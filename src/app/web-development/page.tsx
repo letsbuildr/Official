@@ -2,8 +2,8 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function HeroSection() {
-  const [activeIndex, setActiveIndex] = useState(1); // middle card by default
+export default function WebDevSection() {
+  const [activeIndex, setActiveIndex] = useState(1);
 
   const pricingPlans = [
     {

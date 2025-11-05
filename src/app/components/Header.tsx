@@ -2,8 +2,7 @@ import Image from "next/image";
 
 export default function Header() {
   return (
-   <header className="fixed top-0 left-0 w-full bg-gradient-to-r from-[#0B1E36] via-[#1A2E4F] to-[#0B1E36] shadow-md z-50">
-
+    <header className="fixed top-0 left-0 w-full bg-linear-to-r from-[#0B1E36] via-[#1A2E4F] to-[#0B1E36] shadow-md z-50">
       <nav className="container mx-auto flex items-center justify-between px-8 py-4">
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
@@ -29,17 +28,26 @@ export default function Header() {
             </a>
           </li>
           <li>
-            <a href="#services" className="hover:text-pink-600 transition-colors">
+            <a
+              href="#services"
+              className="hover:text-pink-600 transition-colors"
+            >
               Portfolio
             </a>
           </li>
           <li>
-            <a href="#contact" className="hover:text-pink-600 transition-colors">
+            <a
+              href="#contact"
+              className="hover:text-pink-600 transition-colors"
+            >
               Pricing
             </a>
           </li>
-            <li>
-            <a href="#contact" className="hover:text-pink-600 transition-colors">
+          <li>
+            <a
+              href="#contact"
+              className="hover:text-pink-600 transition-colors"
+            >
               About
             </a>
           </li>
@@ -47,9 +55,9 @@ export default function Header() {
 
         {/* Right: Buttons */}
         <div className="flex items-center gap-4">
-        <button className="px-5 py-2 text-white  rounded-md hover:bg-white hover:text-[#0B1E36] hover:scale-105 transition-all duration-300">
-  Contact
-</button>
+          <button className="px-5 py-2 text-white  rounded-md hover:bg-white hover:text-[#0B1E36] hover:scale-105 transition-all duration-300">
+            Contact
+          </button>
 
           <button className="px-5 py-2 bg-[#0077B6] text-white rounded-md hover:bg-[#0B1E36] transition">
             Get a Quote

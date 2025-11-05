@@ -2,8 +2,8 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function HeroSection() {
-  const [activeIndex, setActiveIndex] = useState(1); // middle card by default
+export default function AutomationServicePage() {
+  const [activeIndex, setActiveIndex] = useState(1);
 
   const pricingPlans = [
     {
@@ -59,27 +59,26 @@ export default function HeroSection() {
         {/* Content wrapper (above overlay) */}
         <div className="relative z-10 flex-1 text-center md:text-left">
           <div className="bg-[#00AFDB33] inline-block  px-4 py-2 mb-4 text-sm  rounded-full">
-            Website Development
+            Automation Services
           </div>
           <h3 className="mb-2   text-4xl md:text-5xl leading-tight">
-            Transforming Ideas
+            Automate. Integrate.
           </h3>
-          <h3 className="mb-1 text-4xl md:text-5xl  leading-tight">into</h3>
           <h3 className="mb-1 text-4xl md:text-5xl  leading-tight">
-            Digital Experiences
+            Accelerate.
           </h3>
 
           <div className="text-gray-300 mt-4 mb-6 text-base max-w-md leading-relaxed">
-            We design and build websites that are fast, scalable, and built to
-            grow with your business.
+            We streamline your business processes through smart automation and
+            integrations that save time and boost efficiency
           </div>
 
           <div className="flex justify-center md:justify-start gap-4">
             <button className="px-10 py-2 bg-[#0077B6]  text-white  rounded-lg transition">
-              Start Your Project
+              Start Your Automation
             </button>
             <button className="px-10 py-2 border border-white text-white hover:bg-[#0B1E36] hover:text-[#FFFFFF] rounded-lg transition duration-300">
-              View Our Works
+              View Case Studies
             </button>
           </div>
         </div>
@@ -121,14 +120,11 @@ export default function HeroSection() {
             />
 
             <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              Speed & Performance
+              Process Optimization
             </h3>
             <p className="text-[#4A5565] text-sm">
-              Lightning-fast load times and,
-            </p>
-            <p className="text-[#4A5565] text-sm">optimized code for peak</p>
-            <p className="text-[#4A5565] text-sm">
-              performance across all devices.
+              We analyze and automate repetitive workflows to help your team
+              work smarter, faster, and more efficiently.
             </p>
           </div>
 
@@ -142,15 +138,12 @@ export default function HeroSection() {
               className="mb-4 mx-auto"
             />
             <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              Exceptional Design Quality
+              System Integration
             </h3>
             <p className="text-[#4A5565] text-sm">
-              Beautiful, modern interfaces that
+              Connect all your business tools and platforms seamlessly to ensure
+              smooth data flow and unified performance.
             </p>
-            <p className="text-[#4A5565] text-sm">
-              captivate users and elevate your
-            </p>
-            <p className="text-[#4A5565] text-sm">brand identity.</p>
           </div>
 
           {/* Box 3 */}
@@ -164,15 +157,12 @@ export default function HeroSection() {
             />
 
             <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              Fully Responsive Layouts
+              Error Reduction
             </h3>
             <p className="text-[#4A5565] text-sm">
-              Seamless experiences on mobile,
+              Minimize manual mistakes through smart automation that enhances
+              accuracy and reliability across processes.
             </p>
-            <p className="text-[#4A5565] text-sm">
-              tablet, and desktop - your site
-            </p>
-            <p className="text-[#4A5565] text-sm">looks perfect everywhere.</p>
           </div>
 
           {/* Box 4 */}
@@ -186,16 +176,11 @@ export default function HeroSection() {
             />
 
             <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              Ongoing Support & Maintenance
+              Ongoing Automation Support
             </h3>
             <p className="text-[#4A5565] text-sm">
-              Continuous updates, security
-            </p>
-            <p className="text-[#4A5565] text-sm">
-              patches, and technical support
-            </p>
-            <p className="text-[#4A5565] text-sm">
-              to keep your site running smoothly.
+              Enjoy continuous monitoring, maintenance, and updates to keep your
+              automation systems running flawlessly.
             </p>
           </div>
         </div>
@@ -212,7 +197,7 @@ export default function HeroSection() {
         {/* Content wrapper */}
         <div className="relative z-10">
           <h2 className="text-3xl mt-5 md:text-4xl text-[#0B1E36] mb-4 font-bold">
-            Our Web Development Process
+            Our Automation Process
           </h2>
           <p className="text-[#4A5565] mb-12 max-w-2xl mx-auto">
             A proven methodology that ensures quality, efficiency, and
@@ -231,11 +216,11 @@ export default function HeroSection() {
                 className="mb-4 mx-auto"
               />
               <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Plan
+                Discover
               </h3>
               <p className="text-[#FFFFFF] text-sm max-w-xs">
-                We analyze your requirements and define project scope, timeline,
-                and strategy.
+                We begin by understanding your business needs and identifying
+                key processes that can be automated.
               </p>
             </div>
 
@@ -249,11 +234,11 @@ export default function HeroSection() {
                 className="mb-4 mx-auto"
               />
               <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Design
+                Plan
               </h3>
               <p className="text-[#FFFFFF] text-sm max-w-xs">
-                Creating intuitive wireframes and stunning visual designs
-                tailored to your brand.
+                Our team designs a tailored automation strategy with clear
+                workflows and integration points.
               </p>
             </div>
 
@@ -267,11 +252,11 @@ export default function HeroSection() {
                 className="mb-4 mx-auto"
               />
               <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Develop
+                Integrate
               </h3>
               <p className="text-[#FFFFFF] text-sm max-w-xs">
-                Building clean, scalable code with modern frameworks and best
-                practices.
+                We connect your tools, apps, and systems to create a seamless,
+                automated environment.
               </p>
             </div>
 
@@ -285,11 +270,11 @@ export default function HeroSection() {
                 className="mb-4 mx-auto"
               />
               <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Launch
+                Test
               </h3>
               <p className="text-[#FFFFFF] text-sm max-w-xs">
-                Rigorous testing, optimization, and seamless deployment to
-                production.
+                Every workflow is tested thoroughly to ensure reliability,
+                accuracy, and efficiency.
               </p>
             </div>
 
@@ -306,8 +291,8 @@ export default function HeroSection() {
                 Support
               </h3>
               <p className="text-[#FFFFFF] text-sm max-w-xs">
-                Ongoing maintenance, updates, and technical assistance whenever
-                you need it.
+                We provide continuous maintenance and optimization to keep your
+                automation running smoothly.
               </p>
             </div>
           </div>
@@ -417,7 +402,7 @@ export default function HeroSection() {
         </div>
       </section>
 
-      <section className="w-full py-20 px-6 md:px-16 text-center bg-linear-to-b from-[#F8FBFF] to-white">
+      <section className="w-full py-20 px-6 md:px-16 text-center bg-gradient-to-b from-[#F8FBFF] to-white">
         <h2 className="text-3xl md:text-4xl font-bold text-[#0B1E36] mb-4">
           Our Pricing Packages
         </h2>
@@ -500,14 +485,14 @@ export default function HeroSection() {
 
         <div className="relative z-10 max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl  text-[#FFFFFF] mb-4">
-            Ready to Build Your Website?
+            Ready to Automate Your Business?
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto mb-8">
-            Lets bring your digital vision to life.
+            Let’s simplify your operations with intelligent automation
           </p>
           <div className="flex justify-center items-center gap-4 mb-12">
             <button className="px-8 py-3 rounded-lg bg-[#FFFFFF] text-[#0077B6] font-medium border border-[#0077B6] hover:bg-white hover:text-[#0B1E36] transition-all duration-300">
-              Start Your Project
+              Start Your Automation
             </button>
             <button className="px-8 py-3 rounded-lg  text-[#FFFFFF] font-medium border border-[#FFFFFF]  hover:text-white transition-all duration-300">
               Contact Us
