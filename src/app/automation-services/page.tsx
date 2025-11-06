@@ -7,42 +7,145 @@ export default function AutomationServicePage() {
 
   const pricingPlans = [
     {
-      title: "Basic Website",
+      title: "Basic",
+      subtitle: "Single Process Setup",
       price: "₦150,000",
       aiPrice: "7–10 days",
       benefits: [
-        "Up to 5 pages",
-        "Responsive design",
-        "Contact form",
-        "1 revision",
-        "Free SSL setup",
+        "1 core process automated",
+        "Up to 2 app integrations",
+        "Basic workflow setup",
+        "Email support (7 days)",
+        "Quick delivery",
       ],
     },
     {
-      title: "Standard Website",
+      title: "Standard",
+      subtitle: "Multi-App Integration",
       price: "₦350,000",
       aiPrice: "14–21 days",
       benefits: [
-        "Up to 15 pages",
-        "Blog integration",
-        "CMS setup",
-        "SEO basics",
-        "2 revisions",
-        "Hosting support",
+        "Up to 5 processes automated",
+        "5–7 app integrations",
+        "Optimized workflows",
+        "Dashboard setup",
+        "30-day support",
+        "Performance monitoring",
       ],
     },
     {
-      title: "Premium Website / E-commerce",
+      title: "Premium",
+      subtitle: "Enterprise Workflow Automation",
       price: "₦800,000+",
       aiPrice: "21–45 days",
       benefits: [
-        "Unlimited pages",
-        "Payment gatewayr",
-        "Product catalog",
-        "Admin dashboard",
-        "SEO optimization",
+        "Full-scale automation",
+        "Unlimited process integrations",
+        "Custom API integrations",
+        "Real-time monitoring and reporting",
+        "Dedicated account manager",
         "Priority support",
       ],
+    },
+  ];
+
+  const projects = [
+    {
+      id: 1,
+      image: "/images/project1.png",
+      alt: "Project Alpha",
+      title: "Modern Business Website",
+      category: "Corporate",
+    },
+    {
+      id: 2,
+      image: "/images/project2.png",
+      alt: "Project Beta",
+      title: "E-commerce Platform",
+      category: "Retail",
+    },
+    {
+      id: 3,
+      image: "/images/project3.png",
+      alt: "Project Gamma",
+      title: "SaaS Dashboard",
+      category: "Technology",
+    },
+    {
+      id: 4,
+      image: "/images/project4.png",
+      alt: "Project Delta",
+      title: "Portfolio Website",
+      category: "Creative",
+    },
+  ];
+
+  const features = [
+    {
+      id: 1,
+      icon: "icon5.svg",
+      title: "Discover",
+      description:
+        "We begin by understanding your business needs and identifying key processes that can be automated.",
+    },
+    {
+      id: 2,
+      icon: "icon6.svg",
+      title: "Plan",
+      description:
+        "Our team designs a tailored automation strategy with clear workflows and integration points.",
+    },
+    {
+      id: 3,
+      icon: "icon7.svg",
+      title: "Integrate",
+      description:
+        "We connect your tools, apps, and systems to create a seamless, automated environment.",
+    },
+    {
+      id: 4,
+      icon: "icon8.svg",
+      title: "Test",
+      description:
+        "Every workflow is tested thoroughly to ensure reliability, accuracy, and efficiency.",
+    },
+    {
+      id: 5,
+      icon: "icon9.svg",
+      title: "Support",
+      description:
+        "We provide continuous maintenance and optimization to keep your automation running smoothly.",
+    },
+  ];
+
+  const automationBoxes = [
+    {
+      id: 1,
+      icon: "icon10.svg",
+      title: "Process Optimization",
+      description:
+        "We analyze and automate repetitive workflows to help your team work smarter, faster, and more efficiently.",
+    },
+    {
+      id: 2,
+      icon: "icon11.svg",
+      title: "System Integration",
+      description:
+        "Connect all your business tools and platforms seamlessly to ensure smooth data flow and unified performance.",
+    },
+    {
+      id: 3,
+      icon: "icon12.svg",
+      title: "Error Reduction",
+      description:
+        "Minimize manual mistakes through smart automation that enhances accuracy and reliability across processes.",
+    },
+    {
+      id: 4,
+      icon: "icon13.svg",
+      title: "Ongoing Automation Support",
+      description:
+        "Enjoy continuous monitoring, maintenance, and updates to keep your automation systems running flawlessly.",
     },
   ];
 
@@ -86,7 +189,7 @@ export default function AutomationServicePage() {
         {/* Right side — Laptop image */}
         <div className="relative z-10 flex-1 flex justify-center md:justify-end mt-10 md:mt-0">
           <Image
-            src="/images/laptop.png"
+            src="/images/devices.png"
             alt="Laptop mockup"
             width={600}
             height={600}
@@ -104,95 +207,43 @@ export default function AutomationServicePage() {
           Why Work With Bomcel Digital
         </h2>
         <p className="text-white max-w-2xl mx-auto mb-12">
-          We combine technical excellence with creative vision to deliver
-          websites that drive results.
+          We make automation simple and stress-free — helping your business work
+          smarter, faster, and with fewer mistakes.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {/* Box 1 */}
-          <div className="bg-white backdrop-blur-md p-6 rounded-xl hover:bg-white/20 transition cursor-pointer">
-            <Image
-              src="icon1.svg"
-              alt="speed"
-              width={40}
-              height={40}
-              className="mb-4 mx-auto"
-            />
-
-            <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              Process Optimization
-            </h3>
-            <p className="text-[#4A5565] text-sm">
-              We analyze and automate repetitive workflows to help your team
-              work smarter, faster, and more efficiently.
-            </p>
-          </div>
-
-          {/* Box 2 */}
-          <div className="bg-white backdrop-blur-md p-6 rounded-xl hover:bg-white/20 transition cursor-pointer">
-            <Image
-              src="icon2.svg"
-              alt="speed"
-              width={40}
-              height={40}
-              className="mb-4 mx-auto"
-            />
-            <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              System Integration
-            </h3>
-            <p className="text-[#4A5565] text-sm">
-              Connect all your business tools and platforms seamlessly to ensure
-              smooth data flow and unified performance.
-            </p>
-          </div>
-
-          {/* Box 3 */}
-          <div className="bg-white backdrop-blur-md p-6 rounded-xl hover:bg-white/20 transition cursor-pointer">
-            <Image
-              src="icon3.svg"
-              alt="speed"
-              width={40}
-              height={40}
-              className="mb-4 mx-auto"
-            />
-
-            <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              Error Reduction
-            </h3>
-            <p className="text-[#4A5565] text-sm">
-              Minimize manual mistakes through smart automation that enhances
-              accuracy and reliability across processes.
-            </p>
-          </div>
-
-          {/* Box 4 */}
-          <div className="bg-white backdrop-blur-md p-6 rounded-xl hover:bg-white/20 transition cursor-pointer">
-            <Image
-              src="icon4.svg"
-              alt="speed"
-              width={40}
-              height={40}
-              className="mb-4 mx-auto"
-            />
-
-            <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-              Ongoing Automation Support
-            </h3>
-            <p className="text-[#4A5565] text-sm">
-              Enjoy continuous monitoring, maintenance, and updates to keep your
-              automation systems running flawlessly.
-            </p>
-          </div>
+          {automationBoxes.map((box) => (
+            <div
+              key={box.id}
+              className="group bg-white backdrop-blur-md p-6 rounded-xl hover:bg-white/20 transition cursor-pointer"
+            >
+              <Image
+                src={box.icon}
+                alt={box.title}
+                width={40}
+                height={40}
+                className="mb-4 mx-auto"
+              />
+              <h3 className="text-xl font-semibold text-[#0B1E36] mb-2 group-hover:text-white transition-colors">
+                {box.title}
+              </h3>
+              <p className="text-[#4A5565] text-sm group-hover:text-white transition-colors">
+                {box.description}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
       <section
         id="why-work"
         className="relative w-full py-20 px-6 md:px-16 text-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/grade.png')" }}
+        style={{
+          backgroundImage: "url('/images/grade.png')",
+        }}
       >
         {/* Subtle overlay for readability */}
-        <div className="absolute inset-0 bg-white/80"></div>
+        <div className="absolute inset-0 bg-black/10"></div>
 
         {/* Content wrapper */}
         <div className="relative z-10">
@@ -204,97 +255,28 @@ export default function AutomationServicePage() {
             exceptional results.
           </p>
 
-          {/* 5 Features */}
+          {/* Features */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-12">
-            {/* Feature 1 */}
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="icon5.svg"
-                alt="Plan"
-                width={50}
-                height={50}
-                className="mb-4 mx-auto"
-              />
-              <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Discover
-              </h3>
-              <p className="text-[#FFFFFF] text-sm max-w-xs">
-                We begin by understanding your business needs and identifying
-                key processes that can be automated.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="icon6.svg"
-                alt="Design"
-                width={50}
-                height={50}
-                className="mb-4 mx-auto"
-              />
-              <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Plan
-              </h3>
-              <p className="text-[#FFFFFF] text-sm max-w-xs">
-                Our team designs a tailored automation strategy with clear
-                workflows and integration points.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="icon7.svg"
-                alt="Develop"
-                width={50}
-                height={50}
-                className="mb-4 mx-auto"
-              />
-              <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Integrate
-              </h3>
-              <p className="text-[#FFFFFF] text-sm max-w-xs">
-                We connect your tools, apps, and systems to create a seamless,
-                automated environment.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="icon8.svg"
-                alt="Launch"
-                width={50}
-                height={50}
-                className="mb-4 mx-auto"
-              />
-              <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Test
-              </h3>
-              <p className="text-[#FFFFFF] text-sm max-w-xs">
-                Every workflow is tested thoroughly to ensure reliability,
-                accuracy, and efficiency.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="icon9.svg"
-                alt="Support"
-                width={50}
-                height={50}
-                className="mb-4 mx-auto"
-              />
-              <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                Support
-              </h3>
-              <p className="text-[#FFFFFF] text-sm max-w-xs">
-                We provide continuous maintenance and optimization to keep your
-                automation running smoothly.
-              </p>
-            </div>
+            {features.map((feature) => (
+              <div
+                key={feature.id}
+                className="flex flex-col items-center text-center"
+              >
+                <Image
+                  src={feature.icon}
+                  alt={feature.title}
+                  width={50}
+                  height={50}
+                  className="mb-4 mx-auto"
+                />
+                <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
+                  {feature.title}
+                </h3>
+                <p className="text-[#FFFFFF] text-sm max-w-xs">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -303,7 +285,7 @@ export default function AutomationServicePage() {
         id="recent-jobs"
         className="w-full py-20 px-6 md:px-16 bg-[#0B1E36] "
       >
-        {/* Section Title */}
+        {/* Projects Section Title */}
         <div className="mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center">
             Recent Jobs
@@ -316,93 +298,33 @@ export default function AutomationServicePage() {
 
         {/* Images Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Job 1 */}
-          <div className="relative group rounded-xl overflow-hidden h-[300px]">
-            <Image
-              src="/images/project1.png"
-              alt="Project Alpha"
-              width={600}
-              height={450} // match container height
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-white p-6 flex flex-col">
-              <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-                Modern Business Website
-              </h3>
-              <p className="text-gray-600 text-sm flex items-center gap-2">
-                <span className="w-8 h-1 bg-blue-500 inline-block"></span>{" "}
-                {/* horizontal line */}
-                Corporate
-              </p>
+          {projects.map((project) => (
+            <div
+              key={project.id}
+              className="relative group rounded-xl overflow-hidden h-[300px]"
+            >
+              <Image
+                src={project.image}
+                alt={project.alt}
+                width={600}
+                height={450}
+                className="w-full h-[60%] object-cover transform transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute bottom-0 left-0 w-full h-[40%] bg-white p-6 flex flex-col">
+                <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
+                  {project.title}
+                </h3>
+                <p className="text-gray-600 text-sm flex items-center gap-2">
+                  <span className="w-8 h-1 bg-blue-500 inline-block"></span>{" "}
+                  {project.category}
+                </p>
+              </div>
             </div>
-          </div>
-
-          {/* Job 2 */}
-          <div className="relative group rounded-xl overflow-hidden h-[300px]">
-            <Image
-              src="/images/project2.png"
-              alt="Project Beta"
-              width={600}
-              height={450}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-white p-6 flex flex-col ">
-              <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-                E-commerce Platform
-              </h3>
-              <p className="text-gray-600 text-sm flex items-center gap-2">
-                <span className="w-8 h-1 bg-blue-500 inline-block"></span>{" "}
-                {/* horizontal line */}
-                Retail
-              </p>
-            </div>
-          </div>
-
-          {/* Job 3 */}
-          <div className="relative group rounded-xl overflow-hidden h-[300px]">
-            <Image
-              src="/images/project3.png"
-              alt="Project Gamma"
-              width={600}
-              height={450}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-white p-6 flex flex-col ">
-              <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-                SaaS Dashboard
-              </h3>
-              <p className="text-gray-600 text-sm flex items-center gap-2">
-                <span className="w-8 h-1 bg-blue-500 inline-block"></span>{" "}
-                {/* horizontal line */}
-                Technology
-              </p>
-            </div>
-          </div>
-
-          {/* Job 4 */}
-          <div className="relative group rounded-xl overflow-hidden h-[300px]">
-            <Image
-              src="/images/project4.png"
-              alt="Project Delta"
-              width={600}
-              height={450}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-white p-6 flex flex-col">
-              <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-                Portfolio Website
-              </h3>
-              <p className="text-gray-600 text-sm flex items-center gap-2">
-                <span className="w-8 h-1 bg-blue-500 inline-block"></span>{" "}
-                {/* horizontal line */}
-                Creative
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      <section className="w-full py-20 px-6 md:px-16 text-center bg-gradient-to-b from-[#F8FBFF] to-white">
+      <section className="w-full py-20 px-6 md:px-16 text-center bg-linear-to-b from-[#F8FBFF] to-white">
         <h2 className="text-3xl md:text-4xl font-bold text-[#0B1E36] mb-4">
           Our Pricing Packages
         </h2>
@@ -414,7 +336,7 @@ export default function AutomationServicePage() {
           {pricingPlans.map((plan, index) => (
             <div
               key={index}
-              className={`relative bg-white shadow-md rounded-xl p-6 md:p-8 h-[500px] w-72 transform transition-all duration-300 border-2 ${
+              className={`relative bg-white shadow-md rounded-xl p-6 md:p-8 h-[500px] w-80 transform transition-all duration-300 border-2 ${
                 activeIndex === index
                   ? "border-[#0077B6] scale-105 z-20"
                   : "border-transparent hover:border-[#0077B6] scale-95 z-10"
@@ -423,27 +345,34 @@ export default function AutomationServicePage() {
             >
               {/* Recommended Tag */}
               {activeIndex === index && (
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#0077B6] text-white text-xs font-medium px-3 py-1 rounded-b-2xl shadow-md">
+                <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-[#0077B6] text-white text-xs font-medium px-3 py-1 rounded-full shadow-md">
                   Recommended
                 </div>
               )}
 
-              <h3 className="text-lg font-semibold text-[#0B1E36]  mb-4">
-                {plan.title}
-              </h3>
+              <div className="text-center max-w-2xl mx-auto mb-8">
+                <h3 className="text-lg font-semibold text-[#0B1E36]  mb-2">
+                  {plan.subtitle}
+                </h3>
+                <p className="text-[#4A5565] text-sm md:text-base">
+                  {plan.title}
+                </p>
+              </div>
 
               {/* Main Price */}
               <div className="mb-4">
                 <p className="text-3xl font-bold text-[#0077B6] flex items-baseline justify-center gap-1">
                   <span className="text-base"></span>
                   {plan.price}
-                  <span className="text-sm text-gray-500 font-normal">/mo</span>
+                  <span className="text-sm text-gray-500 font-normal">
+                    /month
+                  </span>
                 </p>
 
                 {/* AI Price */}
-                <p className="text-sm mt-3 text-gray-400 font-medium">
+                {/* <p className="text-sm mt-3 text-gray-400 font-medium">
                   {plan.aiPrice}
-                </p>
+                </p> */}
               </div>
 
               {/* Benefits */}
@@ -469,7 +398,7 @@ export default function AutomationServicePage() {
                     : "bg-white text-[#0077B6] border-[#0077B6] hover:bg-[#0077B6] hover:text-white"
                 }`}
               >
-                Start Your Project
+                Choose Plan
               </button>
             </div>
           ))}

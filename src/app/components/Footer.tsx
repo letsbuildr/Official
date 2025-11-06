@@ -1,28 +1,24 @@
-// export default function Footer() {
-//   return (
-//     <footer className="bg-gray-900 text-white py-6">
-//       <div className="container mx-auto text-center text-sm">
-//         <p>&copy; {new Date().getFullYear()} MyBrand. All rights reserved.</p>
-//       </div>
-//     </footer>
-//   );
-// }
-
 import Link from "next/link";
-
-// Note: For real social media icons, you would use a library like 'lucide-react' or 'react-icons'
-// The 'className' for social links is provided below for styling a placeholder.
+import Image from "next/image";
+import { FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  // Define your footer data structure
   const footerLinks = [
     {
       title: "Services",
       links: [
-        { label: "Automation Services", href: "/automation-services" },
         { label: "Web Development", href: "/web-development" },
+        { label: "Automation Services", href: "/automation-services" },
+        {
+          label: "Data Analysis for Students",
+          href: "/data-analysis/students",
+        },
+        {
+          label: "Data Analysis for Business",
+          href: "/data-analysis/business",
+        },
         { label: "Pricing Packages", href: "/pricing" },
         { label: "View Case Studies", href: "/case-studies" },
       ],
@@ -51,38 +47,39 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main Content Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 border-b border-gray-700 pb-10">
-          {/* Column 1: Logo and Socials (Takes 2 columns on small screens, 1 on md+) */}
           <div className="col-span-2 md:col-span-2">
-            <h2 className="text-2xl font-bold text-white mb-4">
-              Bomcel Digital
-            </h2>
-            <p className="text-gray-400 mb-6 max-w-xs">
-              We streamline your business processes through smart automation and
-              integrations.
+            <div className="flex items-center gap-2 mb-8">
+              <Image
+                src="/images/logo.png"
+                alt="MyBrand Logo"
+                width={115}
+                height={115}
+                className="object-contain"
+              />
+            </div>
+            <p className="text-gray-400 max-w-xs mb-10">
+              “Empowering businesses with digital presence.”
             </p>
-            <div className="flex space-x-4">
-              {/* Replace these spans with actual icons (e.g., from Lucide or React Icons) */}
+            <div className="flex flex-col space-y-4">
               <Link
-                href="https://twitter.com"
-                aria-label="Twitter"
+                href="tel:+2347070094167"
+                aria-label="Phone"
                 className="text-gray-400 hover:text-blue-500 transition duration-300 text-xl"
               >
-                {/* Example: <Twitter className="w-6 h-6" /> */}
-                <span>🐦</span>
+                <span className="flex items-center space-x-4">
+                  <FaPhoneAlt />
+                  <span>+234 707 009 4167</span>
+                </span>
               </Link>
               <Link
-                href="https://linkedin.com"
-                aria-label="LinkedIn"
-                className="text-gray-400 hover:text-blue-500 transition duration-300 text-xl"
-              >
-                <span>🔗</span>
-              </Link>
-              <Link
-                href="mailto:info@bomcel.com"
+                href="mailto:hello@bomcel.com"
                 aria-label="Email"
                 className="text-gray-400 hover:text-blue-500 transition duration-300 text-xl"
               >
-                <span>📧</span>
+                <span className="flex items-center space-x-4">
+                  <FaEnvelope />
+                  <span>hello@bomcel.com</span>
+                </span>
               </Link>
             </div>
           </div>
