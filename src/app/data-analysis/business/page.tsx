@@ -84,35 +84,35 @@ export default function AutomationServicePage() {
   const features = [
     {
       id: 1,
-      icon: "icon5.svg",
+      icon: "/icon5.svg",
       title: "Discover",
       description:
         "Understand your business goals, data sources, and key challenges.",
     },
     {
       id: 2,
-      icon: "icon6.svg",
+      icon: "/icon6.svg",
       title: "Analyze",
       description:
         "Examine datasets to identify trends, patterns, and opportunities for growth.",
     },
     {
       id: 3,
-      icon: "icon7.svg",
+      icon: "/icon7.svg",
       title: "Prototype",
       description:
         "Build dashboards, models, or visualizations to test actionable insights",
     },
     {
       id: 4,
-      icon: "icon8.svg",
+      icon: "/icon8.svg",
       title: "Implement",
       description:
         "Deploy solutions across your business systems for real-world impact.",
     },
     {
       id: 5,
-      icon: "icon9.svg",
+      icon: "/icon9.svg",
       title: "Train",
       description:
         "Empower your team with training and guidance to fully leverage analytics tools.",
@@ -122,28 +122,28 @@ export default function AutomationServicePage() {
   const automationBoxes = [
     {
       id: 1,
-      icon: "icon10.svg",
+      icon: "/icon10.svg",
       title: "Actionable Insights",
       description:
         "Turn raw data into clear, strategic insights that drive better business decisions",
     },
     {
       id: 2,
-      icon: "icon11.svg",
+      icon: "/icon11.svg",
       title: "Secure Data Handling",
       description:
         "Your data is handled with strict security protocols and confidentiality at every step.",
     },
     {
       id: 3,
-      icon: "icon12.svg",
+      icon: "/icon12.svg",
       title: "Predictive Analytics Expertise",
       description:
         "Leverage our experience in forecasting, modeling, and trend analysis to anticipate business outcomes",
     },
     {
       id: 4,
-      icon: "icon13.svg",
+      icon: "/icon13.svg",
       title: "Ongoing Optimization Support",
       description:
         "Receive continuous guidance and support to refine dashboards, models, and analytics over time.",
@@ -187,11 +187,11 @@ export default function AutomationServicePage() {
         {/* Right side — Laptop image */}
         <div className="relative z-10 flex-1 flex justify-center md:justify-end mt-10 md:mt-0">
           <Image
-            src="/images/devices.png"
+            src="/images/Generated_Image1.png"
             alt="Laptop mockup"
             width={600}
             height={600}
-            className="object-contain drop-shadow-2xl"
+            className="object-contain drop-shadow-2xl rounded-lg"
             priority
           />
         </div>
@@ -205,8 +205,8 @@ export default function AutomationServicePage() {
           Why Work With Bomcel Digital
         </h2>
         <p className="text-white max-w-2xl mx-auto mb-12">
-          We make automation simple and stress-free — helping your business work
-          smarter, faster, and with fewer mistakes.
+          We help businesses unlock hidden opportunities through accurate,
+          data-driven analysis and clear strategic reporting.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">

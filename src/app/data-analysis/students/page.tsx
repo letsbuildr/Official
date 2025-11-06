@@ -84,35 +84,35 @@ export default function AutomationServicePage() {
   const features = [
     {
       id: 1,
-      icon: "icon5.svg",
+      icon: "/icon5.svg",
       title: "Upload",
       description:
         "Submit your dataset and project details securely to get started",
     },
     {
       id: 2,
-      icon: "icon6.svg",
+      icon: "/icon6.svg",
       title: "Scope",
       description:
         "We review your requirements and plan a customized analysis approach",
     },
     {
       id: 3,
-      icon: "icon7.svg",
+      icon: "/icon7.svg",
       title: "Analyze",
       description:
         "Our experts perform thorough data exploration, modeling, and visualization.",
     },
     {
       id: 4,
-      icon: "icon8.svg",
+      icon: "/icon8.svg",
       title: "Deliver",
       description:
         "Receive polished deliverables including reports, notebooks, and presentations.",
     },
     {
       id: 5,
-      icon: "icon9.svg",
+      icon: "/icon9.svg",
       title: "Feedback",
       description:
         "Share your thoughts and request revisions to ensure your project meets your expectations.",
@@ -122,28 +122,28 @@ export default function AutomationServicePage() {
   const automationBoxes = [
     {
       id: 1,
-      icon: "icon10.svg",
+      icon: "/icon10.svg",
       title: "Expert Academic Support",
       description:
         "Work with experienced data analysts and academic professionals who guide you at every step.",
     },
     {
       id: 2,
-      icon: "icon11.svg",
+      icon: "/icon11.svg",
       title: "Custom Analysis & Visuals",
       description:
         "Get tailored insights, charts, and visualizations that make your data easy to understand and present.",
     },
     {
       id: 3,
-      icon: "icon12.svg",
+      icon: "/icon12.svg",
       title: "Fast Turnaround",
       description:
         "Meet your deadlines confidently with efficient project completion without compromising quality.",
     },
     {
       id: 4,
-      icon: "icon13.svg",
+      icon: "/icon13.svg",
       title: "Academic Integrity Guarantee",
       description:
         "Original work you can trust, with proper guidance to maintain academic honesty.",
@@ -171,9 +171,7 @@ export default function AutomationServicePage() {
 
           <div className="text-gray-300 mt-4 mb-6 text-base max-w-md leading-relaxed">
             We provide guidance, code, and deliverables to help you complete
-            your academic data projects with confidenceWe streamline your
-            business processes through smart automation and integrations that
-            save time and boost efficiency
+            your academic data projects with confidence
           </div>
 
           <div className="flex justify-center md:justify-start gap-4">
@@ -189,11 +187,11 @@ export default function AutomationServicePage() {
         {/* Right side — Laptop image */}
         <div className="relative z-10 flex-1 flex justify-center md:justify-end mt-10 md:mt-0">
           <Image
-            src="/images/devices.png"
+            src="/images/Generated_Image2.png"
             alt="Laptop mockup"
             width={600}
             height={600}
-            className="object-contain drop-shadow-2xl"
+            className="object-contain drop-shadow-2xl rounded-lg"
             priority
           />
         </div>
@@ -207,8 +205,8 @@ export default function AutomationServicePage() {
           Why Work With Bomcel Digital
         </h2>
         <p className="text-white max-w-2xl mx-auto mb-12">
-          We make automation simple and stress-free — helping your business work
-          smarter, faster, and with fewer mistakes.
+          We help students transform raw data into clear insights through
+          personalized, easy-to-understand analysis support.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
