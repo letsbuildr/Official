@@ -11,34 +11,10 @@ export default function LoginPage() {
   const togglePassword = () => setShowPassword(!showPassword);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
 
-    // Prepare payload
-    const loginData = {
-      email,
-      password,
-    };
-
+    const loginData = { email, password };
     console.log("Submitting login data:", loginData);
-
-    // Example API call (replace URL with your backend endpoint)
-    /*
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
-      });
-
-      const data = await response.json();
-      console.log("API response:", data);
-
-      // Handle success (redirect, store token, etc.)
-    } catch (error) {
-      console.error("Login error:", error);
-      // Handle error (show message to user)
-    }
-    */
   };
 
   return (
@@ -85,6 +61,16 @@ export default function LoginPage() {
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
+          </div>
+
+          {/* ✅ Forgot Password */}
+          <div className="flex justify-end -mt-2 mb-2">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-[#0077B6] hover:underline"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           <button
