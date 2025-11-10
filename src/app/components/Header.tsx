@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -44,10 +45,7 @@ export default function Header() {
             </a>
           </li>
           <li>
-            <a
-              href="#contact"
-              className="hover:text-pink-600 transition-colors"
-            >
+            <a href="about" className="hover:text-pink-600 transition-colors">
               About
             </a>
           </li>
@@ -55,9 +53,11 @@ export default function Header() {
 
         {/* Right: Buttons */}
         <div className="flex items-center gap-4">
-          <button className="px-5 py-2 text-white  rounded-md hover:bg-white hover:text-[#0B1E36] hover:scale-105 transition-all duration-300">
-            Contact
-          </button>
+          <Link href="contact">
+            <button className="px-5 py-2 text-white rounded-md hover:bg-white hover:text-[#0B1E36] hover:scale-105 transition-all duration-300">
+              Contact
+            </button>
+          </Link>
 
           <button className="px-5 py-2 bg-[#0077B6] text-white rounded-md hover:bg-[#0B1E36] transition">
             Get a Quote
