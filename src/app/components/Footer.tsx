@@ -9,15 +9,15 @@ const Footer = () => {
     {
       title: "Services",
       links: [
-        { label: "Web Development", href: "/web-development" },
-        { label: "Automation Services", href: "/automation-services" },
+        { label: "Web Development", href: "/services/web-development" },
+        { label: "Automation Services", href: "/services/automation-services" },
         {
           label: "Data Analysis for Students",
-          href: "/data-analysis/students",
+          href: "/services/data-analysis/students",
         },
         {
           label: "Data Analysis for Business",
-          href: "/data-analysis/business",
+          href: "/services/data-analysis/business",
         },
         { label: "Pricing Packages", href: "/pricing" },
         { label: "View Case Studies", href: "/case-studies" },

@@ -83,35 +83,35 @@ export default function AutomationServicePage() {
   const features = [
     {
       id: 1,
-      icon: "icon5.svg",
+      icon: "/icon5.svg",
       title: "Discover",
       description:
         "We begin by understanding your business needs and identifying key processes that can be automated.",
     },
     {
       id: 2,
-      icon: "icon6.svg",
+      icon: "/icon6.svg",
       title: "Plan",
       description:
         "Our team designs a tailored automation strategy with clear workflows and integration points.",
     },
     {
       id: 3,
-      icon: "icon7.svg",
+      icon: "/icon7.svg",
       title: "Integrate",
       description:
         "We connect your tools, apps, and systems to create a seamless, automated environment.",
     },
     {
       id: 4,
-      icon: "icon8.svg",
+      icon: "/icon8.svg",
       title: "Test",
       description:
         "Every workflow is tested thoroughly to ensure reliability, accuracy, and efficiency.",
     },
     {
       id: 5,
-      icon: "icon9.svg",
+      icon: "/icon9.svg",
       title: "Support",
       description:
         "We provide continuous maintenance and optimization to keep your automation running smoothly.",
@@ -121,28 +121,28 @@ export default function AutomationServicePage() {
   const automationBoxes = [
     {
       id: 1,
-      icon: "icon10.svg",
+      icon: "/icon10.svg",
       title: "Process Optimization",
       description:
         "We analyze and automate repetitive workflows to help your team work smarter, faster, and more efficiently.",
     },
     {
       id: 2,
-      icon: "icon11.svg",
+      icon: "/icon11.svg",
       title: "System Integration",
       description:
         "Connect all your business tools and platforms seamlessly to ensure smooth data flow and unified performance.",
     },
     {
       id: 3,
-      icon: "icon12.svg",
+      icon: "/icon12.svg",
       title: "Error Reduction",
       description:
         "Minimize manual mistakes through smart automation that enhances accuracy and reliability across processes.",
     },
     {
       id: 4,
-      icon: "icon13.svg",
+      icon: "/icon13.svg",
       title: "Ongoing Automation Support",
       description:
         "Enjoy continuous monitoring, maintenance, and updates to keep your automation systems running flawlessly.",
@@ -177,12 +177,21 @@ export default function AutomationServicePage() {
           </div>
 
           <div className="flex justify-center md:justify-start gap-4">
-            <button className="px-10 py-2 bg-[#0077B6]  text-white  rounded-lg transition">
+            <a
+              href="https://wa.me/2347070094167?text=Hello%20Bomcel%20Digital"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-10 py-2 bg-[#0077B6] text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#005F91] hover:shadow-lg cursor-pointer"
+            >
               Start Your Automation
-            </button>
-            <button className="px-10 py-2 border border-white text-white hover:bg-[#0B1E36] hover:text-[#FFFFFF] rounded-lg transition duration-300">
+            </a>
+
+            <a
+              href="#recent-jobs"
+              className="px-10 py-2 border border-white text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#0B1E36] hover:shadow-lg cursor-pointer"
+            >
               View Case Studies
-            </button>
+            </a>
           </div>
         </div>
 
@@ -420,12 +429,20 @@ export default function AutomationServicePage() {
             Let’s simplify your operations with intelligent automation
           </p>
           <div className="flex justify-center items-center gap-4 mb-12">
-            <button className="px-8 py-3 rounded-lg bg-[#FFFFFF] text-[#0077B6] font-medium border border-[#0077B6] hover:bg-white hover:text-[#0B1E36] transition-all duration-300">
+            <a
+              href="https://wa.me/2347070094167?text=Hello%20Bomcel%20Digital"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 rounded-lg bg-[#FFFFFF] text-[#0077B6] font-medium border border-[#0077B6] hover:bg-white hover:text-[#0B1E36] transition-all duration-300 cursor-pointer"
+            >
               Start Your Automation
-            </button>
-            <button className="px-8 py-3 rounded-lg  text-[#FFFFFF] font-medium border border-[#FFFFFF]  hover:text-white transition-all duration-300">
+            </a>
+            <a
+              href="../contact"
+              className="px-8 py-3 rounded-lg  text-[#FFFFFF] font-medium border border-[#FFFFFF]  hover:text-white transition-all duration-300"
+            >
               Contact Us
-            </button>
+            </a>
           </div>
         </div>
       </section>
