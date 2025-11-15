@@ -22,8 +22,6 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
   Eye,
   Download,
   Share2
@@ -144,6 +142,7 @@ export default function TransactionDetailsPage() {
   const transactionId = params.id;
 
   // Enhanced mock data with full metadata
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const enhancedMockTransaction: EnhancedTransactionDetails = {
     id: Number(transactionId),
     type: "Web Development Service",
@@ -299,7 +298,7 @@ export default function TransactionDetailsPage() {
     if (transactionId) {
       fetchTransaction();
     }
-  }, [transactionId]);
+  }, [enhancedMockTransaction, transactionId]);
 
   // Enhanced navigation helpers
   const navigationContext = useMemo(() => {
@@ -307,6 +306,7 @@ export default function TransactionDetailsPage() {
     
     return {
       backToList: `/dashboard/transactions/all${Object.entries(context)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value !== undefined && value !== null && value !== '')
         .map(([key, value]) => {
           if (key === 'dateRange') {
@@ -315,6 +315,7 @@ export default function TransactionDetailsPage() {
           return `${encodeURIComponent(key)}=${encodeURIComponent(value.toString())}`;
         })
         .join('&') ? '?' + Object.entries(context)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value !== undefined && value !== null && value !== '')
         .map(([key, value]) => {
           if (key === 'dateRange') {

@@ -49,7 +49,7 @@ export default function TransactionAmountCard({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
-      <div className="bg-gradient-to-r from-[#0077B6] to-[#0B1E36] px-6 py-8 text-white text-center">
+      <div className="bg-linear-to-r from-[#0077B6] to-[#0B1E36] px-6 py-8 text-white text-center">
         <p className="text-blue-100 text-sm mb-2">Amount Paid</p>
         <p className="text-3xl sm:text-4xl font-bold mb-3">
           {formatCurrency(amount)}
