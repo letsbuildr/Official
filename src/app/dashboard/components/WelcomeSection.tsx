@@ -29,7 +29,7 @@ export default function WelcomeSection({ user, totalSpent, activeProjects }: Wel
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#0077B6] to-[#0B1E36] rounded-2xl p-6 sm:p-8 mb-8 text-white">
+    <div className="bg-linear-to-r from-[#0077B6] to-[#0B1E36] rounded-2xl p-6 sm:p-8 mb-8 text-white">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
 
         {/* LEFT SIDE */}
