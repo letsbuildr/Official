@@ -348,7 +348,7 @@ export default function TransactionHistoryPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 mt-13">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -648,7 +648,7 @@ export default function TransactionHistoryPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(transaction.status)}
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(transaction.status)}`}>
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(transaction.status)}`}>
                             {transaction.status}
                           </span>
                         </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 
 interface DetailRowProps {
   label: string;
-  value: string;
+  value: string | React.ReactNode;
   copyable?: boolean;
   fullWidth?: boolean;
 }
@@ -13,7 +13,7 @@ export default function DetailRow({ label, value, copyable, fullWidth }: DetailR
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    if (copyable) {
+    if (copyable && typeof value === 'string') {
       await navigator.clipboard.writeText(value);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -22,16 +22,18 @@ export default function DetailRow({ label, value, copyable, fullWidth }: DetailR
 
   return (
     <div className={`flex items-start gap-3 ${fullWidth ? 'flex-col sm:flex-row' : ''}`}>
-      <div className="w-24 sm:w-32 text-sm text-gray-600 flex-shrink-0 mt-0.5">
+      <div className="w-24 sm:w-32 text-sm text-gray-600 shrink-0 mt-0.5">
         {label}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-gray-900 break-words">{value}</p>
-          {copyable && (
+          <div className="text-sm font-medium text-gray-900 wrap-break-word flex-1">
+            {value}
+          </div>
+          {copyable && typeof value === 'string' && (
             <button
               onClick={handleCopy}
-              className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+              className="p-1 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
               aria-label={`Copy ${label}`}
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
