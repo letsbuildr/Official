@@ -22,6 +22,8 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
   Eye,
   Download,
   Share2
@@ -142,7 +144,6 @@ export default function TransactionDetailsPage() {
   const transactionId = params.id;
 
   // Enhanced mock data with full metadata
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const enhancedMockTransaction: EnhancedTransactionDetails = {
     id: Number(transactionId),
     type: "Web Development Service",
@@ -298,7 +299,7 @@ export default function TransactionDetailsPage() {
     if (transactionId) {
       fetchTransaction();
     }
-  }, [enhancedMockTransaction, transactionId]);
+  }, [transactionId]);
 
   // Enhanced navigation helpers
   const navigationContext = useMemo(() => {
@@ -306,7 +307,6 @@ export default function TransactionDetailsPage() {
     
     return {
       backToList: `/dashboard/transactions/all${Object.entries(context)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value !== undefined && value !== null && value !== '')
         .map(([key, value]) => {
           if (key === 'dateRange') {
@@ -315,7 +315,6 @@ export default function TransactionDetailsPage() {
           return `${encodeURIComponent(key)}=${encodeURIComponent(value.toString())}`;
         })
         .join('&') ? '?' + Object.entries(context)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value !== undefined && value !== null && value !== '')
         .map(([key, value]) => {
           if (key === 'dateRange') {
@@ -792,7 +791,7 @@ export default function TransactionDetailsPage() {
                 <div className="space-y-3">
                   {transaction.history.map((event, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="shrink-0 mt-1">
+                      <div className="flex-shrink-0 mt-1">
                         {getStatusIcon(event.status)}
                       </div>
                       <div className="flex-1 min-w-0">
