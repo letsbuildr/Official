@@ -350,7 +350,7 @@ export default function TransactionHistoryPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-gray-200 mt-13">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <Link
@@ -589,7 +589,6 @@ export default function TransactionHistoryPage() {
                       </button>
                     </th>
                     {[
-                      { key: "id", label: "ID" },
                       { key: "type", label: "Type" },
                       { key: "project", label: "Project" },
                       { key: "amount", label: "Amount" },
@@ -630,9 +629,6 @@ export default function TransactionHistoryPage() {
                             <Square className="w-4 h-4" />
                           )}
                         </button>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">#{transaction.id}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900">{transaction.type}</div>
