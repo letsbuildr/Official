@@ -791,7 +791,7 @@ export default function TransactionDetailsPage() {
                 <div className="space-y-3">
                   {transaction.history.map((event, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="flex-shrink-0 mt-1">
+                      <div className="shrink-0 mt-1">
                         {getStatusIcon(event.status)}
                       </div>
                       <div className="flex-1 min-w-0">
