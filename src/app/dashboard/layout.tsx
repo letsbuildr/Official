@@ -11,10 +11,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="font-sans bg-[#F8FBFF] text-[#171717]">
-        {children}
-      </body>
-    </html>
+    <div className="min-h-screen">
+      {children}
+    </div>
   );
 }
