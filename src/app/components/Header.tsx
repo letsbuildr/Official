@@ -73,6 +73,7 @@ export default function Header() {
           <NavItem href="/products" label="Products" active={pathname} />
           <NavItem href="/portfolio" label="Portfolio" active={pathname} />
           <NavItem href="/pricing" label="Pricing" active={pathname} />
+          <NavItem href="/consultation" label="Book Consultation" active={pathname} />
           <NavItem href="/about" label="About" active={pathname} />
         </ul>
 
@@ -145,6 +146,7 @@ export default function Header() {
           <MobileItem href="/products" label="Products" close={setMenuOpen} />
           <MobileItem href="/portfolio" label="Portfolio" close={setMenuOpen} />
           <MobileItem href="/pricing" label="Pricing" close={setMenuOpen} />
+          <MobileItem href="/consultation" label="Book Consultation" close={setMenuOpen} />
           <MobileItem href="/about" label="About" close={setMenuOpen} />
           <MobileItem href="/contact" label="Contact" close={setMenuOpen} />
 
@@ -207,7 +209,7 @@ function MobileItem({
 }: {
   href: string;
   label: string;
-  close: any;
+  close: (value: boolean) => void;
 }) {
   return (
     <li>
