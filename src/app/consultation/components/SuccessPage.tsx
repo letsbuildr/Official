@@ -1,6 +1,6 @@
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { BookingFormData, CONSULTATION_TYPES } from "../types";
+import { BookingFormData } from "../types";
 
 interface SuccessPageProps {
   formData: BookingFormData;
@@ -23,14 +23,22 @@ export default function SuccessPage({ formData, onBookAnother }: SuccessPageProp
         <div className="bg-gray-50 rounded-lg p-4 mb-6">
           <h3 className="font-semibold text-[#0B1E36] mb-2">Booking Details:</h3>
           <p className="text-sm text-gray-600">
+            <strong>Name:</strong> {formData.fullName}
+          </p>
+          <p className="text-sm text-gray-600">
+            <strong>Email:</strong> {formData.email}
+          </p>
+          <p className="text-sm text-gray-600">
             <strong>Date:</strong> {new Date(formData.preferredDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
           <p className="text-sm text-gray-600">
             <strong>Time:</strong> {formData.preferredTime}
           </p>
-          <p className="text-sm text-gray-600">
-            <strong>Type:</strong> {CONSULTATION_TYPES.find(t => t.value === formData.consultationType)?.label}
-          </p>
+          {formData.message && (
+            <p className="text-sm text-gray-600 mt-2">
+              <strong>Message:</strong> {formData.message.length > 100 ? `${formData.message.substring(0, 100)}...` : formData.message}
+            </p>
+          )}
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link

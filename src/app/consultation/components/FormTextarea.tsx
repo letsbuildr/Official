@@ -47,7 +47,7 @@ export default function FormTextarea({
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       {showCharCount && maxLength && (
         <p className="mt-1 text-xs text-gray-500">
-          {value.length}/{maxLength} characters
+          {(value || '').length}/{maxLength} characters
         </p>
       )}
     </div>

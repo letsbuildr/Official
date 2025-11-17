@@ -1,59 +1,87 @@
 "use client";
 
-import { Save } from "lucide-react";
-import { User, Mail, Phone, MessageSquare, Calendar, Clock } from "lucide-react";
+import { Save, User, Mail, MessageSquare, Calendar, Clock, LogIn } from "lucide-react";
 import FormInput from "./FormInput";
-import FormSelect from "./FormSelect";
 import FormTextarea from "./FormTextarea";
 import FormSection from "./FormSection";
-import { BookingFormData, FormErrors, CONSULTATION_TYPES, BUDGET_RANGES, URGENCY_LEVELS, TIME_SLOTS } from "../types";
+import { BookingFormData, FormErrors, TIME_SLOTS } from "../types";
 
 interface BookingFormProps {
   formData: BookingFormData;
   errors: FormErrors;
   isSubmitting: boolean;
+  availableTimeSlots: string[];
+  isLoggedIn: boolean;
+  userData?: {
+    fullName: string;
+    email: string;
+  };
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onDateChange: (date: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   onSaveDraft: () => void;
   onClearDraft: () => void;
   getMinDate: () => string;
+  onLoginClick: () => void;
 }
 
 export default function BookingForm({
   formData,
   errors,
   isSubmitting,
+  availableTimeSlots,
+  isLoggedIn,
+  userData,
   onInputChange,
+  onDateChange,
   onSubmit,
   onSaveDraft,
   onClearDraft,
   getMinDate,
+  onLoginClick,
 }: BookingFormProps) {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = e.target.value;
+    onInputChange(e);
+    onDateChange(date);
+  };
+
   return (
     <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
       <form onSubmit={onSubmit} className="space-y-8">
+        {/* Login Suggestion */}
+        {!isLoggedIn && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <LogIn className="w-5 h-5 text-blue-600 mr-3" />
+                <div>
+                  <p className="text-blue-900 font-medium">Have an account?</p>
+                  <p className="text-blue-700 text-sm">Log in to auto-fill your information</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={onLoginClick}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+              >
+                Log In
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Contact Information */}
         <FormSection title="Contact Information" icon={<User className="w-5 h-5" />}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormInput
-              id="firstName"
-              name="firstName"
-              label="First Name"
-              value={formData.firstName}
+              id="fullName"
+              name="fullName"
+              label="Full Name"
+              value={formData.fullName}
               onChange={onInputChange}
-              error={errors.firstName}
-              placeholder="John"
-              required
-            />
-
-            <FormInput
-              id="lastName"
-              name="lastName"
-              label="Last Name"
-              value={formData.lastName}
-              onChange={onInputChange}
-              error={errors.lastName}
-              placeholder="Doe"
+              error={errors.fullName}
+              placeholder="John Doe"
               required
             />
 
@@ -69,151 +97,100 @@ export default function BookingForm({
               icon={<Mail className="w-4 h-4" />}
               required
             />
-
-            <FormInput
-              id="phone"
-              name="phone"
-              label="Phone Number"
-              type="tel"
-              value={formData.phone}
-              onChange={onInputChange}
-              error={errors.phone}
-              placeholder="+234 800 000 0000"
-              icon={<Phone className="w-4 h-4" />}
-              required
-            />
           </div>
         </FormSection>
 
-        {/* Consultation Details */}
-        <FormSection title="Consultation Details" icon={<MessageSquare className="w-5 h-5" />}>
-          <div className="space-y-4">
-            <FormSelect
-              id="consultationType"
-              name="consultationType"
-              label="Consultation Type"
-              value={formData.consultationType}
-              onChange={onInputChange}
-              error={errors.consultationType}
-              options={CONSULTATION_TYPES}
-              placeholder="Select consultation type"
-              required
-            />
-
-            <FormTextarea
-              id="projectDescription"
-              name="projectDescription"
-              label="Project Description"
-              value={formData.projectDescription}
-              onChange={onInputChange}
-              error={errors.projectDescription}
-              placeholder="Please describe your project requirements, goals, and any specific features you need..."
-              rows={4}
-              showCharCount
-              maxLength={500}
-              required
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormSelect
-                id="budget"
-                name="budget"
-                label="Budget Range"
-                value={formData.budget}
-                onChange={onInputChange}
-                error={errors.budget}
-                options={BUDGET_RANGES}
-                placeholder="Select budget range"
-                required
-              />
-
-              <FormSelect
-                id="urgency"
-                name="urgency"
-                label="Project Urgency"
-                value={formData.urgency}
-                onChange={onInputChange}
-                error={errors.urgency}
-                options={URGENCY_LEVELS}
-                placeholder="Select urgency level"
-                required
-              />
-            </div>
-          </div>
+        {/* Consultation Message */}
+        <FormSection title="Message" icon={<MessageSquare className="w-5 h-5" />}>
+          <FormTextarea
+            id="message"
+            name="message"
+            label="Tell us about your consultation needs"
+            value={formData.message}
+            onChange={onInputChange}
+            error={errors.message}
+            placeholder="Please describe what you'd like to discuss during the consultation..."
+            rows={4}
+            showCharCount
+            maxLength={500}
+            required
+          />
         </FormSection>
 
         {/* Schedule */}
-        <FormSection title="Preferred Schedule" icon={<Calendar className="w-5 h-5" />}>
+        <FormSection title="Schedule" icon={<Calendar className="w-5 h-5" />}>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormInput
-                id="preferredDate"
-                name="preferredDate"
-                label="Preferred Date"
-                type="date"
-                value={formData.preferredDate}
-                onChange={onInputChange}
-                error={errors.preferredDate}
-                min={getMinDate()}
-                required
-              />
+            <FormInput
+              id="preferredDate"
+              name="preferredDate"
+              label="Preferred Date"
+              type="date"
+              value={formData.preferredDate}
+              onChange={handleDateChange}
+              error={errors.preferredDate}
+              min={getMinDate()}
+              required
+            />
 
-              <FormSelect
-                id="preferredTime"
-                name="preferredTime"
-                label="Preferred Time"
-                value={formData.preferredTime}
-                onChange={onInputChange}
-                error={errors.preferredTime}
-                options={TIME_SLOTS.map(time => ({ value: time, label: time }))}
-                placeholder="Select time slot"
-                icon={<Clock className="w-4 h-4" />}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormInput
-                id="alternateDate"
-                name="alternateDate"
-                label="Alternate Date (Optional)"
-                type="date"
-                value={formData.alternateDate}
-                onChange={onInputChange}
-                min={getMinDate()}
-              />
-
-              <FormSelect
-                id="alternateTime"
-                name="alternateTime"
-                label="Alternate Time (Optional)"
-                value={formData.alternateTime}
-                onChange={onInputChange}
-                options={TIME_SLOTS.map(time => ({ value: time, label: time }))}
-                placeholder="Select time slot"
-              />
-            </div>
+            {formData.preferredDate && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Available Time Slots
+                    {availableTimeSlots.length === 0 && (
+                      <span className="text-amber-600 text-xs ml-2">
+                        (No available slots for this date)
+                      </span>
+                    )}
+                  </label>
+                  <select
+                    id="preferredTime"
+                    name="preferredTime"
+                    value={formData.preferredTime}
+                    onChange={onInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      errors.preferredTime ? "border-red-500" : "border-gray-300"
+                    }`}
+                    required
+                  >
+                    <option value="">Select a time slot</option>
+                    {availableTimeSlots.map((time) => (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.preferredTime && (
+                    <p className="text-red-500 text-sm mt-1">{errors.preferredTime}</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </FormSection>
 
-        {/* Additional Notes */}
-        <FormTextarea
-          id="additionalNotes"
-          name="additionalNotes"
-          label="Additional Notes (Optional)"
-          value={formData.additionalNotes}
-          onChange={onInputChange}
-          placeholder="Any additional information you'd like us to know..."
-          rows={3}
-        />
+        {/* Email Confirmation Notice */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-start">
+            <Mail className="w-5 h-5 text-green-600 mr-3 mt-0.5" />
+            <div>
+              <p className="text-green-900 font-medium">Email Confirmation</p>
+              <p className="text-green-700 text-sm">
+                You&apos;ll receive an email confirmation with your consultation details after booking.
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !formData.preferredDate || !formData.preferredTime}
             className={`flex-1 px-6 py-3 bg-[#0077B6] text-white rounded-lg font-semibold hover:bg-[#005F91] transition-all duration-300 transform hover:scale-105 flex items-center justify-center ${
-              isSubmitting ? "opacity-75 cursor-not-allowed" : ""
+              isSubmitting || !formData.preferredDate || !formData.preferredTime 
+                ? "opacity-75 cursor-not-allowed" 
+                : ""
             }`}
           >
             {isSubmitting ? (
@@ -222,7 +199,7 @@ export default function BookingForm({
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Submitting...
+                Booking...
               </>
             ) : (
               "Book Consultation"
