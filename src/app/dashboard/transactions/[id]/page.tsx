@@ -453,7 +453,7 @@ export default function TransactionDetailsPage() {
   return (
     <>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
@@ -889,7 +889,7 @@ export default function TransactionDetailsPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
               {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-13">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                 <div className="space-y-2">
                   <button
