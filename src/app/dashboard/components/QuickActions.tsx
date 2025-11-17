@@ -7,12 +7,12 @@ export default function QuickActions() {
   return (
     <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <Link href="/consultation" className="block">
-        <button className="w-full p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg text-left">
-          <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-3">
-            <Calendar className="w-5 h-5 text-white" />
+        <button className="w-full p-4 bg-white rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors text-left">
+          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+            <Calendar className="w-5 h-5 text-blue-600" />
           </div>
-          <h4 className="font-medium text-white mb-1">Book Consultation</h4>
-          <p className="text-sm text-blue-100">Schedule a free meeting</p>
+          <h4 className="font-medium text-gray-900 mb-1">Book Consultation</h4>
+          <p className="text-sm text-gray-600">Schedule a free meeting</p>
         </button>
       </Link>
 
