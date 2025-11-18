@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
+import { AVAILABLE_SERVICES } from "./types";
 
 export default function ConsultationPage() {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ export default function ConsultationPage() {
     message: "",
     preferredDate: "",
     preferredTime: "",
+    service: "",
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -38,6 +40,7 @@ export default function ConsultationPage() {
           message: parsedDraft.message || "",
           preferredDate: parsedDraft.preferredDate || "",
           preferredTime: parsedDraft.preferredTime || "",
+          service: parsedDraft.service || "",
         });
         setShowDraftNotification(true);
         setTimeout(() => setShowDraftNotification(false), 5000);
@@ -77,6 +80,7 @@ export default function ConsultationPage() {
       message: "",
       preferredDate: "",
       preferredTime: "",
+      service: "",
     });
     setShowDraftNotification(false);
     setAvailableTimeSlots([]);
@@ -192,6 +196,10 @@ export default function ConsultationPage() {
       newErrors.preferredTime = "Please select a time slot";
     }
 
+    if (!formData.service) {
+      newErrors.service = "Please select a service you're interested in";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -270,6 +278,9 @@ export default function ConsultationPage() {
             </p>
             <p className="text-sm text-gray-600">
               <strong>Time:</strong> {formData.preferredTime}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Service:</strong> {AVAILABLE_SERVICES.find(s => s.id === formData.service)?.name || 'Not specified'}
             </p>
             {formData.message && (
               <p className="text-sm text-gray-600 mt-2">
@@ -406,6 +417,39 @@ export default function ConsultationPage() {
               </div>
             </div>
 
+            {/* Service Selection */}
+            <div>
+              <h3 className="text-base sm:text-lg font-semibold text-[#0B1E36] mb-3 sm:mb-4 flex items-center">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Service Selection
+              </h3>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  What service are you interested in? *
+                </label>
+                <select
+                  name="service"
+                  value={formData.service}
+                  onChange={handleInputChange}
+                  className={`w-full border px-3 py-3 sm:px-4 sm:py-2 rounded-lg outline-none focus:ring-2 focus:ring-[#0077B6] text-base ${
+                    errors.service ? "border-red-500" : "border-gray-300"
+                  }`}
+                  required
+                >
+                  <option value="">Select a service</option>
+                  {AVAILABLE_SERVICES.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.name} - {service.description}
+                    </option>
+                  ))}
+                </select>
+                {errors.service && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.service}</p>}
+              </div>
+            </div>
+
             {/* Message */}
             <div>
               <h3 className="text-base sm:text-lg font-semibold text-[#0B1E36] mb-3 sm:mb-4 flex items-center">
@@ -521,9 +565,9 @@ export default function ConsultationPage() {
             <div className="space-y-3 pt-4">
               <button
                 type="submit"
-                disabled={isSubmitting || !formData.preferredDate || !formData.preferredTime}
+                disabled={isSubmitting || !formData.preferredDate || !formData.preferredTime || !formData.service}
                 className={`w-full px-6 py-4 bg-[#0077B6] text-white rounded-lg font-semibold hover:bg-[#005F91] transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-base ${
-                  isSubmitting || !formData.preferredDate || !formData.preferredTime
+                  isSubmitting || !formData.preferredDate || !formData.preferredTime || !formData.service
                     ? "opacity-75 cursor-not-allowed"
                     : ""
                 }`}

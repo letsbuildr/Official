@@ -6,6 +6,7 @@ import WelcomeSection from "./components/WelcomeSection";
 import QuickStats from "./components/QuickStats";
 import TransactionOverview from "./components/TransactionOverview";
 import QuickActions from "./components/QuickActions";
+import ConsultationTracking from "./components/ConsultationTracking";
 
 interface Transaction {
   id: number;
@@ -14,6 +15,17 @@ interface Transaction {
   status: "completed" | "pending" | "failed";
   date: string;
   project: string;
+}
+
+interface Consultation {
+  id: number;
+  service: string;
+  consultationDate: string;
+  consultationTime: string;
+  status: "scheduled" | "completed" | "cancelled";
+  fullName: string;
+  email: string;
+  message: string;
 }
 
 export default function Dashboard() {
@@ -91,38 +103,65 @@ export default function Dashboard() {
      }
    ]);
 
-  // Calculate statistics
-  const totalSpent = transactions
-    .filter(t => t.status === 'completed')
-    .reduce((sum, t) => sum + t.amount, 0);
+  const [consultations] = useState<Consultation[]>([
+   {
+     id: 1,
+     service: "Web Development",
+     consultationDate: "2024-11-20",
+     consultationTime: "10:00 AM",
+     status: "scheduled",
+     fullName: "John Doe",
+     email: "john@example.com",
+     message: "Interested in building a modern e-commerce platform"
+   },
+   {
+     id: 2,
+     service: "Data Analysis",
+     consultationDate: "2024-11-18",
+     consultationTime: "02:00 PM",
+     status: "completed",
+     fullName: "Jane Smith",
+     email: "jane@example.com",
+     message: "Need help with business analytics dashboard"
+   }
+ ]);
 
-  const pendingAmount = transactions
-    .filter(t => t.status === 'pending')
-    .reduce((sum, t) => sum + t.amount, 0);
+ // Calculate statistics
+ const totalSpent = transactions
+   .filter(t => t.status === 'completed')
+   .reduce((sum, t) => sum + t.amount, 0);
 
-  const activeProjects = transactions.filter(t => t.status === 'pending').length;
+ const pendingAmount = transactions
+   .filter(t => t.status === 'pending')
+   .reduce((sum, t) => sum + t.amount, 0);
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardHeader user={user} />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <WelcomeSection 
-          user={{ name: user.name, joinDate: user.joinDate }}
-          totalSpent={totalSpent}
-          activeProjects={activeProjects}
-        />
-        
-        <QuickStats 
-          totalSpent={totalSpent}
-          pendingAmount={pendingAmount}
-          totalProjects={transactions.length}
-        />
-        
-        <TransactionOverview transactions={transactions} />
-        
-        <QuickActions />
-      </div>
-    </div>
-  );
+ const activeProjects = transactions.filter(t => t.status === 'pending').length;
+
+ return (
+   <div className="min-h-screen bg-gray-50">
+     <DashboardHeader user={user} />
+     
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+       <WelcomeSection
+         user={{ name: user.name, joinDate: user.joinDate }}
+         totalSpent={totalSpent}
+         activeProjects={activeProjects}
+       />
+       
+       <QuickStats
+         totalSpent={totalSpent}
+         pendingAmount={pendingAmount}
+         totalProjects={transactions.length}
+       />
+
+       <ConsultationTracking consultations={consultations} />
+
+       
+       <TransactionOverview transactions={transactions} />
+       
+       
+       <QuickActions />
+     </div>
+   </div>
+ );
 }
