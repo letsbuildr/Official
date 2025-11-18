@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 interface DashboardHeaderProps {
   user: {
     name: string;
@@ -24,8 +26,12 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
           {/* Right Section */}
           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
             
-            {/* Icon */}
-            <button className="p-2 text-gray-400 hover:text-gray-500">
+            {/* Settings Icon */}
+            <Link 
+              href="/dashboard/settings"
+              className="p-2 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Settings"
+            >
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -45,7 +51,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-            </button>
+            </Link>
 
             {/* User Section */}
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
