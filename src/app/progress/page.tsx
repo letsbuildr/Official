@@ -3,26 +3,34 @@
 import { useState } from "react";
 import { CheckCircle, Clock, ListChecks } from "lucide-react";
 
+interface Task {
+  id: number;
+  title: string;
+  status: "completed" | "in-progress" | "pending";
+  deadline: string;
+  progress: number;
+}
+
 export default function ProgressPage() {
-  const [tasks] = useState([
+  const [tasks] = useState<Task[]>([
     {
       id: 1,
       title: "Design Landing Page UI",
-      status: "completed",
+      status: "completed" as const,
       deadline: "2025-02-04",
       progress: 100,
     },
     {
       id: 2,
       title: "Integrate Payment API",
-      status: "in-progress",
+      status: "in-progress" as const,
       deadline: "2025-02-06",
       progress: 45,
     },
     {
       id: 3,
       title: "Write Service Descriptions",
-      status: "pending",
+      status: "pending" as const,
       deadline: "2025-02-08",
       progress: 0,
     },
@@ -73,7 +81,7 @@ export default function ProgressPage() {
           Overall Progress
         </h2>
         <p className="text-gray-500 text-sm">
-          Keep going — you're doing great!
+          Keep going — you&apos;re doing great!
         </p>
 
         <div className="mt-6 w-full bg-gray-200 h-4 rounded-full overflow-hidden">
@@ -102,7 +110,13 @@ export default function ProgressPage() {
   );
 }
 
-function StatCard({ icon, label, value }) {
+interface StatCardProps {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+}
+
+function StatCard({ icon, label, value }: StatCardProps) {
   return (
     <div className="bg-white shadow-md rounded-xl p-6 flex items-center gap-4">
       <div className="text-blue-600">{icon}</div>
@@ -114,9 +128,13 @@ function StatCard({ icon, label, value }) {
   );
 }
 
-function TaskRow({ task }) {
-  const getStatusColor = (status) => {
-    const colors = {
+interface TaskRowProps {
+  task: Task;
+}
+
+function TaskRow({ task }: TaskRowProps) {
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
       completed: "bg-green-100 text-green-700",
       "in-progress": "bg-blue-100 text-blue-700",
       pending: "bg-yellow-100 text-yellow-700",
