@@ -7,20 +7,20 @@ export default function NewServicePage() {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [features, setFeatures] = useState([""]);
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   const addFeature = () => setFeatures([...features, ""]);
-  const removeFeature = (index) =>
+  const removeFeature = (index: number) =>
     setFeatures(features.filter((_, i) => i !== index));
 
-  const updateFeature = (value, index) => {
+  const updateFeature = (value: string, index: number) => {
     const updated = [...features];
     updated[index] = value;
     setFeatures(updated);
   };
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
 
@@ -73,7 +73,7 @@ export default function NewServicePage() {
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setImageFile(e.target.files[0])}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setImageFile(e.target.files?.[0] || null)}
               className="w-full border rounded-lg p-2"
             />
           </div>
@@ -87,7 +87,7 @@ export default function NewServicePage() {
               type="text"
               placeholder="e.g., Web Automation Setup"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
               required
               className="w-full border rounded-lg p-3"
             />
@@ -100,7 +100,7 @@ export default function NewServicePage() {
               type="number"
               placeholder="e.g., 200"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPrice(e.target.value)}
               required
               className="w-full border rounded-lg p-3"
             />
@@ -113,7 +113,7 @@ export default function NewServicePage() {
             </label>
             <textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
               placeholder="Brief explanation of the service..."
               required
               className="w-full border rounded-lg p-3 h-32"
@@ -131,7 +131,7 @@ export default function NewServicePage() {
                 <input
                   type="text"
                   value={feature}
-                  onChange={(e) => updateFeature(e.target.value, index)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateFeature(e.target.value, index)}
                   placeholder={`Feature ${index + 1}`}
                   className="flex-1 border rounded-lg p-3"
                 />
