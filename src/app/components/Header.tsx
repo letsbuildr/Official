@@ -44,28 +44,28 @@ export default function Header() {
             {dropdownOpen && (
               <div className="absolute bg-white shadow-md rounded-md p-3 mt-2 w-44 text-black z-20">
                 <Link
-                  href="/service/web-development"
+                  href="/services/web-development"
                   className="block py-2 hover:text-pink-600"
                 >
                   Web Development
                 </Link>
                 <Link
-                  href="/service/automation-services"
+                  href="/services/automation-services"
                   className="block py-2 hover:text-pink-600"
                 >
                   Automation Services
                 </Link>
                 <Link
-                  href="/service/data-analysis/students"
+                  href="/services/data-analysis/students"
                   className="block py-2 hover:text-pink-600"
                 >
                   Data Analysis for Students
                 </Link>
                 <Link
-                  href="/service/data-analysis/businesses"
+                  href="/services/data-analysis/business"
                   className="block py-2 hover:text-pink-600"
                 >
-                  Data Analysis for Businesses
+                  Data Analysis for Business
                 </Link>
               </div>
             )}
@@ -127,17 +127,17 @@ export default function Header() {
 
             {dropdownOpen && (
               <div className="mt-2 ml-4 flex flex-col gap-3 text-base">
-                <Link href="/service/web" onClick={() => setMenuOpen(false)}>
-                  Web Design
+                <Link href="/services/web-development" onClick={() => setMenuOpen(false)}>
+                  Web Development
                 </Link>
-                <Link href="/service/dev" onClick={() => setMenuOpen(false)}>
-                  Development
+                <Link href="/services/automation-services" onClick={() => setMenuOpen(false)}>
+                  Automation Services
                 </Link>
                 <Link
-                  href="/service/branding"
+                  href="/services/data-analysis/students"
                   onClick={() => setMenuOpen(false)}
                 >
-                  Branding
+                  Data Analysis
                 </Link>
               </div>
             )}
