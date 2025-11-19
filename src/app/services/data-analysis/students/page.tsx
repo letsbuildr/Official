@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AutomationServicePage() {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -175,12 +176,12 @@ export default function AutomationServicePage() {
           </div>
 
           <div className="flex justify-center md:justify-start gap-4">
-            <button className="px-10 py-2 bg-[#0077B6]  text-white  rounded-lg transition">
+            <Link href="/sign-up" className="px-10 py-2 bg-[#0077B6]  text-white  rounded-lg transition inline-block text-center">
               Upload Your Project
-            </button>
-            <button className="px-10 py-2 border border-white text-white hover:bg-[#0B1E36] hover:text-[#FFFFFF] rounded-lg transition duration-300">
+            </Link>
+            <Link href="/sign-up" className="px-10 py-2 border border-white text-white hover:bg-[#0B1E36] hover:text-[#FFFFFF] rounded-lg transition duration-300 inline-block text-center">
               Get Quote
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -418,9 +419,9 @@ export default function AutomationServicePage() {
             Upload your dataset and let’s help you analyze it step-by-step
           </p>
           <div className="flex justify-center items-center gap-4 mb-12">
-            <button className="px-8 py-3 rounded-lg bg-[#FFFFFF] text-[#0077B6] font-medium border border-[#0077B6] hover:bg-white hover:text-[#0B1E36] transition-all duration-300">
+            <Link href="/sign-up" className="px-8 py-3 rounded-lg bg-[#FFFFFF] text-[#0077B6] font-medium border border-[#0077B6] hover:bg-white hover:text-[#0B1E36] transition-all duration-300 inline-block text-center">
               Upload Project
-            </button>
+            </Link>
             <button className="px-8 py-3 rounded-lg  text-[#FFFFFF] font-medium border border-[#FFFFFF]  hover:text-white transition-all duration-300">
               Contact Us
             </button>

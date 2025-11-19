@@ -517,9 +517,6 @@ export default function ConsultationPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Available Time Slots *
-                    {availableTimeSlots.length === 0 && formData.preferredDate && (
-                      <span className="text-amber-600 text-xs ml-2">(No available slots for this date)</span>
-                    )}
                   </label>
                   <select
                     name="preferredTime"
@@ -632,7 +629,7 @@ export default function ConsultationPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h4 className="font-semibold text-[#0B1E36] mb-2">60-Minute Session</h4>
+              <h4 className="font-semibold text-[#0B1E36] mb-2">30-Minute Session</h4>
               <p className="text-sm text-gray-600">A comprehensive consultation to understand your needs</p>
             </div>
             <div className="text-center">
