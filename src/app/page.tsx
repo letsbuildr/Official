@@ -4,449 +4,354 @@ import Image from "next/image";
 
 export default function WebDevSection() {
   const [activeIndex, setActiveIndex] = useState(1);
+  const [open, setOpen] = useState(null);
 
-  const pricingPlans = [
+  const CheckCircleIcon = () => (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M17.6251 10.734C17.0001 13.859 14.644 16.801 11.3367 17.4588C8.02952 18.1167 4.67342 16.5783 3.01296 13.6435C1.3525 10.7087 1.76242 7.03963 4.02966 4.5436C6.2969 2.04756 10.1251 1.35896 13.2501 2.60896"
+        stroke="#34C759"
+        stroke-width="1.875"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M7 9.48438L10.125 12.6094L17.625 4.48438"
+        stroke="#34C759"
+        stroke-width="1.875"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+
+  const plans = [
+    { name: "Starter Website", price: "₦150,000" },
+    { name: "Automation Setup", price: "₦100,000" },
+    { name: "Student Project", price: "₦30,000" },
+    { name: "Business Dashboard", price: "₦200,000" },
+  ];
+
+  const faqs = [
     {
-      title: "Perfect for small businesses or personal sites",
-      subtitle: "Basic Website",
-      price: "₦150,000",
-      aiPrice: "7–10 days",
-      benefits: [
-        "Up to 5 pages",
-        "Responsive design",
-        "Contact form",
-        "1 revision",
-        "Free SSL setup",
-      ],
+      question: "How long does it take to build a website?",
+      answer:
+        "Most websites take between 3 to 14 days depending on the complexity, number of pages, features, and your responsiveness during revisions.",
     },
     {
-      title: "Ideal for growing businesses with a blog or CMS",
-      subtitle: "Standard Website",
-      price: "₦350,000",
-      aiPrice: "14–21 days",
-      benefits: [
-        "Up to 15 pages",
-        "Blog integration",
-        "CMS setup",
-        "SEO basics",
-        "2 revisions",
-        "Hosting support",
-      ],
+      question: "Do you offer maintenance & support?",
+      answer:
+        "Yes. I do offer ongoing maintenance, updates, bug fixes, content changes, and security support to keep your website running smoothly.",
     },
     {
-      title: "Comprehensive solution for online stores or large projects",
-      subtitle: "Premium Website / E-commerce",
-      price: "₦800,000+",
-      aiPrice: "21–45 days",
-      benefits: [
-        "Unlimited pages",
-        "Payment gateway",
-        "Product catalog",
-        "Admin dashboard",
-        "SEO optimization",
-        "Priority support",
-      ],
+      question: "Do you help with academic projects?",
+      answer:
+        "Absolutely. I assist students with web development, software engineering, and final-year project development—including documentation.",
+    },
+    {
+      question: "What payment methods do you accept?",
+      answer:
+        "I accept bank transfer, Paystack, Flutterwave, USDT, and other secure payment options depending on your location.",
+    },
+    {
+      question: "Can I see examples of your work?",
+      answer:
+        "Yes! You can explore my portfolio at bomceldigital.com or request specific project samples depending on what you need.",
     },
   ];
 
-  const projects = [
+  const clients = [
+    { name: "Client 1", text: "Amazing service...", img: "/p1.jpg" },
+    { name: "Client 2", text: "Highly recommended...", img: "/p2.jpg" },
+    { name: "Client 3", text: "Very satisfied...", img: "/p3.jpg" },
+  ];
+
+  const stats = [
+    { number: "100+", label: "Projects Delivered" },
+    { number: "24hr", label: "Average Response" },
+    { number: "95%", label: "Client Satisfaction" },
+  ];
+
+  const steps = [
     {
-      id: 1,
-      image: "/images/project1.png",
-      alt: "Project Alpha",
-      title: "Modern Business Website",
-      category: "Corporate",
+      number: "1",
+      title: "Tell Us Your Needs",
+      desc: "FIll out our intake form or book a discovery call. We’ll understand your requirements",
     },
     {
-      id: 2,
-      image: "/images/project2.png",
-      alt: "Project Beta",
-      title: "E-commerce Platform",
-      category: "Retail",
+      number: "2",
+      title: "We Scope & Quote",
+      desc: "WReceive a  detailed proposal with timeline, deliverables, and transparent pricing",
     },
     {
-      id: 3,
-      image: "/images/project3.png",
-      alt: "Project Gamma",
-      title: "SaaS Dashboard",
-      category: "Technology",
-    },
-    {
-      id: 4,
-      image: "/images/project4.png",
-      alt: "Project Delta",
-      title: "Portfolio Website",
-      category: "Creative",
+      number: "3",
+      title: "Delivery & Training",
+      desc: "Get your deliverables with documentation  and training.  Plus ongoing support",
     },
   ];
 
-  const features = [
+  const services = [
     {
-      id: 1,
-      icon: "/icon5.svg",
-      title: "Plan",
-      description:
-        "We analyze your requirements and define project scope, timeline and strategy.",
+      title: "Web Development",
+      subtitle:
+        "Professional websites built for growth. From landing pages to e-commerce stores",
+      price: "Starting from #150000",
+      points: ["Responsive Design", "SEO Optimization", "Fast Delivery"],
+      img: "/images/service1.png",
+      icon: "/serviceicon1.svg",
     },
     {
-      id: 2,
-      icon: "/icon6.svg",
-      title: "Design",
-      description:
-        "Creating intuitive wireframes and stunning visual designs tailored to your brand.",
+      title: "Automation Services",
+      subtitle:
+        "Streamline your business operations with custom automation solutions",
+      price: "Starting from #100000",
+      points: ["Save Time", "Reduce Errors", "Scale Easily"],
+      img: "/images/service2.png",
+      icon: "/serviceicon2.svg",
     },
     {
-      id: 3,
-      icon: "/icon7.svg",
-      title: "Develop",
-      description:
-        "Building clean, scalable code with modern frameworks and best practices.",
+      title: "Data Analysis – Students",
+      subtitle:
+        "Final year project help - analysis, models & presentation  support",
+      price: "Starting from #150000",
+      points: ["Fast Turnaround ", "Academic Integrity", "Detailed reports"],
+      img: "/images/service3.png",
+      icon: "/serviceicon3.svg",
     },
     {
-      id: 4,
-      icon: "/icon8.svg",
-      title: "Launch",
-      description:
-        "Rigorous testing, optimization, and seamless deployment to production.",
-    },
-    {
-      id: 5,
-      icon: "/icon9.svg",
-      title: "Support",
-      description:
-        "Ongoing maintenance, updates, and technical assistance whenever you need it.",
-    },
-  ];
-
-  const automationBoxes = [
-    {
-      id: 1,
-      icon: "/icon1.svg",
-      title: "Speed & Performance",
-      description:
-        "Lightning-fast load times and, optimized code for peak performance across all devices.",
-    },
-    {
-      id: 2,
-      icon: "/icon2.svg",
-      title: "Exceptional Design Quality",
-      description:
-        "Beautiful, modern interfaces that captivate users and elevate your brand identity.",
-    },
-    {
-      id: 3,
-      icon: "/icon3.svg",
-      title: "Fully Responsive Layouts",
-      description:
-        "Seamless experiences on mobile, tablet, and desktop - your site looks perfect everywhere.",
-    },
-    {
-      id: 4,
-      icon: "/icon4.svg",
-      title: "Ongoing Support & Maintenance",
-      description:
-        "Continuous updates, security patches, and technical support to keep your site running smoothly.",
+      title: "Data Analysis – Business",
+      subtitle:
+        "From dashboards to predictive models, turn data into decisions",
+      price: "Starting from #200000",
+      points: ["Custom Dashboards", "Predictive Models", "Training Included"],
+      img: "/images/service4.png",
+      icon: "/serviceicon1.svg",
     },
   ];
 
   return (
     <>
-      <section
-        id="home"
-        className="relative min-h-screen w-full bg-cover bg-center bg-no-repeat text-white flex flex-col md:flex-row items-center justify-between px-8 md:px-16 pt-28"
-        style={{ backgroundImage: "url('/images/bg.png')" }}
-      >
-        {/* Overlay (optional for better contrast) */}
-        <div className="absolute inset-0 bg-black/50"></div>
-
-        {/* Content wrapper (above overlay) */}
-        <div className="relative z-10 flex-1 text-center md:text-left">
-          <div className="bg-[#00AFDB33] inline-block  px-4 py-2 mb-4 text-sm  rounded-full">
-            Website Development
+      {/* Hero Section */}
+      <section className="relative w-full flex items-center justify-center pt-40 pb-40 text-white">
+        <Image
+          src="/images/hero-bg.png"
+          alt="Hero Background"
+          fill
+          className="object-cover opacity-100"
+        />
+        <div className="relative flex flex-col items-center justify-center gap-7 max-w-4xl text-center px-4">
+          <span className="px-5 py-2.5 bg-[#00C0E8] text-sm rounded-[5px] inline-block">
+            Trusted by 100+ clients
+          </span>
+          <h1 className="text-7xl md:text-6xl font-semibold leading-tight">
+            Turn your ideas into stunning websites & data solutions - fast,
+            secure, and built for results
+          </h1>
+          <p className="text-2xl">
+            We help students complete data-driven projects, build digital
+            products for businesses, and automate everyday workflow
+          </p>
+          <div className="flex items-center justify-center gap-7">
+            <button className="bg-[#0077B6] border-2 border-[#0077B6] px-12 py-5 rounded-md font-medium">
+              Get a Quote
+            </button>
+            <button className="bg-transparent border-2 text-white px-12 py-5 rounded-md font-medium">
+              Try Our Product
+            </button>
           </div>
-          <h3 className="mb-2   text-4xl md:text-5xl leading-tight">
-            Transforming Ideas into
-          </h3>
-          <h3 className="mb-1 text-4xl md:text-5xl  leading-tight">
-            Digital Experiences
-          </h3>
+          <div className="flex justify-center space-x-8 text-white">
+            <div className="flex items-center gap-2.5">
+              <CheckCircleIcon />
+              <span className="text-[14px] font-medium whitespace-nowrap">
+                Fast Delivery
+              </span>
+            </div>
 
-          <div className="text-gray-300 mt-4 mb-6 text-base max-w-md leading-relaxed">
-            We design and build websites that are fast, scalable, and built to
-            grow with your business.
+            <div className="flex items-center gap-2.5">
+              <CheckCircleIcon />
+              <span className="text-[14px] font-medium whitespace-nowrap">
+                Transparent Pricing
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <CheckCircleIcon />
+              <span className="text-[14px] font-medium whitespace-nowrap">
+                Secure and Private
+              </span>
+            </div>
           </div>
-
-          <div className="flex justify-center md:justify-start gap-4">
-            <a
-              href="https://wa.me/2347070094167?text=Hello%20Bomcel%20Digital"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-10 py-2 bg-[#0077B6] text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#005F91] hover:shadow-lg cursor-pointer"
-            >
-              Start Your Project
-            </a>
-
-            <a
-              href="#recent-jobs"
-              className="px-10 py-2 border border-white text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#0B1E36] hover:shadow-lg cursor-pointer"
-            >
-              View our Works
-            </a>
-          </div>
-        </div>
-
-        {/* Right side — Laptop image */}
-        <div className="relative z-10 flex-1 flex justify-center md:justify-end mt-10 md:mt-0">
-          <Image
-            src="/images/laptop.png"
-            alt="Laptop mockup"
-            width={600}
-            height={600}
-            className="object-contain drop-shadow-2xl"
-            priority
-          />
         </div>
       </section>
 
-      <section
-        id="why-work"
-        className="w-full bg-[#0B1E36] py-20 px-6 md:px-16 text-center"
-      >
-        <h2 className="text-3xl md:text-4xl text-white mb-4">
-          Why Work With Bomcel Digital
+      {/* Stats */}
+      <section className="bg-[#F5F7FA] py-16">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 text-center gap-8">
+          {stats.map((s, i) => (
+            <div key={i}>
+              <h3 className="text-3xl font-bold text-gray-900">{s.number}</h3>
+              <p className="text-gray-600">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="bg-white py-20">
+        <h2 className="text-center text-[#001429] text-3xl font-bold mb-6">
+          How It Works
         </h2>
-        <p className="text-white max-w-2xl mx-auto mb-12">
-          We combine technical excellence with creative vision to deliver
-          websites that drive results.
+        <p className="text-center text-[#5C738A] text-[18px] mb-12">
+          Simple, transparent process from start to finish
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {automationBoxes.map((box) => (
+        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-10 text-center">
+          {steps.map((step, i) => (
             <div
-              key={box.id}
-              className="group bg-white backdrop-blur-md p-6 rounded-xl hover:bg-white/20 transition cursor-pointer"
+              key={i}
+              className="flex flex-col items-center max-w-[250px] gap-7"
             >
-              <Image
-                src={box.icon}
-                alt={box.title}
-                width={40}
-                height={40}
-                className="mb-4 mx-auto"
-              />
-              <h3 className="text-xl font-semibold text-[#0B1E36] mb-2 group-hover:text-white transition-colors">
-                {box.title}
+              <div className="text-white bg-[#0B1E36] rounded-full flex items-center justify-center w-20 h-20 text-5xl font-bold">
+                {step.number}
+              </div>
+              <h3 className="text-xl text-[#001429] font-semibold">
+                {step.title}
               </h3>
-              <p className="text-[#4A5565] text-sm group-hover:text-white transition-colors">
-                {box.description}
+              <p className="text-[#5C738A]">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="bg-white py-20">
+        <h2 className="text-center text-[#001429] text-3xl font-bold mb-6">
+          Our Services
+        </h2>
+        <p className="text-center text-[#5C738A] text-[18px] mb-12">
+          Comprehensive solutions tailored to your needs
+        </p>
+
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+          {services.map((s, i) => (
+            <div
+              key={i}
+              className="bg-white border rounded-xl shadow-sm overflow-hidden"
+            >
+              <img src={s.img} alt="" className="w-full h-80 object-cover" />
+
+              <div className="p-6">
+                <img src={s.icon} alt="" className="w-20 h-20 mb-5" />
+                <h3 className="text-xl text-[#0B1E36] font-semibold mb-3.5">
+                  {s.title}
+                </h3>
+                <p className="text-[#0B1E36] text-[14px] mb-3.5">
+                  {s.subtitle}
+                </p>
+                <p className="text-[#0B1E36] text-[14px] mb-5">{s.price}</p>
+
+                <ul className="mt-4 text-gray-600 space-y-2">
+                  {s.points.map((p, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="text-green-600">
+                        <CheckCircleIcon />
+                      </span>{" "}
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+
+                <button className="mt-6 text-center w-full rounded-[5px] bg-[#0B1E36] text-white hover:underline pt-4 pb-4">
+                  Learn More →
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="bg-[#0b1a33] text-white py-20">
+        <h2 className="text-center text-3xl font-bold mb-12">
+          What Our Clients Say
+        </h2>
+
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+          {clients.map((c, i) => (
+            <div key={i} className="bg-white/10 p-6 rounded-lg backdrop-blur">
+              <img
+                src={c.img}
+                className="w-14 h-14 rounded-full mx-auto mb-4"
+                alt=""
+              />
+              <p className="text-gray-200 mb-4">{c.text}</p>
+              <h4 className="font-semibold text-center">{c.name}</h4>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="bg-white py-20">
+        <h2 className="text-center text-[#0B1E36] text-3xl font-bold mb-6">
+          Transparent Pricing
+        </h2>
+        <p className="text-center text-[#5C738A] text-[18px] mb-12">
+          Starting prices for our most popular services
+        </p>
+
+        <div className="max-w-5xl mx-auto grid md:grid-cols-4 gap-6">
+          {plans.map((p, i) => (
+            <div
+              key={i}
+              className="border p-6 rounded-[10px] text-center shadow-sm"
+            >
+              <h3 className="text-[#0B1E36] font-semibold">{p.name}</h3>
+              <p className="text-[#5C738A] mt-2 font-bold">
+                From <span className="text-[#0B1E36]">{p.price}</span>
               </p>
             </div>
           ))}
         </div>
-      </section>
 
-      <section
-        id="why-work"
-        className="relative w-full py-20 px-6 md:px-16 text-center bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/images/grade.png')",
-        }}
-      >
-        {/* Subtle overlay for readability */}
-        <div className="absolute inset-0 bg-black/10"></div>
-
-        {/* Content wrapper */}
-        <div className="relative z-10">
-          <h2 className="text-3xl mt-5 md:text-4xl text-[#0B1E36] mb-4 font-bold">
-            Our Web Development Process
-          </h2>
-          <p className="text-[#4A5565] mb-12 max-w-2xl mx-auto">
-            A proven methodology that ensures quality, efficiency, and
-            exceptional results.
-          </p>
-
-          {/* Features */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-12">
-            {features.map((feature) => (
-              <div
-                key={feature.id}
-                className="flex flex-col items-center text-center"
-              >
-                <Image
-                  src={feature.icon}
-                  alt={feature.title}
-                  width={50}
-                  height={50}
-                  className="mb-4 mx-auto"
-                />
-                <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                  {feature.title}
-                </h3>
-                <p className="text-[#FFFFFF] text-sm max-w-xs">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
+        <div className="text-center mt-10">
+          <button className="bg-[#0B1E36] text-white px-6 py-3 rounded-[5px]">
+            View Full Pricing
+          </button>
         </div>
       </section>
 
-      <section
-        id="recent-jobs"
-        className="w-full py-20 px-6 md:px-16 bg-[#0B1E36] "
-      >
-        {/* Projects Section Title */}
-        <div className="mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center">
-            Recent Jobs
-          </h2>
-          <p className="text-gray-300 max-w-2xl mx-auto text-center mb-4">
-            Explore our portfolio of successful web projects across various
-            industries.
-          </p>
-        </div>
-
-        {/* Images Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="relative group rounded-xl overflow-hidden h-[300px]"
-            >
-              <Image
-                src={project.image}
-                alt={project.alt}
-                width={600}
-                height={450}
-                className="w-full h-[60%] object-cover transform transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute bottom-0 left-0 w-full h-[40%] bg-white p-6 flex flex-col">
-                <h3 className="text-xl font-semibold text-[#0B1E36] mb-2">
-                  {project.title}
-                </h3>
-                <p className="text-gray-600 text-sm flex items-center gap-2">
-                  <span className="w-8 h-1 bg-blue-500 inline-block"></span>{" "}
-                  {project.category}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="w-full py-20 px-6 md:px-16 text-center bg-linear-to-b from-[#F8FBFF] to-white">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#0B1E36] mb-4">
-          Our Pricing Packages
+      {/* FAQ */}
+      <section className="bg-white py-20">
+        <h2 className="text-[#0B1E36] text-center text-3xl font-bold mb-6">
+          Frequently Asked Questions
         </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto mb-12">
-          Transparent pricing designed to fit businesses of all sizes.
+        <p className="text-center text-[#5C738A] text-[18px] mb-12">
+          Got questions? We’ve got answers
         </p>
 
-        <div className="flex flex-col md:flex-row justify-center items-center gap-6">
-          {pricingPlans.map((plan, index) => (
-            <div
-              key={index}
-              className={`relative bg-white shadow-md rounded-xl p-6 md:p-8 h-[500px] w-80 transform transition-all duration-300 border-2 ${
-                activeIndex === index
-                  ? "border-[#0077B6] scale-105 z-20"
-                  : "border-transparent hover:border-[#0077B6] scale-95 z-10"
-              } cursor-pointer`}
-              onClick={() => setActiveIndex(index)}
-            >
-              {/* Recommended Tag */}
-              {activeIndex === index && (
-                <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-[#0077B6] text-white text-xs font-medium px-3 py-1 rounded-full shadow-md">
-                  Recommended
-                </div>
-              )}
-
-              <div className="text-center max-w-2xl mx-auto mb-8">
-                <h3 className="text-lg font-semibold text-[#0B1E36]  mb-2">
-                  {plan.subtitle}
-                </h3>
-                <p className="text-[#4A5565] text-sm md:text-base">
-                  {plan.title}
-                </p>
-              </div>
-
-              {/* Main Price */}
-              <div className="mb-4">
-                <p className="text-3xl font-bold text-[#0077B6] flex items-baseline justify-center gap-1">
-                  <span className="text-base"></span>
-                  {plan.price}
-                  <span className="text-sm text-gray-500 font-normal">
-                    /month
-                  </span>
-                </p>
-
-                {/* AI Price */}
-                {/* <p className="text-sm mt-3 text-gray-400 font-medium">
-                  {plan.aiPrice}
-                </p> */}
-              </div>
-
-              {/* Benefits */}
-              <ul className="text-gray-600 text-sm space-y-3 text-left pl-4">
-                {plan.benefits.map((benefit, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <Image
-                      src="/Margin.png"
-                      alt="check"
-                      width={18}
-                      height={18}
-                    />
-                    <span>{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Button */}
+        <div className="text-[#0B1E36] max-w-4xl mx-auto space-y-4">
+          {faqs.map((item, i) => (
+            <div key={i} className="border rounded-lg">
               <button
-                className={`px-10 mt-8 py-3 w-full font-medium rounded-lg border transition-all duration-300 ${
-                  activeIndex === index
-                    ? "bg-[#0077B6] text-white border-[#0077B6]"
-                    : "bg-white text-[#0077B6] border-[#0077B6] hover:bg-[#0077B6] hover:text-white"
-                }`}
+                className="w-full flex justify-between p-4 font-medium"
+                onClick={() => setOpen(open === i ? null : i)}
               >
-                Choose Plan
+                {item.question}
+                <span>{open === i ? "-" : "+"}</span>
               </button>
+
+              {open === i && (
+                <div className="px-4 pb-4 text-gray-600">{item.answer}</div>
+              )}
             </div>
           ))}
-        </div>
-      </section>
-
-      <section
-        id="news"
-        className="relative w-full py-20 px-6 md:px-16 text-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/Gradient.png')" }}
-      >
-        {/* Optional white overlay to make text readable */}
-
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl  text-[#FFFFFF] mb-4">
-            Ready to Build Your Website?
-          </h2>
-          <p className="text-gray-300 max-w-2xl mx-auto mb-8">
-            Lets bring your digital vision to life.
-          </p>
-          <div className="flex justify-center items-center gap-4 mb-12">
-            {/* WhatsApp Button */}
-            <a
-              href="https://wa.me/2347070094167?text=Hello%20Bomcel%20Digital"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 rounded-lg bg-white text-[#0077B6] font-medium border border-[#0077B6] transition-all duration-300 transform hover:scale-105 hover:bg-[#0077B6] hover:text-white hover:shadow-lg cursor-pointer"
-            >
-              Start Your Project
-            </a>
-
-            {/* Contact Button */}
-            <a
-              href="../contact"
-              className="px-8 py-3 rounded-lg text-white font-medium border border-white transition-all duration-300 transform hover:scale-105 hover:bg-white hover:text-[#0B1E36] hover:shadow-lg cursor-pointer"
-            >
-              Contact Us
-            </a>
-          </div>
         </div>
       </section>
     </>
