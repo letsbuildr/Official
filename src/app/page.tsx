@@ -67,9 +67,27 @@ export default function WebDevSection() {
   ];
 
   const clients = [
-    { name: "Client 1", text: "Amazing service...", img: "/p1.jpg" },
-    { name: "Client 2", text: "Highly recommended...", img: "/p2.jpg" },
-    { name: "Client 3", text: "Very satisfied...", img: "/p3.jpg" },
+    {
+      name: "Adebayo Okonkwo",
+      text: "Bomcel  Digital built our website in 2 weeks. Professional, fas, and exactly what we needed. Highly recommended!",
+      img: "/images/client1.png",
+      position: "CEO, TechStart Lagos",
+      stars: "4",
+    },
+    {
+      name: "Sarah Johnson",
+      text: "Their automation service saved us 20 hours per week. The ROI was  immediate and the team was great to work with.",
+      img: "/images/client2.png",
+      position: "Operations Manager, RetailCo",
+      stars: "5",
+    },
+    {
+      name: "Chioma Eze",
+      text: "They helped with my final year project analysis. Clear explanations, detailed code, and finished ahead of schedule!",
+      img: "/images/client3.png",
+      position: "MSc Student, University of Lagos",
+      stars: "5",
+    },
   ];
 
   const stats = [
@@ -284,14 +302,18 @@ export default function WebDevSection() {
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
           {clients.map((c, i) => (
-            <div key={i} className="bg-white/10 p-6 rounded-lg backdrop-blur">
+            <div
+              key={i}
+              className="bg-white text-[#0B1E36] p-6 rounded-lg backdrop-blur"
+            >
               <img
                 src={c.img}
                 className="w-14 h-14 rounded-full mx-auto mb-4"
                 alt=""
               />
-              <p className="text-gray-200 mb-4">{c.text}</p>
-              <h4 className="font-semibold text-center">{c.name}</h4>
+              <p className="mb-4">{c.text}</p>
+              <h4 className="font-semibold">{c.name}</h4>
+              <p className="font-normal text-[14px]">{c.position}</p>
             </div>
           ))}
         </div>
