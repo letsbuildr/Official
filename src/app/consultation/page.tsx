@@ -87,19 +87,15 @@ export default function ConsultationPage() {
   };
 
   const checkAuthStatus = () => {
-    // Simulate checking authentication status
-    // In a real app, this would check JWT tokens, session cookies, etc.
     const token = localStorage.getItem("authToken");
     if (token) {
       setIsLoggedIn(true);
-      // Simulate user data - in real app, decode JWT or fetch user data
       const mockUserData = {
         fullName: "John Doe",
         email: "john@example.com"
       };
       setUserData(mockUserData);
       
-      // Auto-fill form with user data if fields are empty
       setFormData(prev => ({
         ...prev,
         fullName: prev.fullName || mockUserData.fullName,
@@ -109,7 +105,7 @@ export default function ConsultationPage() {
   };
 
   const handleLoginClick = () => {
-    // Redirect to sign-in page
+   
     window.location.href = "/sign-in";
   };
 
@@ -121,13 +117,11 @@ export default function ConsultationPage() {
 
     setLoadingTimeSlots(true);
     try {
-      // Simulate API call to get available time slots
-      // In real app, this would be: /api/consultations/available-slots?date=${date}
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+   
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Mock available slots - some might be booked already
       const allTimeSlots = ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "01:00 PM", "02:00 PM", "03:00 PM"];
-      const mockBookedSlots = ["10:00 AM", "02:00 PM"]; // Simulate already booked slots
+      const mockBookedSlots = ["10:00 AM", "02:00 PM"];
       const available = allTimeSlots.filter(slot => !mockBookedSlots.includes(slot));
       
       setAvailableTimeSlots(available);
@@ -215,23 +209,21 @@ export default function ConsultationPage() {
     setSubmitStatus("idle");
 
     try {
-      // Prepare booking data
+      // Prepare booking data for OTP verification
       const bookingData = {
         ...formData,
         userId: isLoggedIn ? userData?.email : null, // Include user ID if logged in
         bookingDate: new Date().toISOString(),
       };
 
-      // Simulate API call - replace with actual API endpoint
-      // const response = await fetch('/api/consultations/book', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(bookingData),
-      // });
+      // Save booking data for verification
+      localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
       
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-      setSubmitStatus("success");
+      // Clear the draft as we're moving to verification
       clearDraft();
+      
+      // Redirect to verification page
+      window.location.href = "/verification";
     } catch (error) {
       console.error("Booking error:", error);
       setSubmitStatus("error");
@@ -252,60 +244,7 @@ export default function ConsultationPage() {
     clearDraft();
   };
 
-  if (submitStatus === "success") {
-    return (
-      <section className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#F9FAFB] to-[#E6F0FA] px-4 sm:px-6 py-8 sm:py-20">
-        <div className="bg-white shadow-lg rounded-2xl w-full max-w-2xl p-6 sm:p-10 border border-gray-100 text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-12 h-12 text-green-600" />
-          </div>
-          <h2 className="text-3xl font-bold text-[#0B1E36] mb-4">
-            Booking Confirmed!
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Thank you for scheduling a consultation with us. We&apos;ve received your booking request and will send a confirmation email to <strong>{formData.email}</strong> shortly.
-          </p>
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-[#0B1E36] mb-2">Booking Details:</h3>
-            <p className="text-sm text-gray-600">
-              <strong>Name:</strong> {formData.fullName}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Email:</strong> {formData.email}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Date:</strong> {new Date(formData.preferredDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Time:</strong> {formData.preferredTime}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Service:</strong> {AVAILABLE_SERVICES.find(s => s.id === formData.service)?.name || 'Not specified'}
-            </p>
-            {formData.message && (
-              <p className="text-sm text-gray-600 mt-2">
-                <strong>Message:</strong> {formData.message.length > 100 ? `${formData.message.substring(0, 100)}...` : formData.message}
-              </p>
-            )}
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => window.location.href = "/dashboard"}
-              className="w-full sm:w-auto px-6 py-3 bg-[#0077B6] text-white rounded-lg hover:bg-[#005F91] transition-all duration-300 transform hover:scale-105 font-medium"
-            >
-              Go to Dashboard
-            </button>
-            <button
-              onClick={handleBookAnother}
-              className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
-            >
-              Book Another Consultation
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#F9FAFB] to-[#E6F0FA] px-4 sm:px-6 py-8 sm:py-20">
@@ -316,8 +255,8 @@ export default function ConsultationPage() {
             Book a Consultation
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Schedule a free consultation with our expert team. No account required - just fill out the form below and we&apos;ll get back to you within 24 hours.
-            You&apos;ll receive an email confirmation once your booking is confirmed.
+            Schedule a free consultation with our expert team. No account required - just fill out the form below and complete email verification to confirm your booking.
+            You&apos;ll receive an OTP for secure verification.
           </p>
         </div>
 
@@ -543,16 +482,16 @@ export default function ConsultationPage() {
               </div>
             </div>
 
-            {/* Email Confirmation Notice */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            {/* OTP Verification Notice */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start">
-                <svg className="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg className="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
                 <div>
-                  <p className="text-green-900 font-medium">Email Confirmation</p>
-                  <p className="text-green-700 text-sm">
-                    You&apos;ll receive an email confirmation with your consultation details after booking.
+                  <p className="text-blue-900 font-medium">Email Verification Required</p>
+                  <p className="text-blue-700 text-sm">
+                    After submitting, you&apos;ll receive a 6-digit OTP for verification. This ensures secure booking confirmation.
                   </p>
                 </div>
               </div>
