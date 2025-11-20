@@ -2,34 +2,34 @@
 import { useState } from "react";
 import Image from "next/image";
 
+const CheckCircleIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M17.6251 10.734C17.0001 13.859 14.644 16.801 11.3367 17.4588C8.02952 18.1167 4.67342 16.5783 3.01296 13.6435C1.3525 10.7087 1.76242 7.03963 4.02966 4.5436C6.2969 2.04756 10.1251 1.35896 13.2501 2.60896"
+      stroke="#34C759"
+      stroke-width="1.875"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M7 9.48438L10.125 12.6094L17.625 4.48438"
+      stroke="#34C759"
+      stroke-width="1.875"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+);
+
 export default function WebDevSection() {
   const [activeIndex, setActiveIndex] = useState(1);
-  const [open, setOpen] = useState(null);
-
-  const CheckCircleIcon = () => (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M17.6251 10.734C17.0001 13.859 14.644 16.801 11.3367 17.4588C8.02952 18.1167 4.67342 16.5783 3.01296 13.6435C1.3525 10.7087 1.76242 7.03963 4.02966 4.5436C6.2969 2.04756 10.1251 1.35896 13.2501 2.60896"
-        stroke="#34C759"
-        stroke-width="1.875"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M7 9.48438L10.125 12.6094L17.625 4.48438"
-        stroke="#34C759"
-        stroke-width="1.875"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
-  );
+  const [open, setOpen] = useState<number | null>(null);
 
   const plans = [
     { name: "Starter Website", price: "₦150,000" },
