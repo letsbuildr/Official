@@ -42,27 +42,27 @@ export default function WebDevSection() {
     {
       question: "How long does it take to build a website?",
       answer:
-        "Most websites take between 3 to 14 days depending on the complexity, number of pages, features, and your responsiveness during revisions.",
+        "Most websites take between 3 to 14 days, depending on complexity, number of pages, features, and your responsiveness during revisions.",
     },
     {
       question: "Do you offer maintenance & support?",
       answer:
-        "Yes. I do offer ongoing maintenance, updates, bug fixes, content changes, and security support to keep your website running smoothly.",
+        "Yes. We offer ongoing maintenance, updates, bug fixes, content changes, and security support to keep your website running smoothly.",
     },
     {
       question: "Do you help with academic projects?",
       answer:
-        "Absolutely. I assist students with web development, software engineering, and final-year project development—including documentation.",
+        "Absolutely. We assist students with web development, software engineering, and final-year project development—including documentation.",
     },
     {
       question: "What payment methods do you accept?",
       answer:
-        "I accept bank transfer, Paystack, Flutterwave, USDT, and other secure payment options depending on your location.",
+        "We accept bank transfers, Paystack, Flutterwave, USDT, and other secure payment options depending on your location.",
     },
     {
       question: "Can I see examples of your work?",
       answer:
-        "Yes! You can explore my portfolio at bomceldigital.com or request specific project samples depending on what you need.",
+        "Yes! You can explore our portfolio at bomceldigital.com or request specific project samples depending on your needs.",
     },
   ];
 
@@ -123,6 +123,7 @@ export default function WebDevSection() {
       points: ["Responsive Design", "SEO Optimization", "Fast Delivery"],
       img: "/images/service1.png",
       icon: "/serviceicon1.svg",
+      link: "/services/web-development",
     },
     {
       title: "Automation Services",
@@ -132,6 +133,7 @@ export default function WebDevSection() {
       points: ["Save Time", "Reduce Errors", "Scale Easily"],
       img: "/images/service2.png",
       icon: "/serviceicon2.svg",
+      link: "/services/automation-services",
     },
     {
       title: "Data Analysis – Students",
@@ -141,6 +143,7 @@ export default function WebDevSection() {
       points: ["Fast Turnaround ", "Academic Integrity", "Detailed reports"],
       img: "/images/service3.png",
       icon: "/serviceicon3.svg",
+      link: "/services/data-analysis/students",
     },
     {
       title: "Data Analysis – Business",
@@ -150,6 +153,7 @@ export default function WebDevSection() {
       points: ["Custom Dashboards", "Predictive Models", "Training Included"],
       img: "/images/service4.png",
       icon: "/serviceicon1.svg",
+      link: "/services/data-analysis/business",
     },
   ];
 
@@ -312,9 +316,12 @@ export default function WebDevSection() {
                   ))}
                 </ul>
 
-                <button className="mt-6 text-center w-full rounded-[5px] bg-[#0B1E36] text-white hover:underline pt-4 pb-4">
+                <a
+                  href={s.link}
+                  className="block mt-6 text-center w-full rounded-[5px] bg-[#0B1E36] text-white hover:underline pt-4 pb-4 cursor-pointer"
+                >
                   Learn More →
-                </button>
+                </a>
               </div>
             </div>
           ))}
@@ -393,7 +400,7 @@ export default function WebDevSection() {
           {faqs.map((item, i) => (
             <div key={i} className="border rounded-lg">
               <button
-                className="w-full flex justify-between p-4 font-medium"
+                className="w-full flex justify-between p-4 font-medium cursor-pointer"
                 onClick={() => setOpen(open === i ? null : i)}
               >
                 {item.question}
