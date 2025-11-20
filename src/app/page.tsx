@@ -153,6 +153,33 @@ export default function WebDevSection() {
     },
   ];
 
+  const Ratings = ({ rating = 5 }) => {
+    const maxStars = 5;
+    const starPath =
+      "M15 0L18.3677 10.3647H29.2658L20.4491 16.7705L23.8168 27.1353L15 20.7295L6.18322 27.1353L9.55093 16.7705L0.734152 10.3647H11.6323L15 0Z";
+
+    return (
+      <svg
+        width={maxStars * 40}
+        height="30"
+        viewBox={`0 0 ${maxStars * 50} 30`}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {Array.from({ length: maxStars }).map((_, i) => {
+          const isFilled = i < rating;
+          return (
+            <path
+              key={i}
+              d={starPath}
+              transform={`translate(${i * 45}, 0)`}
+              fill={isFilled ? "#FFBD0C" : "#DDE4EA"}
+            />
+          );
+        })}
+      </svg>
+    );
+  };
+
   return (
     <>
       {/* Hero Section */}
@@ -296,9 +323,12 @@ export default function WebDevSection() {
 
       {/* Testimonials */}
       <section className="bg-[#0b1a33] text-white py-20">
-        <h2 className="text-center text-3xl font-bold mb-12">
+        <h2 className="text-center text-3xl font-bold mb-6">
           What Our Clients Say
         </h2>
+        <p className="text-center text-[18px] mb-32">
+          Real feedback from real clients
+        </p>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
           {clients.map((c, i) => (
@@ -308,9 +338,10 @@ export default function WebDevSection() {
             >
               <img
                 src={c.img}
-                className="w-14 h-14 rounded-full mx-auto mb-4"
+                className="w-[150px] h-[150px] mt-[-82px] rounded-full mx-auto mb-4"
                 alt=""
               />
+              <Ratings rating={Number(c.stars)} />
               <p className="mb-4">{c.text}</p>
               <h4 className="font-semibold">{c.name}</h4>
               <p className="font-normal text-[14px]">{c.position}</p>
@@ -374,6 +405,23 @@ export default function WebDevSection() {
               )}
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="bg-[#0B1E36] text-white py-20 px-6 text-center">
+        <h2 className="text-4xl font-semibold mb-6">Ready to Get Started?</h2>
+        <p className="text-lg mb-16">
+          Whether you need a website, automation, or data analysis — we are here
+          to help. Get a free quote today.
+        </p>
+        <div className="flex justify-center space-x-4 gap-8">
+          <button className="bg-[#00B4D8] border-2 border-[#00B4D8] px-12 py-5 rounded-md font-medium">
+            Request a Quote
+          </button>
+          <button className="bg-transparent border-2 text-white px-12 py-5 rounded-md font-medium">
+            View Our Work
+          </button>
         </div>
       </section>
     </>
