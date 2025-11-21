@@ -358,7 +358,7 @@ export default function WebDevSection() {
       </section>
 
       {/* Pricing Section */}
-      <section className="bg-white py-12 md:py-20 px-4">
+      {/* <section className="bg-white py-12 md:py-20 px-4">
         <h2 className="text-center text-[#0B1E36] text-2xl md:text-3xl font-bold mb-4 md:mb-6">
           Transparent Pricing
         </h2>
@@ -385,7 +385,7 @@ export default function WebDevSection() {
             View Full Pricing
           </button>
         </div>
-      </section>
+      </section> */}
 
       {/* FAQ */}
       <section className="bg-white py-12 md:py-20 px-4">

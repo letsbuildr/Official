@@ -19,7 +19,6 @@ const Footer = () => {
           label: "Data Analysis for Business",
           href: "/services/data-analysis/business",
         },
-        { label: "Pricing Packages", href: "/pricing" },
         { label: "View Case Studies", href: "/case-studies" },
       ],
     },
