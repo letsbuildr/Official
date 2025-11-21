@@ -187,51 +187,51 @@ export default function WebDevSection() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative w-full flex items-center justify-center pt-40 pb-40 text-white">
+      <section className="relative w-full flex items-center justify-center pt-20 md:pt-40 pb-16 md:pb-40 text-white">
         <Image
           src="/images/hero-bg.png"
           alt="Hero Background"
           fill
           className="object-cover opacity-100"
         />
-        <div className="relative flex flex-col items-center justify-center gap-7 max-w-4xl text-center px-4">
-          <span className="px-5 py-2.5 bg-[#00C0E8] text-sm rounded-[5px] inline-block">
+        <div className="relative flex flex-col items-center justify-center gap-4 md:gap-7 max-w-4xl text-center px-4">
+          <span className="px-3 md:px-5 py-2 md:py-2.5 bg-[#00C0E8] text-xs md:text-sm rounded-[5px] inline-block">
             Trusted by 100+ clients
           </span>
-          <h1 className="text-7xl md:text-6xl font-semibold leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight">
             Turn your ideas into stunning websites & data solutions - fast,
             secure, and built for results
           </h1>
-          <p className="text-2xl">
+          <p className="text-lg md:text-xl lg:text-2xl">
             We help students complete data-driven projects, build digital
             products for businesses, and automate everyday workflow
           </p>
-          <div className="flex items-center justify-center gap-7">
-            <button className="bg-[#0077B6] border-2 border-[#0077B6] px-12 py-5 rounded-md font-medium">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-7 w-full">
+            <button className="bg-[#0077B6] border-2 border-[#0077B6] px-8 md:px-12 py-3 md:py-5 rounded-md font-medium w-full sm:w-auto">
               Get a Quote
             </button>
-            <button className="bg-transparent border-2 text-white px-12 py-5 rounded-md font-medium">
+            <button className="bg-transparent border-2 text-white px-8 md:px-12 py-3 md:py-5 rounded-md font-medium w-full sm:w-auto">
               Try Our Product
             </button>
           </div>
-          <div className="flex justify-center space-x-8 text-white">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 md:gap-8 text-white">
             <div className="flex items-center gap-2.5">
               <CheckCircleIcon />
-              <span className="text-[14px] font-medium whitespace-nowrap">
+              <span className="text-xs md:text-[14px] font-medium whitespace-nowrap">
                 Fast Delivery
               </span>
             </div>
 
             <div className="flex items-center gap-2.5">
               <CheckCircleIcon />
-              <span className="text-[14px] font-medium whitespace-nowrap">
+              <span className="text-xs md:text-[14px] font-medium whitespace-nowrap">
                 Transparent Pricing
               </span>
             </div>
 
             <div className="flex items-center gap-2.5">
               <CheckCircleIcon />
-              <span className="text-[14px] font-medium whitespace-nowrap">
+              <span className="text-xs md:text-[14px] font-medium whitespace-nowrap">
                 Secure and Private
               </span>
             </div>
@@ -240,74 +240,74 @@ export default function WebDevSection() {
       </section>
 
       {/* Stats */}
-      <section className="bg-[#F5F7FA] py-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 text-center gap-8">
+      <section className="bg-[#F5F7FA] py-12 md:py-16">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-center gap-6 md:gap-8 px-4">
           {stats.map((s, i) => (
-            <div key={i}>
-              <h3 className="text-3xl font-bold text-gray-900">{s.number}</h3>
-              <p className="text-gray-600">{s.label}</p>
+            <div key={i} className="p-4">
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900">{s.number}</h3>
+              <p className="text-gray-600 text-sm md:text-base">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section className="bg-white py-20">
-        <h2 className="text-center text-[#001429] text-3xl font-bold mb-6">
+      <section className="bg-white py-12 md:py-20 px-4">
+        <h2 className="text-center text-[#001429] text-2xl md:text-3xl font-bold mb-4 md:mb-6">
           How It Works
         </h2>
-        <p className="text-center text-[#5C738A] text-[18px] mb-12">
+        <p className="text-center text-[#5C738A] text-base md:text-[18px] mb-8 md:mb-12">
           Simple, transparent process from start to finish
         </p>
 
-        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-10 text-center">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 text-center">
           {steps.map((step, i) => (
             <div
               key={i}
-              className="flex flex-col items-center max-w-[250px] gap-7"
+              className="flex flex-col items-center max-w-[250px] gap-4 md:gap-7 mx-auto"
             >
-              <div className="text-white bg-[#0B1E36] rounded-full flex items-center justify-center w-20 h-20 text-5xl font-bold">
+              <div className="text-white bg-[#0B1E36] rounded-full flex items-center justify-center w-16 h-16 md:w-20 md:h-20 text-2xl md:text-5xl font-bold">
                 {step.number}
               </div>
-              <h3 className="text-xl text-[#001429] font-semibold">
+              <h3 className="text-lg md:text-xl text-[#001429] font-semibold">
                 {step.title}
               </h3>
-              <p className="text-[#5C738A]">{step.desc}</p>
+              <p className="text-[#5C738A] text-sm md:text-base">{step.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Services Section */}
-      <section className="bg-white py-20">
-        <h2 className="text-center text-[#001429] text-3xl font-bold mb-6">
+      <section className="bg-white py-12 md:py-20 px-4">
+        <h2 className="text-center text-[#001429] text-2xl md:text-3xl font-bold mb-4 md:mb-6">
           Our Services
         </h2>
-        <p className="text-center text-[#5C738A] text-[18px] mb-12">
+        <p className="text-center text-[#5C738A] text-base md:text-[18px] mb-8 md:mb-12">
           Comprehensive solutions tailored to your needs
         </p>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
           {services.map((s, i) => (
             <div
               key={i}
               className="bg-white border rounded-xl shadow-sm overflow-hidden"
             >
-              <img src={s.img} alt="" className="w-full h-80 object-cover" />
+              <img src={s.img} alt="" className="w-full h-48 md:h-80 object-cover" />
 
-              <div className="p-6">
-                <img src={s.icon} alt="" className="w-20 h-20 mb-5" />
-                <h3 className="text-xl text-[#0B1E36] font-semibold mb-3.5">
+              <div className="p-4 md:p-6">
+                <img src={s.icon} alt="" className="w-12 h-12 md:w-20 md:h-20 mb-3 md:mb-5" />
+                <h3 className="text-lg md:text-xl text-[#0B1E36] font-semibold mb-2 md:mb-3.5">
                   {s.title}
                 </h3>
-                <p className="text-[#0B1E36] text-[14px] mb-3.5">
+                <p className="text-[#0B1E36] text-xs md:text-[14px] mb-2 md:mb-3.5">
                   {s.subtitle}
                 </p>
-                <p className="text-[#0B1E36] text-[14px] mb-5">{s.price}</p>
+                <p className="text-[#0B1E36] text-xs md:text-[14px] mb-3 md:mb-5">{s.price}</p>
 
-                <ul className="mt-4 text-gray-600 space-y-2">
+                <ul className="mt-3 md:mt-4 text-gray-600 space-y-2">
                   {s.points.map((p, i) => (
-                    <li key={i} className="flex items-center gap-2">
+                    <li key={i} className="flex items-center gap-2 text-sm md:text-base">
                       <span className="text-green-600">
                         <CheckCircleIcon />
                       </span>{" "}
@@ -318,7 +318,7 @@ export default function WebDevSection() {
 
                 <a
                   href={s.link}
-                  className="block mt-6 text-center w-full rounded-[5px] bg-[#0B1E36] text-white hover:underline pt-4 pb-4 cursor-pointer"
+                  className="block mt-4 md:mt-6 text-center w-full rounded-[5px] bg-[#0B1E36] text-white hover:underline py-3 md:py-4 cursor-pointer text-sm md:text-base"
                 >
                   Learn More →
                 </a>
@@ -329,86 +329,86 @@ export default function WebDevSection() {
       </section>
 
       {/* Testimonials */}
-      <section className="bg-[#0b1a33] text-white py-20">
-        <h2 className="text-center text-3xl font-bold mb-6">
+      <section className="bg-[#0b1a33] text-white py-12 md:py-20 px-4">
+        <h2 className="text-center text-2xl md:text-3xl font-bold mb-4 md:mb-6">
           What Our Clients Say
         </h2>
-        <p className="text-center text-[18px] mb-32">
+        <p className="text-center text-base md:text-[18px] mb-8 md:mb-32">
           Real feedback from real clients
         </p>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {clients.map((c, i) => (
             <div
               key={i}
-              className="bg-white text-[#0B1E36] p-6 rounded-lg backdrop-blur"
+              className="bg-white text-[#0B1E36] p-4 md:p-6 rounded-lg backdrop-blur"
             >
               <img
                 src={c.img}
-                className="w-[150px] h-[150px] mt-[-82px] rounded-full mx-auto mb-4"
+                className="w-24 h-24 md:w-[150px] md:h-[150px] mt-[-48px] md:mt-[-82px] rounded-full mx-auto mb-3 md:mb-4"
                 alt=""
               />
               <Ratings rating={Number(c.stars)} />
-              <p className="mb-4">{c.text}</p>
-              <h4 className="font-semibold">{c.name}</h4>
-              <p className="font-normal text-[14px]">{c.position}</p>
+              <p className="mb-3 md:mb-4 text-sm md:text-base">{c.text}</p>
+              <h4 className="font-semibold text-sm md:text-base">{c.name}</h4>
+              <p className="font-normal text-xs md:text-[14px]">{c.position}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section className="bg-white py-20">
-        <h2 className="text-center text-[#0B1E36] text-3xl font-bold mb-6">
+      <section className="bg-white py-12 md:py-20 px-4">
+        <h2 className="text-center text-[#0B1E36] text-2xl md:text-3xl font-bold mb-4 md:mb-6">
           Transparent Pricing
         </h2>
-        <p className="text-center text-[#5C738A] text-[18px] mb-12">
+        <p className="text-center text-[#5C738A] text-base md:text-[18px] mb-8 md:mb-12">
           Starting prices for our most popular services
         </p>
 
-        <div className="max-w-5xl mx-auto grid md:grid-cols-4 gap-6">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {plans.map((p, i) => (
             <div
               key={i}
-              className="border p-6 rounded-[10px] text-center shadow-sm"
+              className="border p-4 md:p-6 rounded-[10px] text-center shadow-sm"
             >
-              <h3 className="text-[#0B1E36] font-semibold">{p.name}</h3>
-              <p className="text-[#5C738A] mt-2 font-bold">
+              <h3 className="text-[#0B1E36] font-semibold text-sm md:text-base">{p.name}</h3>
+              <p className="text-[#5C738A] mt-2 font-bold text-sm md:text-base">
                 From <span className="text-[#0B1E36]">{p.price}</span>
               </p>
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-10">
-          <button className="bg-[#0B1E36] text-white px-6 py-3 rounded-[5px]">
+        <div className="text-center mt-6 md:mt-10">
+          <button className="bg-[#0B1E36] text-white px-6 py-3 rounded-[5px] text-sm md:text-base">
             View Full Pricing
           </button>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="bg-white py-20">
-        <h2 className="text-[#0B1E36] text-center text-3xl font-bold mb-6">
+      <section className="bg-white py-12 md:py-20 px-4">
+        <h2 className="text-[#0B1E36] text-center text-2xl md:text-3xl font-bold mb-4 md:mb-6">
           Frequently Asked Questions
         </h2>
-        <p className="text-center text-[#5C738A] text-[18px] mb-12">
-          Got questions? We’ve got answers
+        <p className="text-center text-[#5C738A] text-base md:text-[18px] mb-8 md:mb-12">
+          Got questions? We&apos;ve got answers
         </p>
 
-        <div className="text-[#0B1E36] max-w-4xl mx-auto space-y-4">
+        <div className="text-[#0B1E36] max-w-4xl mx-auto space-y-3 md:space-y-4">
           {faqs.map((item, i) => (
             <div key={i} className="border rounded-lg">
               <button
-                className="w-full flex justify-between p-4 font-medium cursor-pointer"
+                className="w-full flex justify-between p-3 md:p-4 font-medium cursor-pointer text-sm md:text-base"
                 onClick={() => setOpen(open === i ? null : i)}
               >
                 {item.question}
-                <span>{open === i ? "-" : "+"}</span>
+                <span className="text-lg md:text-xl">{open === i ? "-" : "+"}</span>
               </button>
 
               {open === i && (
-                <div className="px-4 pb-4 text-gray-600">{item.answer}</div>
+                <div className="px-3 md:px-4 pb-3 md:pb-4 text-gray-600 text-sm md:text-base leading-relaxed">{item.answer}</div>
               )}
             </div>
           ))}
@@ -416,17 +416,17 @@ export default function WebDevSection() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="bg-[#0B1E36] text-white py-20 px-6 text-center">
-        <h2 className="text-4xl font-semibold mb-6">Ready to Get Started?</h2>
-        <p className="text-lg mb-16">
+      <section className="bg-[#0B1E36] text-white py-12 md:py-20 px-4 text-center">
+        <h2 className="text-2xl md:text-4xl font-semibold mb-4 md:mb-6">Ready to Get Started?</h2>
+        <p className="text-base md:text-lg mb-8 md:mb-16">
           Whether you need a website, automation, or data analysis — we are here
           to help. Get a free quote today.
         </p>
-        <div className="flex justify-center space-x-4 gap-8">
-          <button className="bg-[#00B4D8] border-2 border-[#00B4D8] px-12 py-5 rounded-md font-medium">
+        <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-8 max-w-md sm:max-w-none mx-auto">
+          <button className="bg-[#00B4D8] border-2 border-[#00B4D8] px-8 md:px-12 py-3 md:py-5 rounded-md font-medium w-full sm:w-auto">
             Request a Quote
           </button>
-          <button className="bg-transparent border-2 text-white px-12 py-5 rounded-md font-medium">
+          <button className="bg-transparent border-2 text-white px-8 md:px-12 py-3 md:py-5 rounded-md font-medium w-full sm:w-auto">
             View Our Work
           </button>
         </div>
