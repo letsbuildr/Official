@@ -136,7 +136,12 @@ export default function Header() {
                   href="/services/data-analysis/students"
                   onClick={() => setMenuOpen(false)}
                 >
-                  Data Analysis
+                  Data Analysis for Students
+                </Link>
+                <Link
+                  href="/services/data-analysis/business"
+                >
+                  Data Analysis for Business
                 </Link>
               </div>
             )}
