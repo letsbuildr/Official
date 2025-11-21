@@ -42,27 +42,27 @@ export default function WebDevSection() {
     {
       question: "How long does it take to build a website?",
       answer:
-        "Most websites take between 3 to 14 days depending on the complexity, number of pages, features, and your responsiveness during revisions.",
+        "Most websites take between 3 to 14 days, depending on complexity, number of pages, features, and your responsiveness during revisions.",
     },
     {
       question: "Do you offer maintenance & support?",
       answer:
-        "Yes. I do offer ongoing maintenance, updates, bug fixes, content changes, and security support to keep your website running smoothly.",
+        "Yes. We offer ongoing maintenance, updates, bug fixes, content changes, and security support to keep your website running smoothly.",
     },
     {
       question: "Do you help with academic projects?",
       answer:
-        "Absolutely. I assist students with web development, software engineering, and final-year project development—including documentation.",
+        "Absolutely. We assist students with web development, software engineering, and final-year project development—including documentation.",
     },
     {
       question: "What payment methods do you accept?",
       answer:
-        "I accept bank transfer, Paystack, Flutterwave, USDT, and other secure payment options depending on your location.",
+        "We accept bank transfers, Paystack, Flutterwave, USDT, and other secure payment options depending on your location.",
     },
     {
       question: "Can I see examples of your work?",
       answer:
-        "Yes! You can explore my portfolio at bomceldigital.com or request specific project samples depending on what you need.",
+        "Yes! You can explore our portfolio at bomceldigital.com or request specific project samples depending on your needs.",
     },
   ];
 
@@ -123,6 +123,7 @@ export default function WebDevSection() {
       points: ["Responsive Design", "SEO Optimization", "Fast Delivery"],
       img: "/images/service1.png",
       icon: "/serviceicon1.svg",
+      link: "/services/web-development",
     },
     {
       title: "Automation Services",
@@ -132,6 +133,7 @@ export default function WebDevSection() {
       points: ["Save Time", "Reduce Errors", "Scale Easily"],
       img: "/images/service2.png",
       icon: "/serviceicon2.svg",
+      link: "/services/automation-services",
     },
     {
       title: "Data Analysis – Students",
@@ -141,6 +143,7 @@ export default function WebDevSection() {
       points: ["Fast Turnaround ", "Academic Integrity", "Detailed reports"],
       img: "/images/service3.png",
       icon: "/serviceicon3.svg",
+      link: "/services/data-analysis/students",
     },
     {
       title: "Data Analysis – Business",
@@ -150,8 +153,36 @@ export default function WebDevSection() {
       points: ["Custom Dashboards", "Predictive Models", "Training Included"],
       img: "/images/service4.png",
       icon: "/serviceicon1.svg",
+      link: "/services/data-analysis/business",
     },
   ];
+
+  const Ratings = ({ rating = 5 }) => {
+    const maxStars = 5;
+    const starPath =
+      "M15 0L18.3677 10.3647H29.2658L20.4491 16.7705L23.8168 27.1353L15 20.7295L6.18322 27.1353L9.55093 16.7705L0.734152 10.3647H11.6323L15 0Z";
+
+    return (
+      <svg
+        width={maxStars * 40}
+        height="30"
+        viewBox={`0 0 ${maxStars * 50} 30`}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {Array.from({ length: maxStars }).map((_, i) => {
+          const isFilled = i < rating;
+          return (
+            <path
+              key={i}
+              d={starPath}
+              transform={`translate(${i * 45}, 0)`}
+              fill={isFilled ? "#FFBD0C" : "#DDE4EA"}
+            />
+          );
+        })}
+      </svg>
+    );
+  };
 
   return (
     <>
@@ -285,9 +316,12 @@ export default function WebDevSection() {
                   ))}
                 </ul>
 
-                <button className="mt-6 text-center w-full rounded-[5px] bg-[#0B1E36] text-white hover:underline pt-4 pb-4">
+                <a
+                  href={s.link}
+                  className="block mt-6 text-center w-full rounded-[5px] bg-[#0B1E36] text-white hover:underline pt-4 pb-4 cursor-pointer"
+                >
                   Learn More →
-                </button>
+                </a>
               </div>
             </div>
           ))}
@@ -296,9 +330,12 @@ export default function WebDevSection() {
 
       {/* Testimonials */}
       <section className="bg-[#0b1a33] text-white py-20">
-        <h2 className="text-center text-3xl font-bold mb-12">
+        <h2 className="text-center text-3xl font-bold mb-6">
           What Our Clients Say
         </h2>
+        <p className="text-center text-[18px] mb-32">
+          Real feedback from real clients
+        </p>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
           {clients.map((c, i) => (
@@ -308,9 +345,10 @@ export default function WebDevSection() {
             >
               <img
                 src={c.img}
-                className="w-14 h-14 rounded-full mx-auto mb-4"
+                className="w-[150px] h-[150px] mt-[-82px] rounded-full mx-auto mb-4"
                 alt=""
               />
+              <Ratings rating={Number(c.stars)} />
               <p className="mb-4">{c.text}</p>
               <h4 className="font-semibold">{c.name}</h4>
               <p className="font-normal text-[14px]">{c.position}</p>
@@ -362,7 +400,7 @@ export default function WebDevSection() {
           {faqs.map((item, i) => (
             <div key={i} className="border rounded-lg">
               <button
-                className="w-full flex justify-between p-4 font-medium"
+                className="w-full flex justify-between p-4 font-medium cursor-pointer"
                 onClick={() => setOpen(open === i ? null : i)}
               >
                 {item.question}
@@ -374,6 +412,23 @@ export default function WebDevSection() {
               )}
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="bg-[#0B1E36] text-white py-20 px-6 text-center">
+        <h2 className="text-4xl font-semibold mb-6">Ready to Get Started?</h2>
+        <p className="text-lg mb-16">
+          Whether you need a website, automation, or data analysis — we are here
+          to help. Get a free quote today.
+        </p>
+        <div className="flex justify-center space-x-4 gap-8">
+          <button className="bg-[#00B4D8] border-2 border-[#00B4D8] px-12 py-5 rounded-md font-medium">
+            Request a Quote
+          </button>
+          <button className="bg-transparent border-2 text-white px-12 py-5 rounded-md font-medium">
+            View Our Work
+          </button>
         </div>
       </section>
     </>
