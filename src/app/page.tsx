@@ -244,7 +244,9 @@ export default function WebDevSection() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-center gap-6 md:gap-8 px-4">
           {stats.map((s, i) => (
             <div key={i} className="p-4">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900">{s.number}</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+                {s.number}
+              </h3>
               <p className="text-gray-600 text-sm md:text-base">{s.label}</p>
             </div>
           ))}
@@ -293,21 +295,34 @@ export default function WebDevSection() {
               key={i}
               className="bg-white border rounded-xl shadow-sm overflow-hidden"
             >
-              <img src={s.img} alt="" className="w-full h-48 md:h-80 object-cover" />
+              <img
+                src={s.img}
+                alt=""
+                className="w-full h-48 md:h-80 object-cover"
+              />
 
               <div className="p-4 md:p-6">
-                <img src={s.icon} alt="" className="w-12 h-12 md:w-20 md:h-20 mb-3 md:mb-5" />
+                <img
+                  src={s.icon}
+                  alt=""
+                  className="w-12 h-12 md:w-20 md:h-20 mb-3 md:mb-5"
+                />
                 <h3 className="text-lg md:text-xl text-[#0B1E36] font-semibold mb-2 md:mb-3.5">
                   {s.title}
                 </h3>
                 <p className="text-[#0B1E36] text-xs md:text-[14px] mb-2 md:mb-3.5">
                   {s.subtitle}
                 </p>
-                <p className="text-[#0B1E36] text-xs md:text-[14px] mb-3 md:mb-5">{s.price}</p>
+                <p className="text-[#0B1E36] text-xs md:text-[14px] mb-3 md:mb-5">
+                  {s.price}
+                </p>
 
                 <ul className="mt-3 md:mt-4 text-gray-600 space-y-2">
                   {s.points.map((p, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm md:text-base">
+                    <li
+                      key={i}
+                      className="flex items-center gap-2 text-sm md:text-base"
+                    >
                       <span className="text-green-600">
                         <CheckCircleIcon />
                       </span>{" "}
@@ -404,11 +419,15 @@ export default function WebDevSection() {
                 onClick={() => setOpen(open === i ? null : i)}
               >
                 {item.question}
-                <span className="text-lg md:text-xl">{open === i ? "-" : "+"}</span>
+                <span className="text-lg md:text-xl">
+                  {open === i ? "-" : "+"}
+                </span>
               </button>
 
               {open === i && (
-                <div className="px-3 md:px-4 pb-3 md:pb-4 text-gray-600 text-sm md:text-base leading-relaxed">{item.answer}</div>
+                <div className="px-3 md:px-4 pb-3 md:pb-4 text-gray-600 text-sm md:text-base leading-relaxed">
+                  {item.answer}
+                </div>
               )}
             </div>
           ))}
@@ -417,7 +436,9 @@ export default function WebDevSection() {
 
       {/* Call to Action Section */}
       <section className="bg-[#0B1E36] text-white py-12 md:py-20 px-4 text-center">
-        <h2 className="text-2xl md:text-4xl font-semibold mb-4 md:mb-6">Ready to Get Started?</h2>
+        <h2 className="text-2xl md:text-4xl font-semibold mb-4 md:mb-6">
+          Ready to Get Started?
+        </h2>
         <p className="text-base md:text-lg mb-8 md:mb-16">
           Whether you need a website, automation, or data analysis — we are here
           to help. Get a free quote today.
