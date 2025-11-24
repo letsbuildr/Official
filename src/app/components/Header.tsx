@@ -70,7 +70,17 @@ export default function Header() {
               </div>
             )}
           </li>
-          <NavItem href="/products" label="Products" active={pathname} />
+          <li className="relative group text-white">
+            <a
+              href="https://www.bomcel.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-pink-600"
+            >
+              Products
+            </a>
+            <span className="absolute left-0 -bottom-1 h-0.5 bg-pink-500 transition-all duration-300 w-0 group-hover:w-full"></span>
+          </li>
           <NavItem href="/portfolio" label="Portfolio" active={pathname} />
           <NavItem href="/consultation" label="Book Consultation" active={pathname} />
           <NavItem href="/about" label="About" active={pathname} />
@@ -147,7 +157,16 @@ export default function Header() {
             )}
           </li>
 
-          <MobileItem href="/products" label="Products" close={setMenuOpen} />
+          <li>
+            <a
+              href="https://www.bomcel.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMenuOpen(false)}
+            >
+              Products
+            </a>
+          </li>
           <MobileItem href="/portfolio" label="Portfolio" close={setMenuOpen} />
           <MobileItem href="/consultation" label="Book Consultation" close={setMenuOpen} />
           <MobileItem href="/about" label="About" close={setMenuOpen} />
