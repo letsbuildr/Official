@@ -39,7 +39,7 @@ export default function QuickActions() {
         <h4 className="font-medium text-gray-900 mb-1">Update Profile</h4>
         <p className="text-sm text-gray-600">Manage your account info</p>
       </button>
-
+      <Link href="/dashboard/settings" className="block">
       <button className="p-4 bg-white rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors text-left">
         <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mb-3">
           <Settings className="w-5 h-5 text-yellow-600" />
@@ -47,6 +47,7 @@ export default function QuickActions() {
         <h4 className="font-medium text-gray-900 mb-1">Settings</h4>
         <p className="text-sm text-gray-600">Configure preferences</p>
       </button>
+      </Link>
     </div>
   );
 }
