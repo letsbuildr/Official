@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function WebDevSection() {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -177,14 +178,14 @@ export default function WebDevSection() {
           </div>
 
           <div className="flex justify-center md:justify-start gap-4">
-            <a
-              href="https://wa.me/2347070094167?text=Hello%20Bomcel%20Digital"
+            <Link
+              href="/consultation"
               target="_blank"
               rel="noopener noreferrer"
               className="px-10 py-2 bg-[#0077B6] text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#005F91] hover:shadow-lg cursor-pointer"
             >
               Start Your Project
-            </a>
+            </Link>
 
             <a
               href="#recent-jobs"
@@ -429,15 +430,12 @@ export default function WebDevSection() {
             Lets bring your digital vision to life.
           </p>
           <div className="flex justify-center items-center gap-4 mb-12">
-            {/* WhatsApp Button */}
-            <a
-              href="https://wa.me/2347070094167?text=Hello%20Bomcel%20Digital"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/consultation"
               className="px-8 py-3 rounded-lg bg-white text-[#0077B6] font-medium border border-[#0077B6] transition-all duration-300 transform hover:scale-105 hover:bg-[#0077B6] hover:text-white hover:shadow-lg cursor-pointer"
             >
               Start Your Project
-            </a>
+            </Link>
 
             {/* Contact Button */}
             <a

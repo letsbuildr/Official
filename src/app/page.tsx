@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const CheckCircleIcon = () => (
   <svg
@@ -207,9 +208,9 @@ export default function WebDevSection() {
             products for businesses, and automate everyday workflow
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-7 w-full">
-            <button className="bg-[#0077B6] border-2 border-[#0077B6] px-8 md:px-12 py-3 md:py-5 rounded-md font-medium w-full sm:w-auto">
+            <Link href="/consultation" className="bg-[#0077B6] border-2 border-[#0077B6] px-8 md:px-12 py-3 md:py-5 rounded-md font-medium w-full sm:w-auto">
               Get a Quote
-            </button>
+            </Link>
             <button className="bg-transparent border-2 text-white px-8 md:px-12 py-3 md:py-5 rounded-md font-medium w-full sm:w-auto">
               Try Our Product
             </button>

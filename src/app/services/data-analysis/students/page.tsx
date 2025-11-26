@@ -179,7 +179,7 @@ export default function AutomationServicePage() {
             <Link href="/sign-up" className="px-10 py-2 bg-[#0077B6]  text-white  rounded-lg transition inline-block text-center">
               Upload Your Project
             </Link>
-            <Link href="/sign-up" className="px-10 py-2 border border-white text-white hover:bg-[#0B1E36] hover:text-[#FFFFFF] rounded-lg transition duration-300 inline-block text-center">
+            <Link href="/consultation" className="px-10 py-2 border border-white text-white hover:bg-[#0B1E36] hover:text-[#FFFFFF] rounded-lg transition duration-300 inline-block text-center">
               Get Quote
             </Link>
           </div>
