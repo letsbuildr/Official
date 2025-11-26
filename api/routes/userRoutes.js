@@ -18,6 +18,12 @@ router.use(protectRoute.protect);
 router.get('/me', userController.getMe, userController.getUser);
 router.delete('/deleteMe', userController.deleteMe);
 
+router.patch(
+  '/:id/progress',
+  restrictRoute.restrictTo('instructor'),
+  userController.updateUserProgress
+);
+
 router.use(restrictRoute.restrictTo('admin'));
 
 router

@@ -81,7 +81,7 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = (Model, options = {}) =>
   catchAsync(async (req, res, next) => {
-    console.log(req.query);
+    // console.log(req.query);
 
     let filter = {};
     if (req.params.serviceId) filter = { service: req.params.serviceId };
@@ -113,29 +113,3 @@ exports.getAll = (Model, options = {}) =>
       },
     });
   });
-
-// exports.getAll = (Model,) =>
-//   catchAsync(async (req, res, next) => {
-//     console.log(req.query);
-
-//     let filter = {};
-//     if (req.params.serviceId) filter = { service: req.params.serviceId };
-//     // EXECUTE QUERY
-//     const features = new APIFeatures(Model.find(filter), req.query)
-//       .filter()
-//       .sort()
-//       .limitFields()
-//       .paginate();
-//     // const doc = await features.query.explain();
-//     const doc = await features.query;
-//     // query.sort().select().skip().limit()
-
-//     // SEND MESSAGE
-//     res.status(200).json({
-//       status: 'success',
-//       results: doc.length,
-//       data: {
-//         data: doc,
-//       },
-//     });
-//   });

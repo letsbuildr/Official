@@ -1,32 +1,63 @@
 const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
-  tour: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Service',
-    required: [true, 'Booking must belong to a Service!'],
+  fullName: {
+    type: String,
+    required: [true, 'Please provide your name'],
+    validate: {
+      validator: function (val) {
+        // At least two words, only letters and optional spaces/hyphens
+        return /^[A-Za-z]+(?:[\s\-][A-Za-z]+)+$/.test(val.trim());
+      },
+      message: 'Please input your full name',
+    },
+  },
+  email: {
+    type: String,
+    required: [true, 'Please provide your email address'],
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: 'User',
-    required: [true, 'Booking must belong to a User!'],
+    default: null,
   },
-  price: {
-    type: Number,
-    require: [true, 'Booking must have a price.'],
+  service: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Service',
+    required: [true, 'Please specify the service for the booking'],
   },
+  date: {
+    type: String,
+    required: [true, 'Please provide a date for the booking'],
+  },
+  time: {
+    type: String,
+    required: [true, 'Please provide a time for the booking'],
+  },
+  timeZone: {
+    type: String,
+    default: 'UTC',
+  },
+  message: String,
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  isCancelled: {
+    type: Boolean,
+    default: false,
+  },
+  status: {
+    type: String,
+    enum: ['scheduled', 'completed', 'cancelled'],
+    default: 'scheduled',
+  },
+  otp: Number,
+  otpExpires: Date,
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
-});
-
-bookingSchema.pre(/^find/, function (next) {
-  this.populate('user').populate({
-    path: 'tour',
-    select: 'name',
-  });
-  next();
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

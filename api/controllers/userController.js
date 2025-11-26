@@ -39,6 +39,53 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.updateUserProgress = catchAsync(async (req, res, next) => {
+  const { progress } = req.body;
+
+  // Ensure request is from an instructor
+  if (req.user.role !== 'instructor') {
+    return next(new AppError('Only instructors can update user progress', 403));
+  }
+
+  // Find the target user to update
+  const targetUser = await User.findById(req.params.id);
+  if (!targetUser) {
+    return next(new AppError('No user found with that ID', 404));
+  }
+
+  // Ensure target user is a regular user
+  if (targetUser.role !== 'user') {
+    return next(
+      new AppError('Can only update progress for regular users', 400)
+    );
+  }
+
+  // Prevent decreasing progress
+  if (progress <= targetUser.progress) {
+    return next(
+      new AppError(
+        'Progress cannot be less than or equal to current value',
+        400
+      )
+    );
+  }
+  // Update progress
+  // targetUser.progress = progress;
+  // await targetUser.save();
+  const updatedUser = await User.findByIdAndUpdate(
+    req.params.id,
+    { progress },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser,
+    },
+  });
+});
+
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
 

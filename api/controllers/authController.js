@@ -25,6 +25,9 @@ const createSendToken = (user, statusCode, res, token) => {
   res.status(statusCode).json({
     // console.log(token),
     status: 'success',
+    data: {
+      user,
+    },
     token,
   });
 };
@@ -34,7 +37,6 @@ const hidePassword = (user) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const newUser = await User.create({
     name: req.body.name,
     username: req.body.username,
@@ -50,25 +52,18 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 
   hidePassword(newUser);
+  const firstNameRaw = newUser.name.split(' ')[0];
+  const firstName =
+    firstNameRaw.charAt(0).toUpperCase() + firstNameRaw.slice(1).toLowerCase();
+  const message = `Hi ${firstName},\n\nWelcome to Bomcel Digital - we’re excited to have you on board!\nAt Bomcel Digital, we help businesses grow smarter by providing:\n- Website development and digital presence setup\n- Workflow automation\n- Data-driven insights to help you scale\n\nYou’ve just joined a community of forward-thinking entrepreneurs who are taking their businesses digital.\n\nA member of our team will reach out shortly to understand your goals and recommend the best solution for your business.\nIf you have any questions, feel free to reply to this email or reach us at hello@bomcel.com.\n\nWelcome once again to the Bomcel family - where innovation meets results. ✨\nWarm regards,\nTeam Bomcel Digital\n📩 hello@bomcel.com\n🌐 www.bomceldigital.com`;
 
-  const message = `Welcome to Bomcel Digital Services! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out.`;
-  try {
-    await sendEmail({
-      email: newUser.email,
-      subject: 'Welcome',
-      message,
-    });
-  } catch (err) {
-    console.log('There was an error sending the welcome email. ', err);
-  }
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
+  await sendEmail({
+    email: newUser.email,
+    subject: "Welcome to Bomcel Digital - Let's take your business online!",
+    message,
   });
+
+  createSendToken(newUser, 201, res, token);
 });
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -98,7 +93,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
-  console.log('Jwt at signing: ', { id: user._id.toString() });
+  // console.log('Jwt at signing: ', { id: user._id.toString() });
 
   //   send token to client
   createSendToken(user, 200, res, token);
@@ -165,7 +160,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   try {
     await sendEmail({
       email: user.email,
-      subject: 'Your password rest token (valid for 10 minutes)',
+      subject: 'Your password reset token (valid for 10 minutes)',
       message,
     });
 

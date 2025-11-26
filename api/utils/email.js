@@ -1,26 +1,30 @@
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
+const brevo = require('@getbrevo/brevo');
 const catchAsync = require('./catchAsync');
 
+const brevoClient = new brevo.TransactionalEmailsApi();
+// brevoClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+brevoClient.setApiKey(
+  brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BOMCEL_BREVO_API_KEY
+);
+
 const sendEmail = catchAsync(async (options) => {
-  // create a transporter
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+  try {
+    const emailData = {
+      sender: {
+        name: 'Bomcel Digital Services',
+        email: process.env.EMAIL_FROM,
+      },
+      to: [{ email: options.email }],
+      subject: options.subject,
+      textContent: options.message,
+    };
 
-  // email options
-  const mailOptions = {
-    from: `Bomcel Digital services ${process.env.EMAIL_FROM}`,
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-  };
-
-  await transporter.sendMail(mailOptions);
+    await brevoClient.sendTransacEmail(emailData);
+  } catch (err) {
+    console.error('Error sending email', err);
+  }
 });
 
 module.exports = sendEmail;

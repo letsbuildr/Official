@@ -48,9 +48,9 @@ module.exports = function detectLocation(options = {}) {
       const devRegion = process.env.DEV_REGION;
       if (devRegion) {
         req.countryCode = devRegion.toUpperCase();
-        console.log(
-          `(dev) IP: ${req.ip || 'unknown'} | Country: ${req.countryCode}`
-        );
+        // console.log(
+        //   `(dev) IP: ${req.ip || 'unknown'} | Country: ${req.countryCode}`
+        // );
         return next();
       }
     }
@@ -67,7 +67,7 @@ module.exports = function detectLocation(options = {}) {
       : ip;
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Client IP: ${ip}, Lookup IP: ${lookupIP}`);
+      // console.log(`Client IP: ${ip}, Lookup IP: ${lookupIP}`);
     }
 
     // 4) Perform lookup
@@ -75,7 +75,7 @@ module.exports = function detectLocation(options = {}) {
     req.countryCode = (country || 'US').toUpperCase();
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Detected Country: ${req.countryCode}`);
+      // console.log(`Detected Country: ${req.countryCode}`);
     }
 
     next();

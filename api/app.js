@@ -11,9 +11,18 @@ const helmet = require('helmet');
 const AppError = require('./utils/appError');
 const userRouter = require('./routes/userRoutes');
 const serviceRouter = require('./routes/serviceRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
+const paymentRouter = require('./routes/paymentRoutes');
 const detectLocation = require('./middlewares/detectLocation');
+const { paystackWebhook } = require('./webhooks/paystack');
 
 const app = express();
+
+app.post(
+  '/api/v1/payments/webhook/paystack',
+  express.raw({ type: 'application/json' }),
+  paystackWebhook
+);
 
 app.use(
   cors({
@@ -96,7 +105,8 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req, res) => ipKeyGenerator(this.request), //ensure ip is correctly used
+  // keyGenerator: (req, res) => ipKeyGenerator(this.request), //ensure ip is correctly used
+  keyGenerator: (req) => req.ip,
   message: 'Too many requests from this IP, please try again in an hour!',
 });
 app.use('/api', limiter);
@@ -111,5 +121,7 @@ app.use(detectLocation({ devFallbackIP: process.env.DEV_FALLBACK_IP }));
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/services', serviceRouter);
+app.use('/api/v1/bookings', bookingRouter);
+app.use('/api/v1/payments', paymentRouter);
 
 module.exports = app;

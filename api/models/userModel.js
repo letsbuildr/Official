@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'Please input your username!'],
-    unique: true,
     lowercase: true,
     trim: true,
     match: [
@@ -31,7 +30,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Please input your email address'],
-    unique: true,
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email address'],
   },
@@ -41,9 +39,31 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'instructor'],
     default: 'user',
   },
+  progress: {
+    type: Number,
+    min: [0, 'Progress cannot be less than 0'],
+    max: [100, 'Progress cannot be more than 100'],
+    validate: {
+      validator: function (value) {
+        if (this instanceof mongoose.Query) return true; //skip on updates
+        if (value === undefined) return true; //progress is optional
+        return this.role === 'user';
+      },
+      message: 'Only regular users can have progress value',
+    },
+  },
+  activities: [
+    {
+      refId: mongoose.Schema.Types.ObjectId,
+      type: { type: String, required: true },
+      metadata: {},
+      createdAt: { type: Date, default: Date.now },
+      updatedAt: Date,
+    },
+  ],
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -71,6 +91,17 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { active: true } }
+);
+
+userSchema.index(
+  { username: 1 },
+  { unique: true, partialFilterExpression: { active: true } }
+);
+
+// Encrypt password using bcrypt
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
@@ -78,8 +109,14 @@ userSchema.pre('save', async function (next) {
   // Hash the password with a cost of 12
   this.password = await bcrypt.hash(this.password, 12);
 
-  // Delete passwordConfirm field
   this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre('save', function (next) {
+  if (this.role == 'user' && this.progress === undefined) {
+    this.progress = 0;
+  }
   next();
 });
 
@@ -90,6 +127,7 @@ userSchema.pre('save', function (next) {
   next();
 });
 
+// Handle duplicate key errors for username and email
 userSchema.post('save', function (error, doc, next) {
   if (error.name === 'Mongo ServerError' && error.code === 11000) {
     next(new Error('Username is already taken!'));
@@ -123,6 +161,30 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
+// Capitalize first letter of each word in name before saving
+userSchema.pre('save', function (next) {
+  if (!this.name) return next();
+
+  this.name = this.name
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+
+  next();
+});
+
+userSchema.pre('findOneAndUpdate', function (next) {
+  const update = this.getUpdate();
+  if (update.name) {
+    update.name = update.name
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    this.setUpdate(update);
+  }
+  next();
+});
+
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
@@ -131,7 +193,7 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest('hex');
 
-  console.log({ resetToken }, this.passwordResetToken);
+  // console.log({ resetToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 

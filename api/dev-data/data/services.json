@@ -95,7 +95,7 @@
       "subtitle": "Transparent pricing designed to fit businesses of all sizes",
       "pricingPlans": [
         {
-          "packageTitle": "Basic Website",
+          "planTitle": "Basic Website",
           "price": {
             "usd": 499,
             "ngn": 150000
@@ -113,7 +113,7 @@
           }
         },
         {
-          "packageTitle": "Standard Website",
+          "planTitle": "Standard Website",
           "price": {
             "usd": 799,
             "ngn": 350000
@@ -132,7 +132,7 @@
           }
         },
         {
-          "packageTitle": "Premium Website/e-commerce",
+          "planTitle": "Premium Website/e-commerce",
           "price": {
             "usd": 999,
             "ngn": 80000
@@ -165,7 +165,7 @@
     "name": "Automation services",
     "summary": "Automate. Integrate",
     "description": "We streamline your business processes through smart automation and integrations that save time and boost efficiency",
-    "buttons": {
+    "heroButtons": {
       "primary": "Start your automation",
       "secondary": "View Case Studies"
     },
@@ -227,34 +227,37 @@
         }
       ]
     },
-    "recentProjects": [
-      {
-        "title": "Modern Business Website",
-        "industry": "Corporate",
-        "image": "automation-services/project1.png"
-      },
-      {
-        "title": "E-commerce Platform",
-        "industry": "Retail",
-        "image": "automation-services/project2.png"
-      },
-      {
-        "title": "SaaS Dashboard",
-        "industry": "Technology",
-        "image": "automation-services/project3.png"
-      },
-      {
-        "title": "portfolio website",
-        "industry": "Creative",
-        "image": "automation-services/project4.png"
-      }
-    ],
+    "recentProjects": {
+      "projects": [
+        {
+          "title": "Modern Business Website",
+          "industry": "Corporate",
+          "image": "automation-services/project1.png"
+        },
+        {
+          "title": "E-commerce Platform",
+          "industry": "Retail",
+          "image": "automation-services/project2.png"
+        },
+        {
+          "title": "SaaS Dashboard",
+          "industry": "Technology",
+          "image": "automation-services/project3.png"
+        },
+        {
+          "title": "portfolio website",
+          "industry": "Creative",
+          "image": "automation-services/project4.png"
+        }
+      ]
+    },
+
     "pricingPackage": {
       "title": "Our Pricing Packages",
       "subtitle": "Transparent pricing designed to fit businesses of all sizes",
       "pricingPlans": [
         {
-          "packageTitle": "Basic",
+          "planTitle": "Basic",
           "packageSubtitle": "Single Process Setup",
           "price": {
             "usd": 499,
@@ -273,7 +276,7 @@
           }
         },
         {
-          "packageTitle": "Standard",
+          "planTitle": "Standard",
           "packageSubtitle": "Multi-App Integration",
           "price": {
             "usd": 799,
@@ -293,7 +296,7 @@
           }
         },
         {
-          "packageTitle": "Premium",
+          "planTitle": "Premium",
           "packageSubtitle": "Enterprise Workflow Automation",
           "price": {
             "usd": 999,
@@ -416,7 +419,7 @@
       "subtitle": "Transparent pricing designed to fit businesses of all sizes",
       "pricingPlans": [
         {
-          "packageTitle": "Basic",
+          "planTitle": "Basic",
           "packageSubtitle": "Dashboard Setup",
           "price": {
             "usd": 499,
@@ -436,7 +439,7 @@
           }
         },
         {
-          "packageTitle": "Standard",
+          "planTitle": "Standard",
           "packageSubtitle": "Full Data Analysis",
           "price": {
             "usd": 799,
@@ -456,7 +459,7 @@
           }
         },
         {
-          "packageTitle": "Premium",
+          "planTitle": "Premium",
           "packageSubtitle": "Predictive Analytics Suite",
           "price": {
             "usd": 999,
