@@ -246,7 +246,7 @@ export default function AboutUs() {
           <p className="text-lg md:text-2xl font-medium leading-relaxed mb-6 max-w-3xl mx-auto">
             We offer four core services, tailored to meet different needs:
           </p>
-          <div className="max-w-6xl grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-20 gap-10 mx-auto">
+          <div className="max-w-6xl grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-10 lg:gap-5 gap-10 mx-auto">
             {what_we_do.map((box, index) => (
               <div
                 key={box.title}
