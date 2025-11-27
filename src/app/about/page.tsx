@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { FaCheck } from "react-icons/fa";
 
 const cards = [
   {
@@ -24,21 +25,27 @@ const cards = [
 
 const how_cards = [
   {
-    title: "Dashboard templates",
+    title: "Consultation & discovery",
     content:
-      "Pre-built templates that save you time and get you started instantly.",
+      "We listen to your needs, understand your goals, and define the scope.",
     image: "/about-how1.svg",
   },
   {
-    title: "Auto-insights",
+    title: "Planning & design",
     content:
-      "Intelligent analysis that spots trends and patterns automatically.",
+      "We create a roadmap: wireframes, data models, or automation blueprints depending on the service.",
     image: "/about-how2.svg",
   },
   {
-    title: "Storytelling Reports ",
+    title: "Build & execution",
     content:
-      "Transform your data into compelling narratives that are easy to understand and share.",
+      "Our developers, data analysts and automation experts bring the plan to life, ensuring clean code, accurate analysis, and seamless workflows.",
+    image: "/about-how3.svg",
+  },
+  {
+    title: "Delivery & support",
+    content:
+      "We deliver on time, test thoroughly, and offer support for maintenance, training, or future enhancements.",
     image: "/about-how3.svg",
   },
 ];
@@ -91,6 +98,121 @@ const values = [
   },
 ];
 
+const core_values = [
+  {
+    title: "Quality & Integrity",
+    content:
+      "We deliver work we are proud of, always with honesty and transparency.",
+    image: "/values_icon1.svg",
+  },
+  {
+    title: "Client‑first mindset",
+    content:
+      "Your needs define the solution; we don’t force cookie‑cutter tools.",
+    image: "/values_icon2.svg",
+  },
+  {
+    title: "Growth & Empowerment",
+    content:
+      "We help our clients - and our community, grow. Whether you’re a student learning analytics or a business transforming operations, we want you to come out stronger.",
+    image: "/values_icon3.svg",
+  },
+  {
+    title: "Innovation",
+    content:
+      "We stay ahead of trends to offer modern, reliable, and future‑proof solutions.",
+    image: "/values_icon4.svg",
+  },
+];
+
+const why_work_with_us = [
+  {
+    title: "Versatility",
+    content:
+      "We bring versatility, from complex data workflows to beautiful websites - all under one roof.",
+    image: "/values_icon1.svg",
+  },
+  {
+    title: "End-to-end service",
+    content:
+      "You talk to one team that understands your needs holistically - no handoffs, no communication gaps.",
+    image: "/values_icon2.svg",
+  },
+  {
+    title: "Client‑centered approach",
+    content: "Our solutions are tailored, not templated.",
+    image: "/values_icon3.svg",
+  },
+  {
+    title: "Efficiency & value",
+    content:
+      "We design with cost and time savings in mind - especially for businesses mindful of budget and ROI.",
+    image: "/values_icon4.svg",
+  },
+  {
+    title: "Commitment",
+    content: "We finish what we start, and stand by our work.",
+    image: "/values_icon5.svg",
+  },
+];
+
+const experience = [
+  {
+    title: "Startups & small businesses",
+    content: "Polished online presence built to convert.",
+    image: "/values_icon1.svg",
+  },
+  {
+    title: "Students & learners",
+    content: "Final year project support and analysis guidance.",
+    image: "/values_icon2.svg",
+  },
+  {
+    title: "Established businesses",
+    content: "Data-driven insights to optimize operations and reduce cost.",
+    image: "/values_icon3.svg",
+  },
+  {
+    title: "Cross-sector clients",
+    content: "From fashion to tech and public services.",
+    image: "/values_icon4.svg",
+  },
+];
+
+const what_we_do = [
+  {
+    title: "Web Development",
+    content:
+      "Custom websites, landing pages, and web apps built with clean code, strong design, and a focus on user experience - so your brand always looks and feels professional.",
+    image: "/images/about1.png",
+  },
+  {
+    title: "Data Analysis for Students",
+    content:
+      "Final year student project research and analysis using the required software tools.",
+    image: "/images/about2.png",
+  },
+  {
+    title: "Data Analysis for Businesses",
+    content:
+      "Actionable insights, dashboards, and reports that help businesses make data‑driven decisions, identify trends, and save costs.",
+    image: "/images/about3.png",
+  },
+  {
+    title: "Automation",
+    content:
+      " Custom automation workflows that streamline repetitive tasks, reduce human error, and save time - giving you room to focus on growth and strategy.",
+    image: "/images/about3.png",
+  },
+];
+
+const items = [
+  "Expand our services (e.g., productized data tools, analytics training programs)",
+  "Build a broader team of experts",
+  "Launch more client success stories and case studies",
+  "Continue empowering students, entrepreneurs, and businesses through technology",
+];
+
 export default function AboutUs() {
   return (
     <main className="w-full bg-white text-[#0B1E36]">
@@ -106,65 +228,74 @@ export default function AboutUs() {
       <section className="max-w-6xl mx-auto text-center py-16 px-5 pb-[100px] overflow-hidden">
         <div className="opacity-0 translate-y-10 animate-fadeUp">
           <h2 className="text-5xl md:text-5xl font-semibold mb-12 max-w-3xl mx-auto leading-snug">
-            Making Data Work for Africa's Businesses, Creators, and Analysts.
+            We build smarter digital solutions - so you can focus on what
+            matters.
           </h2>
-
           <button className="mt-4 bg-[#0077B6] text-white px-6 py-3 rounded-[10px] text-sm hover:opacity-80 transition cursor-pointer">
             Try Bionet Digital Today
           </button>
         </div>
+      </section>
 
-        {/* Cards (Stagger animation) */}
-        <div className="grid md:grid-cols-3 gap-0 sm:gap-6 mt-14">
-          {cards.map((box, index) => (
-            <div
-              key={box.title}
-              className={`group bg-white backdrop-blur-md p-6 rounded-xl overflow-hidden hover:bg-white/20 transition cursor-pointer opacity-0 translate-y-10 animate-fadeUp`}
-              style={{ animationDelay: `${0.3 + index * 0.2}s` }}
-            >
-              <div className="overflow-hidden rounded-t-[10px]">
-                <Image
-                  src={box.image}
-                  alt={box.title}
-                  width={364}
-                  height={300}
-                  className="mx-auto w-full transform transition-transform duration-300 group-hover:scale-105"
-                />
+      {/* WHAT WE DO */}
+      <section className="w-full bg-[#F4F4F4] mx-auto text-center py-16 px-5 pb-[100px] overflow-hidden">
+        <div className="mt-10">
+          <h2 className="text-5xl md:text-5xl font-semibold mb-1 max-w-3xl mx-auto leading-snug">
+            What We Do
+          </h2>
+          <p className="text-lg md:text-2xl font-medium leading-relaxed mb-6 max-w-3xl mx-auto">
+            We offer four core services, tailored to meet different needs:
+          </p>
+          <div className="max-w-6xl grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-20 gap-10 mx-auto">
+            {what_we_do.map((box, index) => (
+              <div
+                key={box.title}
+                className="group backdrop-blur-md rounded-xl overflow-hidden hover:bg-white/20 transition cursor-pointer opacity-0 translate-y-10 animate-fadeUp"
+                style={{ animationDelay: `${0.3 + index * 0.2}s` }}
+              >
+                <div className="overflow-hidden rounded-t-[10px]">
+                  <Image
+                    src={box.image}
+                    alt={box.title}
+                    width={364}
+                    height={300}
+                    className="mx-auto w-full transform transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+
+                <h3 className="text-[14px] h-10 font-semibold bg-[#0B1E36] text-white flex items-center justify-center">
+                  {box.title}
+                </h3>
+
+                <p className="text-[#4A5565] min-h-[165px] rounded-b-[10px] p-5 bg-[#dee1e6] text-sm">
+                  {box.content}
+                </p>
               </div>
-
-              <h3 className="text-xl h-10 font-semibold bg-[#0B1E36] text-white flex items-center justify-center">
-                {box.title}
-              </h3>
-
-              <p className="text-[#4A5565] min-h-[150px] rounded-b-[10px] p-5 bg-[#dee1e6] text-sm transition-colors">
-                {box.content}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* STORY */}
+      {/* WHO WE ARE */}
       <section className="bg-[#0B1E36] text-white pt-20 px-5 pb-[100px] overflow-hidden">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 md:gap-36 items-center">
           <div className="opacity-0 translate-y-10 animate-fadeUp">
             <h2 className="text-5xl md:text-5xl font-semibold mb-7">
-              Our Story
+              Who we are
             </h2>
 
             <p className="text-sm md:text-base leading-relaxed mb-12">
-              At Bomcel Digital, we noticed a challenge: data is everywhere, but
-              the tools to turn it into action often feel too complex, too
-              expensive, or out of reach. Many African businesses and creators
-              struggle to get the insights they need, leading to missed
-              opportunities, wasted resources, and slower growth.
+              Bomcel Digital is a full-stack digital services agency driven by a
+              simple belief: technology should work for you, not the other way
+              around. We are a team of passionate IT professionals, data
+              analysts, web developers, and automation experts united by one
+              goal: to help individuals, students, and businesses succeed in the
+              digital world.
             </p>
 
             <p className="text-sm md:text-base leading-relaxed">
-              We built Bomcel to change that. Our platform is designed with
-              simplicity in mind, helping anyone — from small business owners to
-              data professionals — visualize, automate, and act on data without
-              the stress of learning complicated tools.
+              We blend strong design, clean code and meaningful data to deliver
+              solutions that scale and make day-to-day operations easier.
             </p>
           </div>
 
@@ -184,22 +315,68 @@ export default function AboutUs() {
         </div>
       </section>
 
+      {/* WHY WE EXIST, OUR MISSION & VALUES */}
+      <section className="bg-[#F4F4F4] text-[#0B1E36] pt-20 pb-[100px] px-5 overflow-hidden">
+        <div className="gap-8 items-center">
+          <div>
+            <h2 className="text-5xl md:text-5xl text-[#0B1E36] font-semibold mb-4 text-center">
+              Why we exist (Our Mission & Values)
+            </h2>
+            <p className="max-w-[600px] text-[#0B1E36] mx-auto mb-4 text-center">
+              We believe technology should be simple, accessible, and powerful.
+              Every project starts with one question: how can this make life
+              easier and more efficient?
+            </p>
+            <p className="text-[#0B1E36] text-center">Our core values:</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12 max-w-6xl mx-auto">
+            {core_values.map((i, index) => (
+              <div
+                key={index}
+                className="
+          bg-[#F5F7FA] p-6 md:p-8 rounded-2xl 
+          backdrop-blur-md border border-[#00B4D8]/40 
+          shadow-sm hover:shadow-xl 
+        "
+                style={{ animationDelay: `${0.15 * index}s` }}
+              >
+                <div className="flex items-center gap-5 mb-6">
+                  <Image
+                    src={i.image}
+                    alt={i.title}
+                    width={50}
+                    height={50}
+                    className="mb-0"
+                  />
+                  <h3 className="font-semibold text-black text-xl">
+                    {i.title}
+                  </h3>
+                </div>
+
+                <p className="text-[15px] md:text-[16px] text-gray-600 leading-relaxed">
+                  {i.content}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* HOW WE DO IT */}
-      <section className="py-20 px-5 max-w-6xl mx-auto text-center overflow-hidden">
+      <section className="bg-white py-20 px-5 max-w-6xl mx-auto text-center overflow-hidden">
         {/* Heading */}
         <div className="opacity-0 translate-y-10 animate-fadeUp">
           <h2 className="text-5xl md:text-5xl font-semibold mb-6">
-            How We Do It
+            How We Work
           </h2>
 
           <p className="text-lg md:text-2xl font-medium leading-relaxed mb-12 max-w-3xl mx-auto">
-            We bring this mission to life through powerful, user-friendly
-            features like:
+            Every project at Bomcel Digital follows a thoughtful process:
           </p>
         </div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-8 md:gap-10 mt-10 text-[#0B1E36]">
+        <div className="grid md:grid-cols-3 gap-8 md:gap-10 mt-10 mb-12 text-[#0B1E36]">
           {how_cards.map((i, index) => (
             <div
               key={i.title}
@@ -226,69 +403,59 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* MISSION */}
-      <section className="bg-[#0B1E36] text-white pt-20 pb-[100px] px-5 overflow-hidden">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-20 md:gap-32 lg:gap-[150px]">
-          {/* Mission */}
-          <div
-            className="flex-1 opacity-0 translate-y-10 animate-fadeUp"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <div className="flex items-center gap-5 md:gap-7 mb-10">
-              <Image
-                src="/our-mission.svg"
-                alt="our mission"
-                width={50}
-                height={50}
-                className="mb-0"
-              />
-              <h2 className="font-semibold text-5xl md:text-5xl">
-                Our Mission
-              </h2>
-            </div>
+      {/* EXPERIENCE */}
+      <section className="bg-[#F4F4F4] text-[#0B1E36] py-20 px-5 overflow-hidden">
+        <h2 className="text-center text-5xl md:text-5xl font-semibold mb-20 opacity-0 translate-y-10 animate-fadeUp">
+          Our Experience & Who We Serve
+        </h2>
+        <p className="text-lg md:text-2xl font-medium leading-relaxed text-center max-w-3xl mx-auto">
+          Over the years, we have worked with:
+        </p>
+        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10 mb-20">
+          {experience.map((i, index) => (
+            <div
+              key={index}
+              className="
+          bg-[#F5F7FA] p-6 md:p-8 rounded-2xl 
+          backdrop-blur-md border border-[#00B4D8]/40 
+          shadow-sm hover:shadow-xl 
+          hover:-translate-y-2 transition-all duration-300
+          opacity-0 translate-y-10 animate-fadeUp
+        "
+              style={{ animationDelay: `${0.15 * index}s` }}
+            >
+              <div className="mb-2">
+                <Image
+                  src={i.image}
+                  alt={i.title}
+                  width={50}
+                  height={50}
+                  className="mb-6 mx-auto"
+                />
+                <h3 className="font-semibold text-xl">{i.title}</h3>
+              </div>
 
-            <div className="bg-[#F5F7FA] px-6 md:px-10 py-10 md:py-[58px] rounded-lg backdrop-blur-md border border-white/20">
-              <p className="text-sm md:text-base text-[#0B1E36] leading-relaxed">
-                To empower African innovators with tools that make data simple,
-                accessible, and actionable.
+              <p className="text-[15px] md:text-[16px] leading-relaxed">
+                {i.content}
               </p>
             </div>
-          </div>
-
-          {/* Vision */}
-          <div
-            className="flex-1 opacity-0 translate-y-10 animate-fadeUp"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <div className="flex items-center gap-5 md:gap-7 mb-10">
-              <Image
-                src="/our-vision.svg"
-                alt="our vision"
-                width={50}
-                height={50}
-                className="mb-0"
-              />
-              <h2 className="font-semibold text-5xl md:text-5xl">Our Vision</h2>
-            </div>
-
-            <div className="bg-[#F5F7FA] px-6 md:px-10 py-10 md:py-[58px] rounded-lg backdrop-blur-md border border-white/20">
-              <p className="text-sm md:text-base text-[#0B1E36] leading-relaxed">
-                To empower African innovators with tools that make data simple,
-                accessible, and actionable.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
+        <p className="text-[16px] font-medium leading-relaxed text-center max-w-3xl mx-auto">
+          Our multidisciplinary background (web dev, analytics, automation)
+          gives us a unique edge: we don’t just build websites or dashboards -
+          we build digital ecosystems that grow with you.
+        </p>
       </section>
 
-      {/* VALUES */}
-      <section className="bg-white text-[#0B1E36] py-20 px-5 overflow-hidden">
+      {/* WHY WORK WITH US */}
+      <section className="bg-white text-[#0B1E36] py-12 px-5 overflow-hidden">
         <h2 className="text-center text-5xl md:text-5xl font-semibold mb-20 opacity-0 translate-y-10 animate-fadeUp">
-          Our Values
+          Why Work With Us
         </h2>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
-          {values.map((i, index) => (
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 mb-20">
+          {why_work_with_us.map((i, index) => (
             <div
               key={index}
               className="
@@ -320,18 +487,15 @@ export default function AboutUs() {
       </section>
 
       {/* WHO WE SERVE */}
-      <section className="py-16 sm:py-20 px-5 max-w-6xl mx-auto text-center">
-        {/* Heading */}
+      {/* <section className=" bg-[#F4F4F4] py-16 sm:py-20 px-5 mx-auto text-center">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-4 md:mb-6 animate-fadeUp">
           Who We Serve
         </h2>
 
-        {/* Subheading */}
         <p className="text-lg sm:text-xl md:text-2xl font-medium leading-relaxed mb-10 md:mb-12 animate-fadeUp delay-100">
           At Bomcel, we empower the key players shaping Africa’s digital economy
         </p>
 
-        {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
           {serve_cards.map((i, index) => (
             <div
@@ -358,7 +522,7 @@ export default function AboutUs() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* WHAT MAKES US DIFFERENT */}
       <section className="bg-[#0B1E36] text-white pt-16 sm:pt-20 pb-20 sm:pb-24 px-5">
@@ -455,24 +619,59 @@ export default function AboutUs() {
         </div>
       </section>
 
+      {/* LOOKING AHEAD */}
+      <section className="bg-[#0B1E36] text-white pt-16 sm:pt-20 pb-20 sm:pb-24 px-5">
+        <div className="grid md:grid-cols-2 gap-8 items-start max-w-6xl mx-auto">
+          <div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-4 md:mb-6 animate-fadeUp">
+              Looking Ahead
+            </h2>
+            <p className="text-lg sm:text-xl md:text-2xl font-medium leading-relaxed mb-10 md:mb-12 animate-fadeUp delay-100">
+              As we grow, Bomcel Digital aims to:
+            </p>
+            <ul className="space-y-3">
+              {items.map((item, index) => (
+                <li key={index} className="flex items-center">
+                  <FaCheck className="text-[#C72F86] green-500 mr-2" />
+                  <span className="text-white">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div
+            className="flex flex-col justify-start opacity-0 translate-y-10 animate-fadeUp"
+            style={{ animationDelay: "0.3s" }}
+          >
+            <Image
+              src="/images/looking-ahead2.png"
+              alt="Looking Ahead"
+              width={500}
+              height={400}
+              className="rounded-lg w-full h-auto"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="bg-gray-100 py-20 sm:py-[100px] px-4 text-center">
         <div className="bg-[#c6ccd3] rounded-[40px] md:rounded-[60px] max-w-4xl w-full py-12 sm:py-[70px] mx-auto px-6 animate-fadeUp">
           {/* Heading */}
           <h2
-            className="text-3xl sm:text-4xl md:text-5xl text-[#0B1E36] font-semibold mb-6 sm:mb-7 leading-tight animate-fadeUp"
+            className="text-3xl sm:text-3xl md:text-3xl max-w-[800px] m-auto text-[#0B1E36] font-semibold mb-5 sm:mb-5 leading-tight animate-fadeUp"
             style={{ animationDelay: "0.1s" }}
           >
-            Ready to Transform Your Data?
+            If you’re ready to transform your digital presence, unlock data
+            insights, or automate your workflows — let’s get started.
           </h2>
 
           {/* Paragraph */}
           <p
-            className="text-base sm:text-lg md:text-[20px] text-[#0B1E36]/80 font-normal mb-10 sm:mb-12 md:mb-20 max-w-xl mx-auto animate-fadeUp"
+            className="text-base sm:text-lg md:text-[20px] text-[#0B1E36]/80 font-normal mb-6 sm:mb-6 md:mb-6 max-w-xl mx-auto animate-fadeUp"
             style={{ animationDelay: "0.2s" }}
           >
-            Join us in shaping the future of data in Africa. Try Bomcel Digital
-            today and see how simple data can be.
+            Book a free consultation and we'll discuss how to move forward.
           </p>
 
           {/* Buttons */}
@@ -480,13 +679,15 @@ export default function AboutUs() {
             className="flex flex-col sm:flex-row justify-center gap-4 md:gap-8 max-w-lg mx-auto animate-fadeUp"
             style={{ animationDelay: "0.3s" }}
           >
-            <button className="text-[18px] md:text-[20px] bg-[#0077B6] border-2 border-[#0077B6] text-white px-8 md:px-12 py-3 md:py-5 rounded-[10px] font-medium w-full sm:w-auto transition-all duration-300 hover:bg-white hover:text-[#0077B6] hover:scale-105">
-              Try Bomcel Digital
-            </button>
-
-            <button className="text-[18px] md:text-[20px] bg-transparent border-2 border-[#0B1E36] text-black px-8 md:px-12 py-3 md:py-5 rounded-[10px] font-medium w-full sm:w-auto transition-all duration-300 hover:bg-[#0B1E36] hover:text-white hover:scale-105">
+            <a
+              href="consultation"
+              className="text-[18px] md:text-[20px] bg-[#0077B6] border-2 border-[#0077B6] text-white px-8 md:px-12 py-3 md:py-5 rounded-[10px] font-medium w-full sm:w-auto transition-all duration-300 hover:bg-white hover:text-[#0077B6] hover:scale-105 cursor-pointer"
+            >
+              Book a Free Consultation
+            </a>
+            {/* <button className="text-[18px] md:text-[20px] bg-transparent border-2 border-[#0B1E36] text-black px-8 md:px-12 py-3 md:py-5 rounded-[10px] font-medium w-full sm:w-auto transition-all duration-300 hover:bg-[#0B1E36] hover:text-white hover:scale-105">
               Learn More
-            </button>
+            </button> */}
           </div>
         </div>
       </section>
