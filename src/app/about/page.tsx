@@ -267,7 +267,7 @@ export default function AboutUs() {
                   {box.title}
                 </h3>
 
-                <p className="text-[#4A5565] min-h-[165px] rounded-b-[10px] p-5 bg-[#dee1e6] text-sm">
+                <p className="text-[#4A5565] min-h-[180px] rounded-b-[10px] p-5 bg-[#dee1e6] text-sm">
                   {box.content}
                 </p>
               </div>
@@ -640,7 +640,7 @@ export default function AboutUs() {
           </div>
 
           <div
-            className="flex flex-col justify-start opacity-0 translate-y-10 animate-fadeUp"
+            className="flex flex-col justify-start opacity-0 animate-fadeUp"
             style={{ animationDelay: "0.3s" }}
           >
             <Image
