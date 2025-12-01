@@ -11,6 +11,10 @@ const paymentSchema = new mongoose.Schema({
     ref: 'Service',
     required: [true, 'Payment must be associated with a service'],
   },
+  activityId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Activity',
+  },
   planType: {
     type: String,
     required: [true, 'Payment must have a plan type'],
@@ -44,6 +48,7 @@ const paymentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  paidAt: Date,
 });
 
 const Payment = mongoose.model('Payment', paymentSchema);

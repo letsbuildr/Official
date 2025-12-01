@@ -5,6 +5,7 @@ const Activity = require('../models/activityModel');
 const User = require('../models/userModel');
 const sendEmail = require('../utils/email');
 const catchAsync = require('../utils/catchAsync');
+const { generateAvailability } = require('../utils/generateAvailability');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
@@ -13,6 +14,7 @@ exports.initBooking = catchAsync(async (req, res, next) => {
   // const timezone = req.timezone || 'UTC';
 
   const services = await Service.find({ active: true }).select('name _id');
+  const availableSlots = await generateAvailability(14);
 
   // If user is logged in, return their data
   const userInfo = user
@@ -29,52 +31,6 @@ exports.initBooking = catchAsync(async (req, res, next) => {
         userId: null,
       };
 
-  // date generation
-  const daysToCheck = 14; // next 14 days
-  const today = new Date();
-  const availableSlots = {};
-
-  for (let i = 1; i <= daysToCheck; i++) {
-    const date = new Date();
-    date.setDate(today.getDate() + i);
-
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const dateStr = `${yyyy}-${mm}-${dd}`;
-
-    // Skip weekends
-    const day = date.getDay(); // 0 = Sunday, 6 = Saturday
-    if (day === 0 || day == 6) continue;
-
-    // Generate possible time slots
-    const possibleSlots = [];
-    for (let hour = 8; hour <= 15; hour++) {
-      if (hour === 12) continue; // skip lunch hour
-      // if (hour === 16) continue; // Not available
-
-      for (let minute of [0, 30]) {
-        const hh = String(hour).padStart(2, '0');
-        const min = String(minute).padStart(2, '0');
-
-        possibleSlots.push(`${hh}:${min}`);
-      }
-    }
-
-    // Removed already booked times
-    const bookings = await Booking.find({
-      date: dateStr,
-      isCancelled: { $ne: true },
-    }).select('time');
-
-    const bookedTimes = bookings.map((b) => b.time);
-    const finalSLots = possibleSlots.filter((t) => !bookedTimes.includes(t));
-
-    if (finalSLots.length > 0) {
-      availableSlots[dateStr] = finalSLots;
-    }
-  }
-
   res.status(200).json({
     status: 'success',
     ...userInfo,
@@ -86,6 +42,7 @@ exports.initBooking = catchAsync(async (req, res, next) => {
 exports.createBooking = catchAsync(async (req, res, next) => {
   const { fullName, email, time, service, date, timeZone, message } = req.body;
   const user = res.locals.user ? res.locals.user._id : null;
+  const availableSlots = await generateAvailability(14);
 
   // if logged in, overwrite payload with user's info
   const bookingName = res.locals.user ? res.locals.user.name : fullName;
@@ -96,26 +53,16 @@ exports.createBooking = catchAsync(async (req, res, next) => {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
-  const generateSlotsForDate = () => {
-    const slots = [];
+  if (!availableSlots[date]) {
+    return next(
+      new AppError('Selected date is not available for booking', 400)
+    );
+  }
 
-    for (let hour = 8; hour <= 15; hour++) {
-      if (hour === 12) continue; // skip lunch hour
-      for (let minute of [0, 30]) {
-        slots.push(
-          `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-        );
-      }
-    }
-    return slots;
-  };
-
-  const allowedSlotsForDate = generateSlotsForDate();
-  if (!allowedSlotsForDate.includes(time)) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Invalid time! Please pick a valid time slot.',
-    });
+  if (!availableSlots[date].includes(time)) {
+    return next(
+      new AppError('Selected time is not available for booking', 400)
+    );
   }
 
   const existing = await Booking.findOne({
@@ -167,6 +114,44 @@ exports.createBooking = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.regenerateBookingOtp = catchAsync(async (req, res, next) => {
+  const { bookingId } = req.body;
+  if (!bookingId) return next(new AppError('Booking ID is required', 400));
+
+  const booking = await Booking.findOne({
+    _id: bookingId,
+    isCancelled: false,
+  });
+
+  if (!booking) return next(new AppError('Booking not found', 404));
+
+  if (booking.isVerified)
+    return next(new AppError('This booking has already been verified', 400));
+
+  // Generate new OTP
+  const newOtp = Math.floor(100000 + Math.random() * 900000);
+  const newOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  booking.otp = newOtp;
+  booking.otpExpires = newOtpExpires;
+
+  const emailMessage = `A new verification code has been generated for your booking. Your new code is ${newOtp}. Valid for the next 10 minutes.\nIf you did not request this, please ignore this email`;
+  try {
+    await sendEmail({
+      email: booking.email,
+      subject: 'Your new verification code',
+      message: emailMessage,
+    });
+  } catch (err) {
+    console.err(err);
+  }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'A new OTP has been sent to your email',
+  });
+});
+
 exports.verifyBooking = catchAsync(async (req, res) => {
   const { bookingId, otp } = req.body;
   console.log(req.params);
@@ -209,21 +194,21 @@ exports.verifyBooking = catchAsync(async (req, res) => {
     console.err(err);
   }
 
+  const activity = await Activity.create({
+    user: booking.user,
+    type: 'consultation',
+    metadata: {
+      service: serviceName,
+      status: 'scheduled',
+      date: booking.date,
+      time: booking.time,
+      message: booking.message,
+    },
+  });
+
   await User.findByIdAndUpdate(booking.user, {
     $push: {
-      activities: {
-        refId: booking._id,
-        type: 'consultation',
-        metadata: {
-          bookingId,
-          service: serviceName,
-          status: 'scheduled',
-          date: booking.date,
-          time: booking.time,
-          message: booking.message,
-          timestamp: Date.now(),
-        },
-      },
+      activities: activity._id,
     },
   });
 
@@ -245,16 +230,15 @@ exports.cancelBooking = catchAsync(async (req, res) => {
   booking.status = 'cancelled';
   await booking.save();
 
-  await User.updateOne(
-    { _id: booking.user, 'activities.refId': booking.id },
-    {
-      $set: {
-        'activities.$.metadata.status': 'cancelled',
-        'activities.$.metadata.cancelledAt': new Date(),
-        'activities.$.updatedAt': new Date(),
-      },
-    }
-  );
+  await Activity.create({
+    user: booking.user,
+    type: 'consultation',
+    metadata: {
+      service: booking.service,
+      status: 'cancelled',
+      cancelledAt: new Date(),
+    },
+  });
 
   const emailMessage = `Your booking on ${booking.date} at ${booking.time} has been successfully cancelled. If you have any questions, feel free to contact us.`;
   try {

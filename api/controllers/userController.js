@@ -1,5 +1,7 @@
 const sharp = require('sharp');
 const User = require('../models/userModel');
+const ServiceOrder = require('../models/serviceOrder');
+const Activity = require('../models/activityModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
@@ -43,25 +45,25 @@ exports.updateUserProgress = catchAsync(async (req, res, next) => {
   const { progress } = req.body;
 
   // Ensure request is from an instructor
-  if (req.user.role !== 'instructor') {
-    return next(new AppError('Only instructors can update user progress', 403));
+  if (req.user.role !== 'freelancer') {
+    return next(new AppError('Only freelancers can update user progress', 403));
   }
 
   // Find the target user to update
-  const targetUser = await User.findById(req.params.id);
-  if (!targetUser) {
-    return next(new AppError('No user found with that ID', 404));
+  const order = await ServiceOrder.findById(req.params.id);
+  if (!order) {
+    return next(new AppError('No order found with that ID', 404));
   }
 
-  // Ensure target user is a regular user
-  if (targetUser.role !== 'user') {
+  const targetUser = await User.findById(order.user);
+  if (!targetUser || targetUser.role !== 'user') {
     return next(
       new AppError('Can only update progress for regular users', 400)
     );
   }
 
   // Prevent decreasing progress
-  if (progress <= targetUser.progress) {
+  if (progress <= order.progress) {
     return next(
       new AppError(
         'Progress cannot be less than or equal to current value',
@@ -69,19 +71,25 @@ exports.updateUserProgress = catchAsync(async (req, res, next) => {
       )
     );
   }
-  // Update progress
-  // targetUser.progress = progress;
-  // await targetUser.save();
-  const updatedUser = await User.findByIdAndUpdate(
-    req.params.id,
-    { progress },
-    { new: true, runValidators: true }
-  );
+
+  order.progress = progress;
+  if (progress === 100) order.status = 'completed';
+
+  await Activity.create({
+    user: order.user,
+    type: 'service-progress',
+    metadata: {
+      orderId: order._id,
+      progress,
+      status: order.status,
+      timeStamp: Date.now(),
+    },
+  });
 
   res.status(200).json({
     status: 'success',
     data: {
-      user: updatedUser,
+      order,
     },
   });
 });
@@ -96,11 +104,29 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 });
 
 // Get current logged in user data
-exports.getMe = (req, res, next) => {
+exports.getMe = catchAsync(async (req, res, next) => {
   // console.log('id:' req.user.id);
-  req.params.id = req.user.id;
-  next();
-};
+  // req.params.id = req.user.id;
+  const user = await User.findById(req.user.id)
+    .populate({
+      path: 'activities',
+      options: { sort: { createdAt: -1 }, limit: 10 },
+    })
+    .populate({
+      path: 'bookings',
+      options: { sort: { createdAt: -1 } },
+    })
+    .populate('serviceOrders');
+
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: user,
+  });
+});
 
 exports.createUser = (req, res) => {
   res.status(500).json({

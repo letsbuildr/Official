@@ -20,7 +20,7 @@ router.delete('/deleteMe', userController.deleteMe);
 
 router.patch(
   '/:id/progress',
-  restrictRoute.restrictTo('instructor'),
+  restrictRoute.restrictTo('freelancer'),
   userController.updateUserProgress
 );
 

@@ -6,10 +6,6 @@ const factory = require('./handlerFactory');
 const AppError = require('../utils/appError');
 // const APIFeatures = require('./../utils/apiFeatures');
 
-// const tours = JSON.parse(
-//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
-// );
-
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {

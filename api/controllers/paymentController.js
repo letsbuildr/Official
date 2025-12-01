@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Payment = require('../models/paymentModel');
 const Service = require('../models/serviceModel');
+const Activity = require('../models/activityModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -28,8 +29,23 @@ exports.startPayment = catchAsync(async (req, res, next) => {
     planType: plan.planTitle,
     amount: price,
     currency: cur,
+    paymentMethod: 'Paystack',
+    paymentStatus: 'pending',
     transactionRef: reference,
   });
+
+  const activity = await Activity.create({
+    user: req.user._id,
+    type: 'payment',
+    metadata: {
+      status: 'pending',
+      paymentId: payment._id,
+      date: payment.createdAt,
+    },
+  });
+
+  payment.activityId = activity._id;
+  await payment.save();
 
   //   Initialize paystack
   const result = await axios.post(
@@ -46,6 +62,8 @@ exports.startPayment = catchAsync(async (req, res, next) => {
     status: 'success',
     message: 'Payment initialized',
     data: {
+      activity,
+      payment,
       paymentUrl: result.data.data.authorization_url,
       accessCode: result.data.data.access_code,
       reference,

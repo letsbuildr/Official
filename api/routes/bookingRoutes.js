@@ -8,12 +8,11 @@ const router = express.Router();
 // check if logged in, but don’t require it
 router.use(checkLoggedInUser.isLoggedIn);
 
-router.route('/init').get(bookingController.initBooking); // anyone can book
-router.route('/createBooking').post(bookingController.createBooking); // anyone can book
-
-router.route('/verify').post(bookingController.verifyBooking);
-
-router.route('/cancel').post(bookingController.cancelBooking);
+router.get('init', bookingController.initBooking); // anyone can book
+router.post('/createBooking', bookingController.createBooking); // anyone can book
+router.post('/regenerateOtp', bookingController.regenerateBookingOtp);
+router.post('verify', bookingController.verifyBooking);
+router.post('cancel', bookingController.cancelBooking);
 
 // router.route('/availability').get(bookingController.getAvailableSlots);
 

@@ -12,6 +12,7 @@ const router = express.Router();
 // );
 
 router.use(protectRoute.protect);
+router.use(restrictRoute.restrictTo('user'));
 
 router.post('/start', paymentController.startPayment);
 // router.get('/verify')
