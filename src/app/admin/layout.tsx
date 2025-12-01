@@ -1,4 +1,5 @@
 import "../globals.css";
+import { ProtectedRoute } from "../../components/ProtectedRoute";
 
 export const metadata = {
   title: "Admin Dashboard - My Landing Page",
@@ -11,8 +12,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
-      {children}
-    </div>
+    <ProtectedRoute requiredRole="admin">
+      <div className="min-h-screen">
+        {children}
+      </div>
+    </ProtectedRoute>
   );
 }

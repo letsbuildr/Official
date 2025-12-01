@@ -15,15 +15,15 @@ const CheckCircleIcon = () => (
       d="M17.6251 10.734C17.0001 13.859 14.644 16.801 11.3367 17.4588C8.02952 18.1167 4.67342 16.5783 3.01296 13.6435C1.3525 10.7087 1.76242 7.03963 4.02966 4.5436C6.2969 2.04756 10.1251 1.35896 13.2501 2.60896"
       stroke="#34C759"
       strokeWidth="1.875"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M7 9.48438L10.125 12.6094L17.625 4.48438"
       stroke="#34C759"
       strokeWidth="1.875"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

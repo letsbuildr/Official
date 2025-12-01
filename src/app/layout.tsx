@@ -36,6 +36,7 @@
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { Providers } from "../components/Providers";
 
 export const metadata = {
   title: "My Landing Page",
@@ -50,9 +51,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans bg-[#F8FBFF] text-[#171717]">
-        <Header />
-        <main className="pt-20 pb-0">{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="pt-20 pb-0">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

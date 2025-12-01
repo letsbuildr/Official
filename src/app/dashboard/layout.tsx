@@ -1,4 +1,5 @@
 import "../globals.css";
+import { ProtectedRoute } from "../../components/ProtectedRoute";
 
 export const metadata = {
   title: "Dashboard - My Landing Page",
@@ -11,8 +12,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
-      {children}
-    </div>
+    <ProtectedRoute>
+      <div className="min-h-screen">
+        {children}
+      </div>
+    </ProtectedRoute>
   );
 }

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardHeader from "./components/DashboardHeader";
 import WelcomeSection from "./components/WelcomeSection";
 import QuickStats from "./components/QuickStats";
 import TransactionOverview from "./components/TransactionOverview";
 import QuickActions from "./components/QuickActions";
 import ConsultationTracking from "./components/ConsultationTracking";
+import { useUserDetails } from "../../lib/redux/hooks";
+import { useAuthContext } from "../../lib/api/auth-context";
 
 interface Transaction {
   id: number;
@@ -30,11 +32,25 @@ interface Consultation {
 
 export default function Dashboard() {
   const [user] = useState({
-    name: "Oge Obubu",
-    email: "ogeobubu@gmail.com",
+    name: "Unknown User",
+    email: "unknown@gmail.com",
     joinDate: "2025-11-14",
     avatar: "/images/avatar.png"
   });
+
+  const { user: reduxUser, loading, error, fetchUserDetails } = useUserDetails();
+
+  const { user: authUser, isAuthenticated } = useAuthContext();
+
+  useEffect(() => {
+    if (isAuthenticated && authUser && !reduxUser && !loading) {
+      const userId = authUser.id || authUser._id;
+      if (userId) {
+        console.log('Dashboard: Fetching user details for authenticated user:', userId);
+        fetchUserDetails(userId);
+      }
+    }
+  }, [isAuthenticated, authUser, reduxUser, loading, fetchUserDetails]);
 
  const [transactions] = useState<Transaction[]>([
      {
@@ -139,7 +155,7 @@ export default function Dashboard() {
 
  return (
    <div className="min-h-screen bg-gray-50">
-     <DashboardHeader user={user} />
+     <DashboardHeader user={authUser ? { name: authUser.name, email: authUser.email } : user} />
      
      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
        <WelcomeSection
@@ -156,11 +172,12 @@ export default function Dashboard() {
 
        <ConsultationTracking consultations={consultations} />
 
-       
+
        <TransactionOverview transactions={transactions} />
-       
-       
+
+
        <QuickActions />
+
      </div>
    </div>
  );

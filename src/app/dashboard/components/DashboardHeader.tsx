@@ -3,13 +3,15 @@
 import Link from "next/link";
 
 interface DashboardHeaderProps {
-  user: {
+  user?: {
     name: string;
     email: string;
-  };
+  } | null;
 }
 
 export default function DashboardHeader({ user }: DashboardHeaderProps) {
+  const displayUser = user || { name: 'User', email: 'user@example.com' };
+
   return (
     <div className="bg-white shadow-sm border-b border-gray-200 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,13 +58,13 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
             {/* User Section */}
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+                <p className="text-sm font-medium text-gray-900">{displayUser.name}</p>
+                <p className="text-xs text-gray-500">{displayUser.email}</p>
               </div>
 
               {/* Avatar */}
               <div className="w-9 h-9 sm:w-10 sm:h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-medium">
-                {user.name
+                {displayUser.name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")

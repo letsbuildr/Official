@@ -1,20 +1,34 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useLogin } from "../../lib/api/hooks";
+import { useAuthContext } from "../../lib/api/auth-context";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // Can be username or email
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  
+  const { login } = useAuthContext();
+  const loginMutation = useLogin();
+  const router = useRouter();
 
   const togglePassword = () => setShowPassword(!showPassword);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
 
-    const loginData = { email, password };
-    console.log("Submitting login data:", loginData);
+    try {
+      await login({ identifier, password });
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Login failed. Please try again.";
+      setError(errorMessage);
+    }
   };
 
   return (
@@ -30,16 +44,16 @@ export default function LoginPage() {
         <form className="space-y-4 text-left" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full text-gray-950 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0077B6] outline-none"
-              required
-            />
+                          Email or Username
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="john@example.com or johndoe"
+                          value={identifier}
+                          onChange={(e) => setIdentifier(e.target.value)}
+                          className="w-full text-gray-950 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0077B6] outline-none"
+                          required
+                        />
           </div>
 
           <div className="relative">
@@ -64,22 +78,31 @@ export default function LoginPage() {
           </div>
 
           {/* ✅ Forgot Password */}
-          <div className="flex justify-end -mt-2 mb-2">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-[#0077B6] hover:underline"
-            >
-              Forgot Password?
-            </Link>
-          </div>
+                    <div className="flex justify-end -mt-2 mb-2">
+                      <Link
+                        href="/forgot-password"
+                        className="text-sm text-[#0077B6] hover:underline"
+                      >
+                        Forgot Password?
+                      </Link>
+                    </div>
+          
+                    {error && (
+                      <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded-lg">
+                        {error}
+                      </div>
+                    )}
 
-          <button
-            type="submit"
-            className="w-full bg-[#0077B6] text-white font-semibold py-2 rounded-lg hover:bg-[#005F91] transition"
-          >
-            Sign In
-          </button>
-        </form>
+                    {/* Toast notifications are handled globally */}
+          
+                    <button
+                      type="submit"
+                      disabled={loginMutation.isPending}
+                      className="w-full bg-[#0077B6] text-white font-semibold py-2 rounded-lg hover:bg-[#005F91] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                    </button>
+                  </form>
 
         <p className="text-sm text-gray-600 mt-6">
           Don’t have an account?{" "}
