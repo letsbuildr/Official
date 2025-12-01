@@ -128,12 +128,27 @@ exports.regenerateBookingOtp = catchAsync(async (req, res, next) => {
   if (booking.isVerified)
     return next(new AppError('This booking has already been verified', 400));
 
+  // Rate limiting
+  const now = Date.now();
+  if (
+    booking.lastOtpSentAt &&
+    now - booking.lastOtpSentAt.getTime() < 1 * 60 * 1000 //10 minutes
+  ) {
+    const remaining = Math.ceil(
+      (1 * 60 * 1000 - (now - booking.lastOtpSentAt.getTime())) / 1000
+    );
+    return next(
+      new AppError(`You can request a new OTP in ${remaining} seconds`, 429)
+    );
+  }
+
   // Generate new OTP
   const newOtp = Math.floor(100000 + Math.random() * 900000);
   const newOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
   booking.otp = newOtp;
   booking.otpExpires = newOtpExpires;
+  booking.lastOtpSentAt = new Date.now();
   await booking.save();
 
   const emailMessage = `A new verification code has been generated for your booking. Your new code is ${newOtp}. Valid for the next 10 minutes.\nIf you did not request this, please ignore this email`;

@@ -54,6 +54,7 @@ const bookingSchema = new mongoose.Schema({
   },
   otp: Number,
   otpExpires: Date,
+  lastOtpSentAt: Date,
   createdAt: {
     type: Date,
     default: Date.now,
