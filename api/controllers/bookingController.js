@@ -134,6 +134,7 @@ exports.regenerateBookingOtp = catchAsync(async (req, res, next) => {
 
   booking.otp = newOtp;
   booking.otpExpires = newOtpExpires;
+  await booking.save();
 
   const emailMessage = `A new verification code has been generated for your booking. Your new code is ${newOtp}. Valid for the next 10 minutes.\nIf you did not request this, please ignore this email`;
   try {
