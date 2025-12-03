@@ -2,17 +2,20 @@
 
 import { useState } from "react";
 import { Search, Filter, Eye, Trash2, UserCheck } from "lucide-react";
+import { useAllUsers, useDeleteUser } from "../../../lib/api/hooks";
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
+  username: string;
   role: "user" | "freelancer" | "admin";
   joinDate: string;
   status: "active" | "inactive";
   totalSpent: number;
   consultations: number;
   avatar: string;
+  photo: string;
 }
 
 export default function UserManagement() {
@@ -21,63 +24,22 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
 
-  const [users] = useState<User[]>([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "user",
-      joinDate: "2024-10-15",
-      status: "active",
-      totalSpent: 150000,
-      consultations: 3,
-      avatar: "JD"
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "freelancer",
-      joinDate: "2024-09-20",
-      status: "active",
-      totalSpent: 50000,
-      consultations: 5,
-      avatar: "JS"
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      email: "mike@example.com",
-      role: "admin",
-      joinDate: "2024-08-10",
-      status: "active",
-      totalSpent: 0,
-      consultations: 12,
-      avatar: "MJ"
-    },
-    {
-      id: 4,
-      name: "Sarah Wilson",
-      email: "sarah@example.com",
-      role: "user",
-      joinDate: "2024-11-01",
-      status: "active",
-      totalSpent: 75000,
-      consultations: 2,
-      avatar: "SW"
-    },
-    {
-      id: 5,
-      name: "David Brown",
-      email: "david@example.com",
-      role: "user",
-      joinDate: "2024-10-25",
-      status: "inactive",
-      totalSpent: 200000,
-      consultations: 4,
-      avatar: "DB"
-    }
-  ]);
+  const { data: usersResponse, isLoading, error } = useAllUsers();
+  const deleteUserMutation = useDeleteUser();
+
+  const users: User[] = usersResponse?.data?.data?.map((user) => ({
+    id: user._id || user.id, // Use _id as string for uniqueness
+    name: user.name,
+    email: user.email,
+    username: user.username,
+    role: user.role as "user" | "freelancer" | "admin",
+    joinDate: user.passwordChangedAt ? new Date(user.passwordChangedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    status: "active" as "active" | "inactive", // Assume active
+    totalSpent: 0, // API doesn't provide
+    consultations: user.serviceOrders?.length || 0,
+    avatar: user.name.split(" ").map(n => n[0]).join("").toUpperCase(),
+    photo: user.photo || 'default.jpg'
+  })) || [];
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -86,15 +48,19 @@ export default function UserManagement() {
     return matchesSearch && matchesRole;
   });
 
-  const handleRoleChange = (userId: number, newRole: string) => {
+  const handleRoleChange = (userId: string, newRole: string) => {
     console.log(`Changing user ${userId} role to ${newRole}`);
-    // Here you would typically make an API call
+    // TODO: Implement API call to update user role
+    // Example: apiClient.updateUserRole(userId, newRole)
   };
 
-  const handleDeleteUser = (userId: number) => {
+  const handleDeleteUser = async (userId: string) => {
     if (confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
-      console.log(`Deleting user ${userId}`);
-      // Here you would typically make an API call
+      try {
+        await deleteUserMutation.mutateAsync(userId);
+      } catch (error) {
+        // Error is handled by the mutation
+      }
     }
   };
 
@@ -110,6 +76,23 @@ export default function UserManagement() {
       default: return "bg-blue-100 text-blue-800";
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-2 text-gray-600">Loading users...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Error loading users: {error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -208,6 +191,7 @@ export default function UserManagement() {
                     <select
                       value={user.role}
                       onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                      disabled={true} // Temporarily disable until role update API is implemented
                       className={`text-xs font-medium px-2 py-1 rounded-full border-0 ${getRoleBadgeColor(user.role)}`}
                     >
                       <option value="user">User</option>
@@ -239,9 +223,10 @@ export default function UserManagement() {
                       </button>
                       <button
                         onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-600 hover:text-red-900"
+                        disabled={deleteUserMutation.isPending}
+                        className="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Delete
+                        {deleteUserMutation.isPending ? 'Deleting...' : 'Delete'}
                       </button>
                     </div>
                   </td>
@@ -288,42 +273,46 @@ export default function UserManagement() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600">Total Spent</p>
                   <p className="text-2xl font-semibold text-gray-900">₦{selectedUser.totalSpent.toLocaleString()}</p>
+                  <p className="text-xs text-gray-500">Data not available</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600">Consultations</p>
+                  <p className="text-sm text-gray-600">Service Orders</p>
                   <p className="text-2xl font-semibold text-gray-900">{selectedUser.consultations}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600">Member Since</p>
-                  <p className="text-2xl font-semibold text-gray-900">{new Date(selectedUser.joinDate).getFullYear()}</p>
+                  <p className="text-2xl font-semibold text-gray-900">{new Date(selectedUser.joinDate).toLocaleDateString()}</p>
                 </div>
               </div>
 
-              {/* Mock Dashboard Sections */}
+              {/* User Information */}
               <div className="space-y-4">
-                <h5 className="font-medium text-gray-900">Recent Transactions</h5>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-sm">Web Development Service</span>
-                    <span className="text-sm font-medium">₦150,000</span>
+                <h5 className="font-medium text-gray-900">Account Details</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="text-sm text-gray-600">Username</p>
+                    <p className="font-medium">{selectedUser.username}</p>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-sm">Data Analysis Service</span>
-                    <span className="text-sm font-medium">₦100,000</span>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="text-sm text-gray-600">Role</p>
+                    <p className="font-medium capitalize">{selectedUser.role}</p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="text-sm text-gray-600">Status</p>
+                    <p className="font-medium capitalize">{selectedUser.status}</p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="text-sm text-gray-600">Photo</p>
+                    <p className="font-medium">{selectedUser.photo}</p>
                   </div>
                 </div>
 
-                <h5 className="font-medium text-gray-900">Consultation History</h5>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-sm">Web Development Consultation</span>
-                    <span className="text-sm text-green-600">Completed</span>
+                {selectedUser.consultations > 0 && (
+                  <div>
+                    <h5 className="font-medium text-gray-900">Service Orders ({selectedUser.consultations})</h5>
+                    <p className="text-sm text-gray-600">This user has active service orders. Detailed transaction history is not available in this view.</p>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-sm">Business Analysis</span>
-                    <span className="text-sm text-orange-600">Scheduled</span>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

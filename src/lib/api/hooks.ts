@@ -1,12 +1,14 @@
 // React Query hooks for authentication
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { apiClient, LoginRequest, SignupRequest, ForgotPasswordRequest, ResetPasswordRequest, AuthResponse } from './client';
+import { apiClient, LoginRequest, SignupRequest, ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, Service } from './client';
 
 // Query keys for React Query
 export const queryKeys = {
   auth: ['auth'] as const,
   user: ['user'] as const,
+  users: ['users'] as const,
+  services: ['services'] as const,
 };
 
 // Custom hook for login
@@ -123,6 +125,121 @@ export const useAuth = () => {
 // Custom hook to get current user data
 export const useUser = () => {
   const queryClient = useQueryClient();
-  
+
   return queryClient.getQueryData(queryKeys.user);
+};
+
+// Custom hook to get all users
+export const useAllUsers = () => {
+  return useQuery({
+    queryKey: queryKeys.users,
+    queryFn: () => apiClient.getAllUsers(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Custom hook to delete a user
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: string) => apiClient.deleteUser(userId),
+    onSuccess: () => {
+      // Invalidate and refetch users
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      toast.success('User deleted successfully!');
+    },
+    onError: (error) => {
+      console.error('Delete user failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Delete user failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to get all services
+export const useAllServices = () => {
+  return useQuery({
+    queryKey: queryKeys.services,
+    queryFn: () => apiClient.getAllServices(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Custom hook to get a service by slug
+export const useServiceBySlug = (slug: string) => {
+  return useQuery({
+    queryKey: [...queryKeys.services, 'slug', slug],
+    queryFn: () => apiClient.getServiceBySlug(slug),
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Custom hook to get a service by ID
+export const useServiceById = (id: string) => {
+  return useQuery({
+    queryKey: [...queryKeys.services, 'id', id],
+    queryFn: () => apiClient.getServiceById(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Custom hook to create a service
+export const useCreateService = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (serviceData: Partial<Service>) => apiClient.createService(serviceData),
+    onSuccess: () => {
+      // Invalidate and refetch services
+      queryClient.invalidateQueries({ queryKey: queryKeys.services });
+      toast.success('Service created successfully!');
+    },
+    onError: (error) => {
+      console.error('Create service failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Create service failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to update a service
+export const useUpdateService = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<Service> }) =>
+      apiClient.updateService(id, updates),
+    onSuccess: () => {
+      // Invalidate and refetch services
+      queryClient.invalidateQueries({ queryKey: queryKeys.services });
+      toast.success('Service updated successfully!');
+    },
+    onError: (error) => {
+      console.error('Update service failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Update service failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to delete a service
+export const useDeleteService = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => apiClient.deleteService(id),
+    onSuccess: () => {
+      // Invalidate and refetch services
+      queryClient.invalidateQueries({ queryKey: queryKeys.services });
+      toast.success('Service deleted successfully!');
+    },
+    onError: (error) => {
+      console.error('Delete service failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Delete service failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
 };

@@ -9,15 +9,12 @@ import ServiceManagement from "./components/ServiceManagement";
 import ScheduleManagement from "./components/ScheduleManagement";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import PricingAdjustment from "./components/PricingAdjustment";
+import { useAuthContext } from "../../lib/api/auth-context";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
 
-  const [admin] = useState({
-    name: "Admin User",
-    email: "admin@example.com",
-    role: "admin"
-  });
+  const { user: admin } = useAuthContext();
 
   const tabs = [
     { id: "overview", label: "Overview", icon: BarChart3 },
@@ -30,7 +27,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminHeader admin={admin} />
+      <AdminHeader admin={admin ? { name: admin.name, email: admin.email, role: admin.role } : { name: "Admin", email: "", role: "admin" }} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tab Navigation */}
