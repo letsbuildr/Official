@@ -8,6 +8,22 @@ export interface ApiResponse<T> {
   status?: string;
 }
 
+export interface ServicesResponse {
+  status: string;
+  results: number;
+  data: {
+    data: Service[];
+  };
+}
+
+export interface ApiResponseWithServices {
+  status: string;
+  results: number;
+  data: {
+    data: Service[];
+  };
+}
+
 export interface AuthResponse {
   token: string;
   user: {
@@ -21,6 +37,8 @@ export interface AuthResponse {
     activities?: unknown[];
     progress?: number;
     __v?: number;
+    serviceOrders?: unknown[];
+    passwordChangedAt?: string;
   };
 }
 
@@ -44,6 +62,73 @@ export interface ForgotPasswordRequest {
 export interface ResetPasswordRequest {
   password: string;
   passwordConfirm: string;
+}
+
+export interface Service {
+  _id: string;
+  name: string;
+  summary: string;
+  description: string;
+  slug: string;
+  heroImage: string[];
+  isRecommended: boolean;
+  isMostPopular: boolean;
+  heroButtons: {
+    primary: string;
+    secondary: string;
+  };
+  whyWork: {
+    description: string;
+    reasons: Array<{
+      title: string;
+      description: string;
+      image: string;
+      _id: string;
+    }>;
+  };
+  process: {
+    title: string;
+    description: string;
+    steps: Array<{
+      title: string;
+      description: string;
+      image: string;
+      _id: string;
+    }>;
+  };
+  recentProjects: {
+    subtitle: string;
+    projects: Array<{
+      title: string;
+      industry: string;
+      image: string;
+      _id: string;
+    }>;
+  };
+  pricingPackage: {
+    title: string;
+    subtitle: string;
+    pricingPlans: Array<{
+      price: {
+        ngn: number;
+      };
+      duration: {
+        minDays: number;
+        maxDays: number;
+      };
+      planTitle: string;
+      benefit: string[];
+      _id: string;
+    }>;
+  };
+  readySection: {
+    readyButton: {
+      primary: string;
+      secondary: string;
+    };
+    title: string;
+    description: string;
+  };
 }
 
 class ApiClient {
@@ -79,6 +164,15 @@ class ApiClient {
       const errorData = await response.json().catch(() => ({}));
       let errorMessage = errorData.message || response.statusText;
 
+      // Log detailed error information for debugging
+      console.error('API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        errorData,
+        originalMessage: errorMessage
+      });
+
       // Provide specific messages for common HTTP status codes
       if (response.status === 401) {
         errorMessage = errorMessage || 'Invalid credentials. Please check your username/email and password.';
@@ -89,7 +183,7 @@ class ApiClient {
       } else if (response.status === 404) {
         errorMessage = errorMessage || 'Resource not found.';
       } else if (response.status === 500) {
-        errorMessage = errorMessage || 'Internal server error. Please try again later.';
+        errorMessage = `Internal server error. Please try again later.${errorData.message ? ` Details: ${errorData.message}` : ''}`;
       } else {
         errorMessage = errorMessage || `HTTP ${response.status}: ${response.statusText || 'Unknown error'}`;
       }
@@ -144,6 +238,56 @@ class ApiClient {
   async getCurrentUser(): Promise<ApiResponse<AuthResponse['user']>> {
     return this.request(`/users/me`, {
       method: 'GET',
+    });
+  }
+
+  async getAllUsers(): Promise<{ status: string; results: number; data: { data: AuthResponse['user'][] } }> {
+    return this.request('/users/', {
+      method: 'GET',
+    });
+  }
+
+  async deleteUser(userId: string): Promise<ApiResponse<unknown>> {
+    return this.request(`/users/${userId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getAllServices(): Promise<ApiResponse<Service[]>> {
+    return this.request('/services/', {
+      method: 'GET',
+    });
+  }
+
+  async getServiceBySlug(slug: string): Promise<ApiResponse<Service>> {
+    return this.request(`/services/slug/${slug}`, {
+      method: 'GET',
+    });
+  }
+
+  async getServiceById(id: string): Promise<ApiResponse<Service>> {
+    return this.request(`/services/${id}`, {
+      method: 'GET',
+    });
+  }
+
+  async createService(serviceData: Partial<Service>): Promise<ApiResponse<Service>> {
+    return this.request('/services/', {
+      method: 'POST',
+      body: JSON.stringify(serviceData),
+    });
+  }
+
+  async updateService(id: string, updates: Partial<Service>): Promise<ApiResponse<Service>> {
+    return this.request(`/services/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async deleteService(id: string): Promise<ApiResponse<unknown>> {
+    return this.request(`/services/${id}`, {
+      method: 'DELETE',
     });
   }
 

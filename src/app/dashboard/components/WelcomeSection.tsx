@@ -3,10 +3,7 @@
 import { User, Wallet, TrendingUp } from "lucide-react";
 
 interface WelcomeSectionProps {
-  user: {
-    name: string;
-    joinDate: string;
-  };
+  user: { name: string };
   totalSpent: number;
   activeProjects: number;
 }
@@ -20,14 +17,6 @@ export default function WelcomeSection({ user, totalSpent, activeProjects }: Wel
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   return (
     <div className="bg-linear-to-r from-[#0077B6] to-[#0B1E36] rounded-2xl p-6 sm:p-8 mb-8 text-white">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -39,7 +28,7 @@ export default function WelcomeSection({ user, totalSpent, activeProjects }: Wel
           </h2>
 
           <p className="text-blue-100 text-sm sm:text-base md:text-lg mb-4">
-            Member since {formatDate(user.joinDate)}. Let&apos;s check on your projects and payments.
+            Let&apos;s check on your projects and payments.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 text-xs sm:text-sm md:text-base">

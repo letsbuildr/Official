@@ -1,73 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Edit, Trash2, Eye } from "lucide-react";
-
-interface Service {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  category: string;
-  status: "active" | "inactive";
-  sales: number;
-  rating: number;
-  image?: string;
-  tags: string[];
-  paymentPlans: string[];
-}
+import { Plus, Edit, Trash2 } from "lucide-react";
+import { useAllServices, useUpdateService, useDeleteService } from "@/lib/api/hooks";
+import { Service, ApiResponseWithServices } from "@/lib/api/client";
 
 export default function ServiceManagement() {
-  const [services] = useState<Service[]>([
-    {
-      id: 1,
-      title: "Web Development Service",
-      description: "Complete web development solution from design to deployment",
-      price: 350000,
-      category: "Development",
-      status: "active",
-      sales: 45,
-      rating: 4.8,
-      tags: ["React", "Node.js", "MongoDB"],
-      paymentPlans: ["Full Payment", "50/50 Split", "Monthly"]
-    },
-    {
-      id: 2,
-      title: "Data Analysis Service",
-      description: "Professional data analysis and business intelligence",
-      price: 150000,
-      category: "Analytics",
-      status: "active",
-      sales: 32,
-      rating: 4.6,
-      tags: ["Python", "Tableau", "SQL"],
-      paymentPlans: ["Full Payment", "Monthly"]
-    },
-    {
-      id: 3,
-      title: "Automation Setup",
-      description: "Business process automation and workflow optimization",
-      price: 200000,
-      category: "Automation",
-      status: "active",
-      sales: 28,
-      rating: 4.7,
-      tags: ["Zapier", "API", "Workflows"],
-      paymentPlans: ["Full Payment", "50/50 Split"]
-    },
-    {
-      id: 4,
-      title: "UI/UX Design",
-      description: "User interface and experience design services",
-      price: 120000,
-      category: "Design",
-      status: "inactive",
-      sales: 19,
-      rating: 4.9,
-      tags: ["Figma", "Adobe XD", "Prototyping"],
-      paymentPlans: ["Full Payment"]
-    }
-  ]);
+  const { data: servicesResponse } = useAllServices();
+  const updateServiceMutation = useUpdateService();
+  const deleteServiceMutation = useDeleteService();
+
+  const services: Service[] = 
+    servicesResponse && 'results' in servicesResponse && Array.isArray(servicesResponse.data)
+      ? servicesResponse.data
+      : [];
 
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -75,19 +21,23 @@ export default function ServiceManagement() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const categories = ["all", "Development", "Analytics", "Automation", "Design"];
-
   const filteredServices = services.filter(service => {
-    const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || service.category === categoryFilter;
-    const matchesStatus = statusFilter === "all" || service.status === statusFilter;
-    return matchesSearch && matchesCategory && matchesStatus;
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || service.slug === categoryFilter;
+    return matchesSearch && matchesCategory;
   });
 
-  const handleToggleStatus = (serviceId: number) => {
+  const handleToggleStatus = (serviceId: string) => {
     console.log(`Toggling service ${serviceId} status`);
-    // Here you would typically make an API call
+    // For now, we'll implement this as a simple toggle of isRecommended
+    const service = services.find(s => s._id === serviceId);
+    if (service) {
+      updateServiceMutation.mutate({
+        id: serviceId,
+        updates: { isRecommended: !service.isRecommended }
+      });
+    }
   };
 
   const handleEditService = (service: Service) => {
@@ -100,10 +50,9 @@ export default function ServiceManagement() {
     setShowModal(true);
   };
 
-  const handleDeleteService = (serviceId: number) => {
+  const handleDeleteService = (serviceId: string) => {
     if (confirm("Are you sure you want to delete this service? This action cannot be undone.")) {
-      console.log(`Deleting service ${serviceId}`);
-      // Here you would typically make an API call
+      deleteServiceMutation.mutate(serviceId);
     }
   };
 
@@ -155,11 +104,10 @@ export default function ServiceManagement() {
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </option>
-              ))}
+              <option value="all">All Services</option>
+              <option value="web-development">Web Development</option>
+              <option value="data-analysis">Data Analysis</option>
+              <option value="automation-services">Automation Services</option>
             </select>
           </div>
 
@@ -184,62 +132,60 @@ export default function ServiceManagement() {
       {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredServices.map((service) => (
-          <div key={service.id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+          <div key={service._id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
             <div className="p-6">
               {/* Service Header */}
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
-                  <p className="text-sm text-gray-500">{service.category}</p>
+                  <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
+                  <p className="text-sm text-gray-500">{service.slug}</p>
                 </div>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                  service.status === "active" 
-                    ? "bg-green-100 text-green-800" 
-                    : "bg-red-100 text-red-800"
-                }`}>
-                  {service.status}
-                </span>
+                <div className="flex gap-1">
+                  {service.isRecommended && (
+                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                      Recommended
+                    </span>
+                  )}
+                  {service.isMostPopular && (
+                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                      Popular
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Description */}
               <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                {service.description}
+                {service.summary}
               </p>
 
-              {/* Price and Stats */}
+              {/* Pricing Info */}
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Price:</span>
-                  <span className="font-medium">₦{service.price.toLocaleString()}</span>
+                  <span className="text-gray-500">Starting Price:</span>
+                  <span className="font-medium">
+                    ₦{service.pricingPackage.pricingPlans[0]?.price.ngn.toLocaleString() || 'N/A'}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Sales:</span>
-                  <span className="font-medium">{service.sales}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Rating:</span>
-                  <div className="flex items-center">
-                    <span className="font-medium">{service.rating}</span>
-                    <svg className="w-4 h-4 text-yellow-400 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  </div>
+                  <span className="text-gray-500">Plans:</span>
+                  <span className="font-medium">{service.pricingPackage.pricingPlans.length}</span>
                 </div>
               </div>
 
-              {/* Tags */}
+              {/* Features */}
               <div className="flex flex-wrap gap-1 mb-4">
-                {service.tags.slice(0, 3).map((tag, index) => (
+                {service.whyWork.reasons.slice(0, 3).map((reason, index) => (
                   <span
                     key={index}
                     className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded"
                   >
-                    {tag}
+                    {reason.title}
                   </span>
                 ))}
-                {service.tags.length > 3 && (
+                {service.whyWork.reasons.length > 3 && (
                   <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
-                    +{service.tags.length - 3} more
+                    +{service.whyWork.reasons.length - 3} more
                   </span>
                 )}
               </div>
@@ -254,20 +200,21 @@ export default function ServiceManagement() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleToggleStatus(service.id)}
+                  onClick={() => handleToggleStatus(service._id)}
                   className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
-                    service.status === "active"
+                    service.isRecommended
                       ? "bg-red-50 hover:bg-red-100 text-red-700"
                       : "bg-green-50 hover:bg-green-100 text-green-700"
                   }`}
                 >
-                  {service.status === "active" ? "Deactivate" : "Activate"}
+                  {service.isRecommended ? "Unrecommend" : "Recommend"}
                 </button>
                 <button
-                  onClick={() => handleDeleteService(service.id)}
-                  className="bg-gray-50 hover:bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm font-medium transition-colors"
+                  onClick={() => handleDeleteService(service._id)}
+                  disabled={deleteServiceMutation.isPending}
+                  className="bg-gray-50 hover:bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  {deleteServiceMutation.isPending ? 'Deleting...' : <Trash2 className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -294,15 +241,28 @@ export default function ServiceManagement() {
             </div>
 
             <form className="space-y-4">
-              {/* Service Title */}
+              {/* Service Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Service Title
+                  Service Name
                 </label>
                 <input
                   type="text"
-                  defaultValue={editingService?.title || ""}
-                  placeholder="Enter service title"
+                  defaultValue={editingService?.name || ""}
+                  placeholder="Enter service name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Summary */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Summary
+                </label>
+                <input
+                  type="text"
+                  defaultValue={editingService?.summary || ""}
+                  placeholder="Brief summary of the service"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -315,65 +275,42 @@ export default function ServiceManagement() {
                 <textarea
                   rows={3}
                   defaultValue={editingService?.description || ""}
-                  placeholder="Enter service description"
+                  placeholder="Detailed service description"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
-              {/* Price and Category */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price (₦)
-                  </label>
+              {/* Slug */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  defaultValue={editingService?.slug || ""}
+                  placeholder="service-slug-name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Flags */}
+              <div className="flex gap-4">
+                <label className="flex items-center">
                   <input
-                    type="number"
-                    defaultValue={editingService?.price || ""}
-                    placeholder="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type="checkbox"
+                    defaultChecked={editingService?.isRecommended || false}
+                    className="mr-2"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <select
-                    defaultValue={editingService?.category || ""}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="Development">Development</option>
-                    <option value="Analytics">Analytics</option>
-                    <option value="Automation">Automation</option>
-                    <option value="Design">Design</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tags (comma separated)
+                  Recommended
                 </label>
-                <input
-                  type="text"
-                  defaultValue={editingService?.tags.join(", ") || ""}
-                  placeholder="React, Node.js, MongoDB"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Payment Plans */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Payment Plans (comma separated)
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    defaultChecked={editingService?.isMostPopular || false}
+                    className="mr-2"
+                  />
+                  Most Popular
                 </label>
-                <input
-                  type="text"
-                  defaultValue={editingService?.paymentPlans.join(", ") || ""}
-                  placeholder="Full Payment, 50/50 Split, Monthly"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
               </div>
 
               {/* Actions */}
