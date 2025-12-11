@@ -8,9 +8,8 @@ import { useAuthContext } from "../../lib/api/auth-context";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [identifier, setIdentifier] = useState(""); // Can be username or email
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   
   const { login } = useAuthContext();
   const loginMutation = useLogin();
@@ -20,14 +19,12 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
 
     try {
       await login({ identifier, password });
       router.push("/dashboard");
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Login failed. Please try again.";
-      setError(errorMessage);
+      console.log(err)
     }
   };
 
@@ -86,12 +83,6 @@ export default function LoginPage() {
                         Forgot Password?
                       </Link>
                     </div>
-          
-                    {error && (
-                      <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded-lg">
-                        {error}
-                      </div>
-                    )}
 
                     {/* Toast notifications are handled globally */}
           

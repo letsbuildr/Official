@@ -1,65 +1,102 @@
 "use client";
 
-import { useState } from "react";
-import { Users, Calendar, DollarSign, CheckCircle, Star, Settings } from "lucide-react";
+import { Users, Calendar, DollarSign, CheckCircle, Star, Settings, CreditCard, Clock } from "lucide-react";
+import { useAdminOverview } from "../../../lib/api/hooks";
 
 export default function AdminOverview() {
-  const [stats] = useState({
-    totalUsers: 1247,
-    totalServices: 24,
-    totalConsultations: 342,
-    totalRevenue: 2750000,
-    activeUsers: 423,
-    completedConsultations: 287,
-    pendingConsultations: 55,
-    newUsersThisMonth: 89
-  });
+  const { data: overviewData, isLoading, error } = useAdminOverview();
 
-  const recentActivities = [
-    {
-      id: 1,
-      type: "user_registered",
-      message: "New user John Doe registered",
-      time: "2 hours ago",
-      icon: Users
-    },
-    {
-      id: 2,
-      type: "consultation_booked",
-      message: "New consultation booked for Web Development",
-      time: "4 hours ago",
-      icon: Calendar
-    },
-    {
-      id: 3,
-      type: "service_purchased",
-      message: "Data Analysis service purchased by Jane Smith",
-      time: "6 hours ago",
-      icon: DollarSign
-    },
-    {
-      id: 4,
-      type: "consultation_completed",
-      message: "Consultation completed with Mike Johnson",
-      time: "8 hours ago",
-      icon: CheckCircle
-    },
-    {
-      id: 5,
-      type: "user_upgraded",
-      message: "User upgraded to Freelancer role",
-      time: "1 day ago",
-      icon: Star
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
+              <div className="flex items-center">
+                <div className="p-3 bg-gray-200 rounded-lg w-12 h-12"></div>
+                <div className="ml-4 flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-6 bg-gray-200 rounded w-1/2 mb-1"></div>
+                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-lg font-medium text-red-800">Error Loading Overview</h3>
+          <p className="text-red-600 mt-1">
+            {error instanceof Error ? error.message : 'Failed to load admin overview data'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!overviewData?.data) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-8">
+          <p className="text-gray-500">No overview data available</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { stats, activityLog, topServices } = overviewData.data;
+
+  // Helper function to get activity icon and message
+  const getActivityInfo = (type: string, user: string) => {
+    switch (type) {
+      case 'payment-completed':
+        return {
+          icon: CheckCircle,
+          message: `${user} completed a payment`,
+          color: 'text-green-600'
+        };
+      case 'payment-pending':
+        return {
+          icon: Clock,
+          message: `${user} has a pending payment`,
+          color: 'text-orange-600'
+        };
+      case 'consultation-booked':
+        return {
+          icon: Calendar,
+          message: `${user} booked a consultation`,
+          color: 'text-blue-600'
+        };
+      default:
+        return {
+          icon: Users,
+          message: `${user} performed ${type}`,
+          color: 'text-gray-600'
+        };
     }
-  ];
+  };
 
-  const topServices = [
-    { name: "Web Development", sales: 45, revenue: 1575000 },
-    { name: "Data Analysis", sales: 32, revenue: 800000 },
-    { name: "Automation Setup", sales: 28, revenue: 560000 },
-    { name: "UI/UX Design", sales: 19, revenue: 380000 },
-    { name: "Mobile App Development", sales: 15, revenue: 750000 }
-  ];
+  // Helper function to format time ago
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  };
 
   return (
     <div className="space-y-8">
@@ -67,7 +104,7 @@ export default function AdminOverview() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Platform Overview</h2>
         <p className="text-gray-600 mt-1">
-          Monitor your platform&apos;s performance and key metrics
+          Monitor your platform's performance and key metrics
         </p>
       </div>
 
@@ -96,12 +133,12 @@ export default function AdminOverview() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Services</p>
               <p className="text-2xl font-semibold text-gray-900">{stats.totalServices}</p>
-              <p className="text-sm text-blue-600">{stats.activeUsers} active users</p>
+              <p className="text-sm text-blue-600">{stats.activeServiceUsers} active users</p>
             </div>
           </div>
         </div>
 
-        {/* Total Consultations */}
+        {/* Scheduled Consultations */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-3 bg-purple-100 rounded-lg">
@@ -109,8 +146,8 @@ export default function AdminOverview() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Consultations</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalConsultations}</p>
-              <p className="text-sm text-orange-600">{stats.pendingConsultations} pending</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats.scheduledConsultations}</p>
+              <p className="text-sm text-orange-600">scheduled</p>
             </div>
           </div>
         </div>
@@ -124,7 +161,7 @@ export default function AdminOverview() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Revenue</p>
               <p className="text-2xl font-semibold text-gray-900">₦{stats.totalRevenue.toLocaleString()}</p>
-              <p className="text-sm text-green-600">{stats.completedConsultations} completed</p>
+              <p className="text-sm text-green-600">lifetime</p>
             </div>
           </div>
         </div>
@@ -140,33 +177,38 @@ export default function AdminOverview() {
           <div className="p-6">
             <div className="flow-root">
               <ul className="-mb-8">
-                {recentActivities.map((activity, activityIdx) => (
-                  <li key={activity.id}>
-                    <div className="relative pb-8">
-                      {activityIdx !== recentActivities.length - 1 ? (
-                        <span
-                          className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
-                          aria-hidden="true"
-                        />
-                      ) : null}
-                      <div className="relative flex space-x-3">
-                        <div>
-                          <span className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
-                            <activity.icon className="w-4 h-4 text-gray-600" />
-                          </span>
-                        </div>
-                        <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                {activityLog.slice(0, 10).map((activity, activityIdx) => {
+                  const activityInfo = getActivityInfo(activity.type, activity.user);
+                  const IconComponent = activityInfo.icon;
+                  
+                  return (
+                    <li key={activityIdx}>
+                      <div className="relative pb-8">
+                        {activityIdx !== Math.min(activityLog.length - 1, 9) ? (
+                          <span
+                            className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
+                            aria-hidden="true"
+                          />
+                        ) : null}
+                        <div className="relative flex space-x-3">
                           <div>
-                            <p className="text-sm text-gray-900">{activity.message}</p>
+                            <span className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
+                              <IconComponent className={`w-4 h-4 ${activityInfo.color}`} />
+                            </span>
                           </div>
-                          <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                            {activity.time}
+                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                            <div>
+                              <p className="text-sm text-gray-900">{activityInfo.message}</p>
+                            </div>
+                            <div className="text-right text-sm whitespace-nowrap text-gray-500">
+                              {getTimeAgo(activity.createdAt)}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
@@ -179,27 +221,36 @@ export default function AdminOverview() {
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {topServices.map((service, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-900">{service.name}</p>
-                      <p className="text-sm text-gray-500">{service.sales} sales</p>
-                    </div>
-                    <div className="mt-2">
-                      <div className="bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-blue-600 h-2 rounded-full"
-                          style={{ width: `${(service.sales / 45) * 100}%` }}
-                        />
+              {topServices.length > 0 ? (
+                topServices.map((service, index) => {
+                  const maxSales = Math.max(...topServices.map(s => s.sales));
+                  const percentage = (service.sales / maxSales) * 100;
+                  
+                  return (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-gray-900">Service {service._id._id.slice(-6)}</p>
+                          <p className="text-sm text-gray-500">{service.sales} sales</p>
+                        </div>
+                        <div className="mt-2">
+                          <div className="bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-blue-600 h-2 rounded-full"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Revenue: ₦{service.revenue.toLocaleString()}
+                        </p>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Revenue: ₦{service.revenue.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                  );
+                })
+              ) : (
+                <p className="text-gray-500 text-center py-4">No service data available</p>
+              )}
             </div>
           </div>
         </div>

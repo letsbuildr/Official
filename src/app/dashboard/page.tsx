@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import DashboardHeader from "./components/DashboardHeader";
 import WelcomeSection from "./components/WelcomeSection";
 import QuickStats from "./components/QuickStats";
@@ -31,6 +32,8 @@ interface Consultation {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
+
   const [user] = useState({
     name: "Unknown User",
     email: "unknown@gmail.com",
@@ -51,6 +54,13 @@ export default function Dashboard() {
       }
     }
   }, [isAuthenticated, authUser, reduxUser, loading, fetchUserDetails]);
+
+  // Redirect admin users to admin dashboard
+  useEffect(() => {
+    if (isAuthenticated && authUser?.role === 'admin') {
+      router.push('/admin');
+    }
+  }, [isAuthenticated, authUser?.role, router]);
 
  const [transactions] = useState<Transaction[]>([
      {
@@ -159,7 +169,7 @@ export default function Dashboard() {
      
      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
        <WelcomeSection
-         user={{ name: user.name, joinDate: user.joinDate }}
+         user={{ name: authUser?.name || user.name }}
          totalSpent={totalSpent}
          activeProjects={activeProjects}
        />

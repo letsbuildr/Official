@@ -185,8 +185,93 @@ export default function WebDevSection() {
     );
   };
 
+  // Structured Data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Bomcel Digital",
+    "description": "Professional web development, automation services, and data analysis solutions for businesses and students.",
+    "url": "https://bomceldigital.com",
+    "logo": "https://bomceldigital.com/images/logo.png",
+    "image": "https://bomceldigital.com/images/hero-bg.png",
+    "telephone": "+234-xxx-xxxx",
+    "email": "info@bomceldigital.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "NG",
+      "addressLocality": "Lagos"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "6.5244",
+      "longitude": "3.3792"
+    },
+    "openingHours": "Mo-Fr 09:00-18:00",
+    "serviceArea": {
+      "@type": "GeoCircle",
+      "geoMidpoint": {
+        "@type": "GeoCoordinates",
+        "latitude": "6.5244",
+        "longitude": "3.3792"
+      },
+      "geoRadius": "100000"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Digital Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Web Development",
+            "description": "Professional websites built for growth. From landing pages to e-commerce stores"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Automation Services",
+            "description": "Streamline your business operations with custom automation solutions"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Data Analysis for Students",
+            "description": "Final year project help - analysis, models & presentation support"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Data Analysis for Business",
+            "description": "From dashboards to predictive models, turn data into decisions"
+          }
+        }
+      ]
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "100",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "priceRange": "₦30,000 - ₦200,000"
+  };
+
   return (
     <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       {/* Hero Section */}
       <section className="relative w-full flex items-center justify-center pt-20 md:pt-40 pb-16 md:pb-40 text-white">
         <Image
