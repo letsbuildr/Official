@@ -39,8 +39,99 @@ import Footer from "./components/Footer";
 import { Providers } from "../components/Providers";
 
 export const metadata = {
-  title: "My Landing Page",
-  description: "Modern landing page built with Next.js + Tailwind",
+  title: {
+    default: "Bomcel Digital - Professional Web Development & Data Analysis Services",
+    template: "%s | Bomcel Digital"
+  },
+  description: "Transform your business with professional web development, automation services, and data analysis solutions. Trusted by 100+ clients with 24hr response time and 95% satisfaction rate.",
+  keywords: [
+    "web development",
+    "website design",
+    "business automation",
+    "data analysis",
+    "student projects",
+    "e-commerce development",
+    "digital solutions",
+    "Nigerian web developers",
+    "professional web services",
+    "business dashboards",
+    "predictive analytics",
+    "workflow automation"
+  ],
+  authors: [{ name: "Bomcel Digital Team" }],
+  creator: "Bomcel Digital",
+  publisher: "Bomcel Digital",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://bomceldigital.com"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://bomceldigital.com",
+    title: "Bomcel Digital - Professional Web Development & Data Analysis Services",
+    description: "Transform your business with professional web development, automation services, and data analysis solutions. Trusted by 100+ clients with 24hr response time and 95% satisfaction rate.",
+    siteName: "Bomcel Digital",
+    images: [
+      {
+        url: "/images/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Bomcel Digital - Professional Web Development & Data Analysis Services",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bomcel Digital - Professional Web Development & Data Analysis Services",
+    description: "Transform your business with professional web development, automation services, and data analysis solutions. Trusted by 100+ clients.",
+    creator: "@bomceldigital",
+    images: ["/images/twitter-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code",
+    yandex: "your-yandex-verification-code",
+    yahoo: "your-yahoo-verification-code",
+  },
+  category: "technology",
+  classification: "Web Development, Data Analysis, Business Automation",
+  referrer: "origin-when-cross-origin",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B1E36" },
+  ],
+  colorScheme: "light dark",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Bomcel Digital",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-title": "Bomcel Digital",
+    "application-name": "Bomcel Digital",
+    "msapplication-TileColor": "#0B1E36",
+    "msapplication-config": "/browserconfig.xml",
+  },
 };
 
 export default function RootLayout({

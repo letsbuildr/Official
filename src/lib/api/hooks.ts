@@ -9,6 +9,7 @@ export const queryKeys = {
   user: ['user'] as const,
   users: ['users'] as const,
   services: ['services'] as const,
+  adminOverview: ['adminOverview'] as const,
 };
 
 // Custom hook for login
@@ -241,5 +242,15 @@ export const useDeleteService = () => {
       const errorMessage = error instanceof Error ? error.message : 'Delete service failed. Please try again.';
       toast.error(errorMessage);
     },
+  });
+};
+
+// Custom hook to get admin overview data
+export const useAdminOverview = () => {
+  return useQuery({
+    queryKey: queryKeys.adminOverview,
+    queryFn: () => apiClient.getAdminOverview(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
   });
 };

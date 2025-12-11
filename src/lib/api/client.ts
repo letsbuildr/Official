@@ -1,6 +1,12 @@
 // API client configuration
 const BASE_URL = 'https://official-rq05.onrender.com/api/v1';
 
+interface ErrorResponse {
+  message?: string;
+  error?: string;
+  rawResponse?: string;
+}
+
 export interface ApiResponse<T> {
   token: string;
   data?: T;
@@ -161,31 +167,51 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      let errorMessage = errorData.message || response.statusText;
+      let errorData: ErrorResponse = {};
+      let errorMessage = '';
+      let responseText = '';
+
+      try {
+        // Try to get the response text first
+        responseText = await response.text();
+        console.log('Raw response text:', responseText);
+        
+        // Try to parse as JSON
+        if (responseText) {
+          errorData = JSON.parse(responseText);
+          errorMessage = errorData.message || errorData.error || '';
+        }
+      } catch (parseError) {
+        // If JSON parsing fails, use the raw text or status text
+        errorData = { rawResponse: responseText };
+        errorMessage = responseText || response.statusText;
+        console.warn('Failed to parse error response as JSON:', parseError);
+      }
 
       // Log detailed error information for debugging
-      console.error('API Error:', {
+      console.error('API Error Details:', {
         status: response.status,
         statusText: response.statusText,
         url: response.url,
+        endpoint,
+        method: options.method || 'GET',
         errorData,
-        originalMessage: errorMessage
+        errorMessage,
+        responseText,
+        headers: Object.fromEntries(response.headers.entries())
       });
 
       // Provide specific messages for common HTTP status codes
       if (response.status === 401) {
         errorMessage = errorMessage || 'Invalid credentials. Please check your username/email and password.';
-      } else if (response.status === 400) {
-        errorMessage = errorMessage || 'Bad request. Please check your input data.';
       } else if (response.status === 403) {
         errorMessage = errorMessage || 'Access forbidden. You do not have permission to perform this action.';
       } else if (response.status === 404) {
-        errorMessage = errorMessage || 'Resource not found.';
+        errorMessage = errorMessage || `Endpoint not found: ${endpoint}`;
       } else if (response.status === 500) {
-        errorMessage = `Internal server error. Please try again later.${errorData.message ? ` Details: ${errorData.message}` : ''}`;
-      } else {
-        errorMessage = errorMessage || `HTTP ${response.status}: ${response.statusText || 'Unknown error'}`;
+        errorMessage = errorMessage || `Internal server error. Please try again later.`;
+      } else if (!errorMessage) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText || 'Unknown error'}`;
       }
 
       throw new Error(errorMessage);
@@ -289,6 +315,70 @@ class ApiClient {
     return this.request(`/services/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  async getAdminOverview(): Promise<{
+    status: string;
+    data: {
+      stats: {
+        totalUsers: number;
+        newUsersThisMonth: number;
+        totalServices: number;
+        activeServiceUsers: number;
+        scheduledConsultations: number;
+        totalRevenue: number;
+      };
+      activityLog: Array<{
+        user: string;
+        type: string;
+        createdAt: string;
+      }>;
+      topServices: Array<{
+        _id: {
+          _id: string;
+        };
+        revenue: number;
+        sales: number;
+      }>;
+    };
+  }> {
+    console.log('Fetching admin overview from:', `${this.baseURL}/admin/overview`);
+    console.log('Current auth token:', this.getToken() ? 'Present' : 'Missing');
+    
+    try {
+      const result = await this.request('/admin/overview', {
+        method: 'GET',
+      }) as {
+        status: string;
+        data: {
+          stats: {
+            totalUsers: number;
+            newUsersThisMonth: number;
+            totalServices: number;
+            activeServiceUsers: number;
+            scheduledConsultations: number;
+            totalRevenue: number;
+          };
+          activityLog: Array<{
+            user: string;
+            type: string;
+            createdAt: string;
+          }>;
+          topServices: Array<{
+            _id: {
+              _id: string;
+            };
+            revenue: number;
+            sales: number;
+          }>;
+        };
+      };
+      console.log('Admin overview fetch successful:', result);
+      return result;
+    } catch (error) {
+      console.error('Admin overview fetch failed:', error);
+      throw error;
+    }
   }
 
   // Token management
