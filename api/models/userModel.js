@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const { permission } = require('process');
 
 // name, email, photo, password, passwordConfirm
 const userSchema = new mongoose.Schema(
@@ -51,6 +52,11 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
+    adminProfile: {
+      permissions: [String],
+      lastLoggedIn: Date,
+    },
+
     password: {
       type: String,
       required: [true, 'Please provide a password'],
@@ -75,6 +81,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
       select: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   {
@@ -143,6 +153,7 @@ userSchema.post('save', function (error, doc, next) {
 
 userSchema.pre(/^find/, function (next) {
   // this points to the current query
+  if (this.getOptions().bypassActive) return next();
   this.find({ active: { $ne: false } });
   next();
 });

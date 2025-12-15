@@ -12,18 +12,33 @@ const serviceOrderSchema = new mongoose.Schema(
       ref: 'Service',
       required: true,
     },
+    planType: {
+      type: String,
+      required: [true, 'Service order must have a plan type'],
+    },
+    amountPaid: {
+      type: Number,
+      required: true,
+    },
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Payment',
+      required: true,
+    },
     progress: {
       type: Number,
       min: [0, 'Progress cannot be less than 0'],
       max: [100, 'Progress cannot be more than 100'],
       default: 0,
       validate: {
-        validator: function (value) {
-          if (this instanceof mongoose.Query) return true; //skip on updates
-          if (value === undefined) return true; //progress is optional
-          return this.role === 'user';
+        validator: async function (value) {
+          if (this.metadata?.createdByWebhook === true) return true; //skip validation if created by webhook
+          // return true; //temporarily allow all for now
+
+          return this.userRole === 'user';
         },
         message: 'Only regular users can have progress value',
+        // message: 'Progress validation prevented by webhook',
       },
     },
     status: {
@@ -31,7 +46,11 @@ const serviceOrderSchema = new mongoose.Schema(
       enum: ['ongoing', 'completed', 'cancelled'],
       default: 'ongoing',
     },
-    metadata: {},
+    updatedAt: Date,
+    metadata: {
+      type: Object,
+      default: {},
+    },
   },
   { timestamps: true }
 );

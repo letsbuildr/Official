@@ -1,9 +1,9 @@
 const axios = require('axios');
 const Payment = require('../models/paymentModel');
 const Service = require('../models/serviceModel');
-const Activity = require('../models/activityModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const { logActivity } = require('../utils/activityLogger');
 
 exports.startPayment = catchAsync(async (req, res, next) => {
   const { serviceId, planType, currency } = req.body;
@@ -34,14 +34,10 @@ exports.startPayment = catchAsync(async (req, res, next) => {
     transactionRef: reference,
   });
 
-  const activity = await Activity.create({
-    user: req.user._id,
-    type: 'payment',
-    metadata: {
-      status: 'pending',
-      paymentId: payment._id,
-      date: payment.createdAt,
-    },
+  const activity = await logActivity(req.user._id, 'payment-pending', {
+    status: 'pending',
+    paymentId: payment._id,
+    date: payment.createdAt,
   });
 
   payment.activityId = activity._id;
@@ -54,6 +50,7 @@ exports.startPayment = catchAsync(async (req, res, next) => {
       email: req.user.email,
       amount: price * 100, // in kobo
       reference,
+      // callback_url: `${process.env.PAYSTACK_CALLBACK_URL}/payment-success?reference=${reference}`,
     },
     { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
   );

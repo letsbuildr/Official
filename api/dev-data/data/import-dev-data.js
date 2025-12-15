@@ -27,13 +27,21 @@ mongoose.connection.on('connected', () => {
 const services = JSON.parse(
   fs.readFileSync(`${__dirname}/services.json`, 'utf-8')
 );
-// const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
     await Service.create(services);
     // await User.create(users, { validateBeforeSave: false }); //To turn off validation while importing since there is already a password in dev data
+
+    for (const user of users) {
+      await User.create({
+        ...user,
+        password: user.password || 'test1234',
+        passwordConfirm: user.password || 'test1234',
+      });
+    }
     console.log('Data sucessfully loaded');
   } catch (err) {
     console.log(err);

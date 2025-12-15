@@ -13,6 +13,7 @@ const userRouter = require('./routes/userRoutes');
 const serviceRouter = require('./routes/serviceRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
+const adminRouter = require('./routes/adminRoutes');
 const detectLocation = require('./middlewares/detectLocation');
 const { paystackWebhook } = require('./webhooks/paystack');
 
@@ -40,52 +41,9 @@ app.post(
 );
 
 // Security HTTP headers
-
-app.use(helmet());
-app.use(helmet.dnsPrefetchControl());
-app.use(helmet.frameguard());
-app.use(helmet.hidePoweredBy());
-app.use(helmet.hsts());
-app.use(helmet.ieNoOpen());
-app.use(helmet.noSniff());
-app.use(helmet.originAgentCluster());
-app.use(helmet.permittedCrossDomainPolicies());
-app.use(helmet.referrerPolicy());
-app.use(helmet.xssFilter());
 app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      childSrc: ['blob:'],
-      connectSrc: [
-        "'self'",
-        'https://official-rq05.onrender.com',
-        'https://official-rq05.onrender.com/api',
-        'https://*.cloudflare.com',
-        'http://localhost:3000',
-        'http://localhost:*',
-        'ws://127.0.0.1:*',
-        'ws://localhost:1234/',
-      ],
-      defaultSrc: ["'self'", 'data:', 'blob', 'https', 'ws:'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: [
-        "'self'",
-        'data:',
-        'blob:',
-        'https://unpkg.com',
-        'https://res.cloudinary.com',
-      ],
-      scriptSrc: [
-        "'self'",
-        "'unsafe-inline'",
-        'https://unpkg.com',
-        'https://*.cloudflare.com',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-      ],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      workerSrc: ["'self'", 'blob:'],
-    },
+  helmet({
+    contentSecurityPolicy: false,
   })
 );
 
@@ -133,5 +91,6 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/services', serviceRouter);
 app.use('/api/v1/bookings', bookingRouter);
 app.use('/api/v1/payments', paymentRouter);
+app.use('/api/v1/admin', adminRouter);
 
 module.exports = app;

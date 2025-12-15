@@ -3,10 +3,14 @@ const Booking = require('../models/bookingModel');
 const Service = require('../models/serviceModel');
 const Activity = require('../models/activityModel');
 const User = require('../models/userModel');
+const UnavailableDate = require('../models/unavailableDateModel');
+const BlockedTime = require('../models/blockedTimeModel');
+const Setting = require('../models/settingModel');
 const sendEmail = require('../utils/email');
 const catchAsync = require('../utils/catchAsync');
 const { generateAvailability } = require('../utils/generateAvailability');
 const AppError = require('../utils/appError');
+const { logActivity } = require('../utils/activityLogger');
 const factory = require('./handlerFactory');
 
 exports.initBooking = catchAsync(async (req, res, next) => {
@@ -14,7 +18,16 @@ exports.initBooking = catchAsync(async (req, res, next) => {
   // const timezone = req.timezone || 'UTC';
 
   const services = await Service.find({ active: true }).select('name _id');
-  const availableSlots = await generateAvailability(14);
+  const unavailableDates = await UnavailableDate.find().lean();
+  const blockedTimes = await BlockedTime.find().lean();
+  const slotDuration = await Setting.get('slotDuration', 30);
+
+  const availableSlots = await generateAvailability({
+    daysToCheck: 14,
+    slotDuration,
+    unavailableDates,
+    blockedTimes,
+  });
 
   // If user is logged in, return their data
   const userInfo = user
@@ -42,7 +55,15 @@ exports.initBooking = catchAsync(async (req, res, next) => {
 exports.createBooking = catchAsync(async (req, res, next) => {
   const { fullName, email, time, service, date, timeZone, message } = req.body;
   const user = res.locals.user ? res.locals.user._id : null;
-  const availableSlots = await generateAvailability(14);
+  const unavailableDates = await UnavailableDate.find().lean();
+  const blockedTimes = await BlockedTime.find().lean();
+  const slotDuration = await Setting.get('slotDuration', 30);
+  const availableSlots = await generateAvailability({
+    daysToCheck: 14,
+    slotDuration,
+    unavailableDates,
+    blockedTimes,
+  });
 
   // if logged in, overwrite payload with user's info
   const bookingName = res.locals.user ? res.locals.user.name : fullName;
@@ -53,13 +74,31 @@ exports.createBooking = catchAsync(async (req, res, next) => {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
+  console.log('available slots for date:', date, availableSlots[date]);
+
   if (!availableSlots[date]) {
     return next(
       new AppError('Selected date is not available for booking', 400)
     );
   }
 
-  if (!availableSlots[date].includes(time)) {
+  // if the date is marked unavailable, reject booking
+  if (!availableSlots[date].available) {
+    return next(new AppError('This date is not available for booking', 400));
+  }
+
+  // if (!availableSlots[date].includes(time)) {
+  //   //TODO: fix create booking
+  //   return next(
+  //     new AppError('Selected time is not available for booking', 400)
+  //   );
+  // }
+
+  if (!Array.isArray(availableSlots[date].times)) {
+    return next(new AppError('No available slots found for this date', 400));
+  }
+
+  if (!availableSlots[date].times.includes(time)) {
     return next(
       new AppError('Selected time is not available for booking', 400)
     );
@@ -148,7 +187,7 @@ exports.regenerateBookingOtp = catchAsync(async (req, res, next) => {
 
   booking.otp = newOtp;
   booking.otpExpires = newOtpExpires;
-  booking.lastOtpSentAt = new Date.now();
+  booking.lastOtpSentAt = new Date();
   await booking.save();
 
   const emailMessage = `A new verification code has been generated for your booking. Your new code is ${newOtp}. Valid for the next 10 minutes.\nIf you did not request this, please ignore this email`;
@@ -192,12 +231,27 @@ exports.verifyBooking = catchAsync(async (req, res) => {
   // const firstNameRaw = await Booking.findOne({ _id: bookingId }).fullName.split(
   //   ' '
   // )[0];
+
   const firstNameRaw = booking.fullName.split(' ')[0];
   const firstName =
     firstNameRaw.charAt(0).toUpperCase() + firstNameRaw.slice(1).toLowerCase();
 
   const serviceDoc = await Service.findById({ _id: booking.service });
   const serviceName = serviceDoc.name;
+
+  await logActivity(booking.user, 'consultation-booked', {
+    service: serviceName,
+    status: 'scheduled',
+    date: booking.date,
+    time: booking.time,
+    message: booking.message,
+  });
+
+  //  await User.findByIdAndUpdate(booking.user, {
+  //   $push: {
+  //     activities: activity._id,
+  //   },
+  // });
 
   const emailMessage = `Hi ${firstName},\n\nYour session has been successfully booked - thank you for choosing Bomcel Digital!\n\nHere are the details of your session:\n\nDate: ${booking.date}\nTime: ${booking.time}\nService: ${serviceName}\nChannel: Google Meet\n\nPlease ensure you are available at the scheduled time. A reminder will be sent before your session begins.\n\nIf you need to reschedule or have any questions, you can reply directly to this email - the Bomcel Digital team is always here to support you.\n\nWarm regards,\nBomcelDigital`;
   try {
@@ -209,24 +263,6 @@ exports.verifyBooking = catchAsync(async (req, res) => {
   } catch (err) {
     console.err(err);
   }
-
-  const activity = await Activity.create({
-    user: booking.user,
-    type: 'consultation',
-    metadata: {
-      service: serviceName,
-      status: 'scheduled',
-      date: booking.date,
-      time: booking.time,
-      message: booking.message,
-    },
-  });
-
-  await User.findByIdAndUpdate(booking.user, {
-    $push: {
-      activities: activity._id,
-    },
-  });
 
   res.status(200).json({
     status: 'success',
@@ -246,14 +282,10 @@ exports.cancelBooking = catchAsync(async (req, res) => {
   booking.status = 'cancelled';
   await booking.save();
 
-  await Activity.create({
-    user: booking.user,
-    type: 'consultation',
-    metadata: {
-      service: booking.service,
-      status: 'cancelled',
-      cancelledAt: new Date(),
-    },
+  await logActivity(booking.user, 'consultation-cancelled', {
+    service: booking.service,
+    status: 'cancelled',
+    cancelledAt: new Date(),
   });
 
   const emailMessage = `Your booking on ${booking.date} at ${booking.time} has been successfully cancelled. If you have any questions, feel free to contact us.`;
@@ -268,4 +300,66 @@ exports.cancelBooking = catchAsync(async (req, res) => {
   }
 
   res.json({ message: 'Booking cancelled successfully' });
+});
+
+exports.updateBookingDuration = catchAsync(async (req, res, next) => {
+  const { duration } = req.body; //in minutes
+
+  const updated = await Setting.findOneAndUpdate(
+    { key: 'slotDuration' },
+    { key: 'slotDuration', value: duration },
+    { new: true, upsert: true }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    data: { updated },
+  });
+});
+
+exports.updateBookingStatus = catchAsync(async (req, res, next) => {
+  const { bookingId, status } = req.body;
+
+  const validStatuses = ['scheduled', 'completed', 'cancelled'];
+  if (!validStatuses.includes(status)) {
+    return next(new AppError('Invalid booking status', 400));
+  }
+
+  const booking = await Booking.findByIdAndUpdate(
+    bookingId,
+    { status },
+    { new: true }
+  );
+
+  if (!booking) {
+    return next(new AppError('Booking not found', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: { booking },
+  });
+});
+
+exports.addUnavailableDate = catchAsync(async (req, res, next) => {
+  const { date, reason, type } = req.body;
+  const adminId = res.locals.user._id;
+  if (!date || !reason || !type)
+    return next(new AppError('Date, reason and type are required', 400));
+
+  const dateStr = new Date(date).toISOString().split('T')[0];
+
+  const existing = await UnavailableDate.findOne({ date: dateStr });
+  if (existing)
+    return next(new AppError('This date is already marked unavailable', 400));
+  const entry = await UnavailableDate.create({
+    date: dateStr,
+    type,
+    reason,
+    createdBy: adminId,
+  });
+  res.status(200).json({
+    status: 'success',
+    data: entry,
+  });
 });

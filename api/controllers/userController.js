@@ -1,9 +1,10 @@
 const sharp = require('sharp');
 const User = require('../models/userModel');
-const ServiceOrder = require('../models/serviceOrder');
+const ServiceOrder = require('../models/serviceOrderModel');
 const Activity = require('../models/activityModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const { logActivity } = require('../utils/activityLogger');
 const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
@@ -42,7 +43,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUserProgress = catchAsync(async (req, res, next) => {
-  const { progress } = req.body;
+  let { progress } = req.body;
 
   // Ensure request is from an instructor
   if (req.user.role !== 'freelancer') {
@@ -62,6 +63,17 @@ exports.updateUserProgress = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (progress === null) {
+    return next(new AppError('Progress value is required', 400));
+  }
+
+  progress = Number(progress);
+  if (isNaN(progress) || progress < 0 || progress > 100) {
+    return next(
+      new AppError('Progress must be a number between 0 and 100', 400)
+    );
+  }
+
   // Prevent decreasing progress
   if (progress <= order.progress) {
     return next(
@@ -73,23 +85,37 @@ exports.updateUserProgress = catchAsync(async (req, res, next) => {
   }
 
   order.progress = progress;
-  if (progress === 100) order.status = 'completed';
-
-  await Activity.create({
-    user: order.user,
-    type: 'service-progress',
-    metadata: {
+  order.updatedAt = Date.now();
+  // if (progress === 100) order.status = 'completed';
+  if (progress === 100) {
+    (await logActivity(order.user, 'service-progress-completed', {
       orderId: order._id,
       progress,
-      status: order.status,
+      status: 'completed',
       timeStamp: Date.now(),
-    },
+    }),
+      (order.status = 'completed'));
+  }
+  await order.save();
+
+  await logActivity(order.user, 'service-progress-updated', {
+    orderId: order._id,
+    progress,
+    status: order.status,
+    timeStamp: Date.now(),
   });
 
   res.status(200).json({
     status: 'success',
     data: {
-      order,
+      order: {
+        id: order._id,
+        user: order.user,
+        service: order.service,
+        progress: order.progress,
+        status: order.status,
+        updatedAt: order.updatedAt,
+      },
     },
   });
 });

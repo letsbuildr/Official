@@ -6,6 +6,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
+const { logActivity } = require('../utils/activityLogger');
 
 const createSendToken = (user, statusCode, res, token) => {
   const cookieOptions = {
@@ -63,6 +64,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     message,
   });
 
+  await logActivity(newUser._id, 'new-user-registered');
+
   createSendToken(newUser, 201, res, token);
 });
 
@@ -87,7 +90,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid email/username or password', 401));
   }
 
-  console.log(`User id:  ${user._id.toString()}`);
+  // console.log(`User id:  ${user._id.toString()}`);
 
   // if everything is okay, send token to client
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -96,7 +99,7 @@ exports.login = catchAsync(async (req, res, next) => {
   // console.log('Jwt at signing: ', { id: user._id.toString() });
 
   //   send token to client
-  createSendToken(user, 200, res, token);
+  createSendToken(user._id, 200, res, token);
 });
 
 exports.googleLogin = catchAsync(async (req, res, next) => {
@@ -156,7 +159,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // send token to user's email
   const resetURL = `${req.protocol}://${req.get('host')}/api/v1/resetPassword/${resetToken}`;
-  const message = `Forgot your password? Send a patch request with your new password and password confirm to: ${resetURL}.\n If you didn't forget your password, please ignore this email!`;
+  const message = `Forgot your password? Send a patch request with your new password and password confirm to: ${resetURL}\n If you didn't forget your password, please ignore this email!`;
   try {
     await sendEmail({
       email: user.email,
@@ -207,7 +210,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     expiresIn: process.env.JWT_COOKIE_EXPIRES_IN,
   });
 
-  createSendToken(user, 200, res, token);
+  createSendToken(user._id, 200, res, token);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {

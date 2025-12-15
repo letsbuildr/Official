@@ -213,6 +213,14 @@ const serviceSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+  lastPriceUpdate: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
   isRecommended: { type: Boolean, default: false },
   isMostPopular: { type: Boolean, default: false },
 });
