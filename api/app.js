@@ -15,6 +15,7 @@ const bookingRouter = require('./routes/bookingRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const adminRouter = require('./routes/adminRoutes');
 const detectLocation = require('./middlewares/detectLocation');
+const globalErrorHandler = require('./controllers/errorController');
 const { paystackWebhook } = require('./webhooks/paystack');
 
 const app = express();
@@ -92,5 +93,18 @@ app.use('/api/v1/services', serviceRouter);
 app.use('/api/v1/bookings', bookingRouter);
 app.use('/api/v1/payments', paymentRouter);
 app.use('/api/v1/admin', adminRouter);
+
+// app.all('*', (req, res, next) => {
+//   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+// });
+// app.all('/*', (req, res, next) => {
+//   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+// });
+app.use((req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+
+// // global error middleware
+app.use(globalErrorHandler);
 
 module.exports = app;
