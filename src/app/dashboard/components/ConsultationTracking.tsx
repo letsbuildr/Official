@@ -1,46 +1,33 @@
 "use client";
 
-import { Calendar, Clock, User, Briefcase } from "lucide-react";
+import { Calendar, Clock, User, Briefcase, X } from "lucide-react";
+import { useCancelBooking } from "@/lib/api/hooks";
 
 interface Consultation {
-  id: number;
-  service: string;
-  consultationDate: string;
-  consultationTime: string;
-  status: "scheduled" | "completed" | "cancelled";
-  fullName: string;
+  _id: string;
+  fullname: string;
   email: string;
-  message: string;
+  date: string;
+  time: string;
+  service: string;
+  status: string;
+  createdAt: string;
 }
 
 interface ConsultationTrackingProps {
   consultations?: Consultation[];
 }
 
-export default function ConsultationTracking({ 
-  consultations = [
-    {
-      id: 1,
-      service: "Web Development",
-      consultationDate: "2024-11-20",
-      consultationTime: "10:00 AM",
-      status: "scheduled",
-      fullName: "John Doe",
-      email: "john@example.com",
-      message: "Interested in building a modern e-commerce platform"
-    },
-    {
-      id: 2,
-      service: "Data Analysis",
-      consultationDate: "2024-11-18",
-      consultationTime: "02:00 PM", 
-      status: "completed",
-      fullName: "Jane Smith",
-      email: "jane@example.com",
-      message: "Need help with business analytics dashboard"
-    }
-  ]
+export default function ConsultationTracking({
+  consultations = []
 }: ConsultationTrackingProps) {
+  const cancelBookingMutation = useCancelBooking();
+
+  const handleCancelBooking = (bookingId: string) => {
+    if (confirm("Are you sure you want to cancel this consultation? This action cannot be undone.")) {
+      cancelBookingMutation.mutate({ bookingId });
+    }
+  };
   const getStatusColor = (status: string) => {
     switch (status) {
       case "scheduled":
@@ -107,7 +94,7 @@ export default function ConsultationTracking({
         <div className="space-y-4">
           {consultations.map((consultation) => (
             <div
-              key={consultation.id}
+              key={consultation._id}
               className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between mb-3">
@@ -117,35 +104,39 @@ export default function ConsultationTracking({
                     Service: {consultation.service}
                   </h3>
                 </div>
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(consultation.status)}`}>
-                  {getStatusIcon(consultation.status)}
-                  <span className="ml-1 capitalize">{consultation.status}</span>
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(consultation.status)}`}>
+                    {getStatusIcon(consultation.status)}
+                    <span className="ml-1 capitalize">{consultation.status}</span>
+                  </span>
+                  {consultation.status === "scheduled" && (
+                    <button
+                      onClick={() => handleCancelBooking(consultation._id)}
+                      disabled={cancelBookingMutation.isPending}
+                      className="inline-flex items-center px-2 py-1 text-xs text-red-600 hover:text-red-800 border border-red-200 rounded hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <X className="w-3 h-3 mr-1" />
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div className="flex items-center text-sm text-gray-600">
                   <Calendar className="w-4 h-4 mr-2" />
-                  <span>{formatDate(consultation.consultationDate)}</span>
+                  <span>{formatDate(consultation.date)}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <Clock className="w-4 h-4 mr-2" />
-                  <span>{consultation.consultationTime}</span>
+                  <span>{consultation.time}</span>
                 </div>
               </div>
 
               <div className="flex items-center text-sm text-gray-600 mb-3">
                 <User className="w-4 h-4 mr-2" />
-                <span>{consultation.fullName} ({consultation.email})</span>
+                <span>{consultation.fullname} ({consultation.email})</span>
               </div>
-
-              {consultation.message && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-sm text-gray-700">
-                    <span className="font-medium">Message:</span> {consultation.message}
-                  </p>
-                </div>
-              )}
             </div>
           ))}
         </div>

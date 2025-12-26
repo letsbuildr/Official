@@ -116,6 +116,7 @@ export interface Service {
     subtitle: string;
     pricingPlans: Array<{
       price: {
+        usd: number;
         ngn: number;
       };
       duration: {
@@ -157,14 +158,20 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...this.getHeaders(),
-        ...options.headers,
-      },
-    });
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...options,
+        headers: {
+          ...this.getHeaders(),
+          ...options.headers,
+        },
+      });
+    } catch (error) {
+      console.error('Network error during API request:', error);
+      throw new Error('Network error: Unable to connect to the server. Please check your internet connection.');
+    }
 
     if (!response.ok) {
       let errorData: ErrorResponse = {};
@@ -197,8 +204,7 @@ class ApiClient {
         method: options.method || 'GET',
         errorData,
         errorMessage,
-        responseText,
-        headers: Object.fromEntries(response.headers.entries())
+        responseText
       });
 
       // Provide specific messages for common HTTP status codes
@@ -215,6 +221,14 @@ class ApiClient {
       }
 
       throw new Error(errorMessage);
+    }
+
+    // Handle empty responses (e.g., DELETE requests)
+    const contentLength = response.headers.get('content-length');
+    const contentType = response.headers.get('content-type');
+
+    if (contentLength === '0' || !contentLength || !contentType?.includes('application/json')) {
+      return {} as T;
     }
 
     return response.json();
@@ -279,7 +293,7 @@ class ApiClient {
     });
   }
 
-  async getAllServices(): Promise<ApiResponse<Service[]>> {
+  async getAllServices(): Promise<ServicesResponse> {
     return this.request('/services/', {
       method: 'GET',
     });
@@ -344,7 +358,7 @@ class ApiClient {
   }> {
     console.log('Fetching admin overview from:', `${this.baseURL}/admin/overview`);
     console.log('Current auth token:', this.getToken() ? 'Present' : 'Missing');
-    
+
     try {
       const result = await this.request('/admin/overview', {
         method: 'GET',
@@ -379,6 +393,190 @@ class ApiClient {
       console.error('Admin overview fetch failed:', error);
       throw error;
     }
+  }
+
+  async getPricingOverview(): Promise<{
+    status: string;
+    count: number;
+    data: Array<{
+      serviceId: string;
+      name: string;
+      pricingPlans: Array<{
+        price: {
+          usd: number;
+          ngn: number;
+        };
+        duration: {
+          minDays: number;
+          maxDays: number;
+        };
+        planTitle: string;
+        benefit: string[];
+        _id: string;
+      }>;
+      sales: number;
+      trend: string;
+      lastPriceUpdate: string;
+    }>;
+  }> {
+    return this.request('/admin/pricingOverview', {
+      method: 'GET',
+    });
+  }
+
+  async updateServicePrice(serviceId: string, plans: Array<{
+    _id: string;
+    price: {
+      usd?: number;
+      ngn?: number;
+    };
+  }>): Promise<ApiResponse<unknown>> {
+    return this.request(`/admin/updateServicePrice/${serviceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ plans }),
+    });
+  }
+
+  async applyInflationAdjustment(data: {
+    percentage: number;
+    currency: 'all' | 'usd' | 'ngn';
+    reason?: string;
+  }): Promise<ApiResponse<unknown>> {
+    return this.request('/admin/applyInflationAdjustment', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async addUnavailableDate(data: {
+    date: string;
+    reason: string;
+    type: 'holiday' | 'maintenance' | 'personal' | 'other';
+  }): Promise<ApiResponse<unknown>> {
+    return this.request('/bookings/addUnavailableDate', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBookingDuration(data: { duration: number }): Promise<ApiResponse<unknown>> {
+    return this.request('/bookings/updateBookingDuration', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBookingStatus(data: { bookingId: string; status: string }): Promise<ApiResponse<unknown>> {
+    return this.request('/bookings/updateBookingStatus', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async initializeBooking(): Promise<{
+    status: string;
+    loggedIn: boolean;
+    fullname: string;
+    email: string;
+    userId: string;
+    services: Array<{
+      _id: string;
+      name: string;
+    }>;
+    availableSlots: { [date: string]: string[] };
+  }> {
+    return this.request('/bookings/init', {
+      method: 'GET',
+    });
+  }
+
+  async createBooking(data: {
+    fullname: string;
+    email: string;
+    date: string;
+    time: string;
+    service: string;
+  }): Promise<ApiResponse<{
+    bookingId: string;
+    message: string;
+  }>> {
+    return this.request('/bookings/createBooking', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async verifyBooking(data: {
+    bookingId: string;
+    otp: string;
+  }): Promise<ApiResponse<{
+    booking: {
+      _id: string;
+      fullname: string;
+      email: string;
+      date: string;
+      time: string;
+      service: string;
+      status: string;
+      createdAt: string;
+    };
+    message: string;
+  }>> {
+    return this.request('/bookings/verify', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async regenerateBookingOtp(data: { bookingId: string }): Promise<ApiResponse<{
+    message: string;
+  }>> {
+    return this.request('/bookings/regenerateOtp', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async cancelBooking(data: { bookingId: string }): Promise<ApiResponse<{
+    message: string;
+  }>> {
+    return this.request('/bookings/cancel', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getPendingConsultations(range: number = 60): Promise<{
+    status: string;
+    range: number;
+    count: number;
+    data: Array<{
+      _id: string;
+      fullName: string;
+      email: string;
+      user: {
+        _id: string;
+        name: string;
+        email: string;
+        id: string;
+      };
+      service: {
+        _id: string;
+        name: string;
+      } | null;
+      date: string;
+      time: string;
+      timeZone: string;
+      isVerified: boolean;
+      isCancelled: boolean;
+      status: string;
+      createdAt: string;
+      __v: number;
+    }>;
+  }> {
+    return this.request(`/admin/pendingConsultations?range=${range}`, {
+      method: 'GET',
+    });
   }
 
   // Token management

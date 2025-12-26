@@ -3,22 +3,29 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Shield, Clock, RefreshCw, CheckCircle } from "lucide-react";
+import { useVerifyBooking, useRegenerateBookingOtp } from "@/lib/api/hooks";
 
 export default function VerificationPage() {
   const router = useRouter();
+  const verifyBookingMutation = useVerifyBooking();
+  const regenerateOtpMutation = useRegenerateBookingOtp();
+
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   const [canResend, setCanResend] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(60); // 60 seconds cooldown
-  const [bookingData, setBookingData] = useState<{email: string; fullName: string; preferredDate: string; preferredTime: string; message?: string} | null>(null);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [bookingEmail, setBookingEmail] = useState<string>("");
 
-  // Load booking data from localStorage (simulating what was submitted from consultation form)
+  // Load booking data from localStorage
   useEffect(() => {
-    const savedBooking = localStorage.getItem("pendingBooking");
-    if (savedBooking) {
-      setBookingData(JSON.parse(savedBooking));
+    const savedBookingId = localStorage.getItem("pendingBookingId");
+    const savedBookingEmail = localStorage.getItem("pendingBookingEmail");
+
+    if (savedBookingId && savedBookingEmail) {
+      setBookingId(savedBookingId);
+      setBookingEmail(savedBookingEmail);
     } else {
       // If no pending booking, redirect back to consultation
       router.push("/consultation");
@@ -75,59 +82,62 @@ export default function VerificationPage() {
     }
   };
 
-  const handleVerify = async () => {
+  const handleVerify = () => {
+    if (!bookingId) return;
+
     const otpCode = otp.join("");
-    
+
     if (otpCode.length !== 6) {
       setError("Please enter the complete 6-digit OTP");
       return;
     }
 
-    setIsVerifying(true);
     setError("");
 
-    try {
-      // Simulate OTP verification
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // For demo purposes, accept "123456" as valid OTP
-      if (otpCode === "123456") {
-        // Clear pending booking and redirect to success
-        localStorage.removeItem("pendingBooking");
-        localStorage.setItem("verifiedBooking", JSON.stringify(bookingData));
-        router.push("/booking-success");
-      } else {
-        setError("Invalid OTP. Please check your email and try again.");
-        // Clear OTP inputs
-        setOtp(["", "", "", "", "", ""]);
-        document.getElementById("otp-0")?.focus();
+    verifyBookingMutation.mutate(
+      { bookingId, otp: otpCode },
+      {
+        onSuccess: (response) => {
+          // Clear pending booking data
+          localStorage.removeItem("pendingBookingId");
+          localStorage.removeItem("pendingBookingEmail");
+
+          // Save verified booking data
+          localStorage.setItem("verifiedBooking", JSON.stringify(response.data.booking));
+
+          // Redirect to success page
+          router.push("/booking-success");
+        },
+        onError: () => {
+          // Clear OTP inputs on error
+          setOtp(["", "", "", "", "", ""]);
+          document.getElementById("otp-0")?.focus();
+        },
       }
-    } catch (error) {
-      setError("Verification failed. Please try again.");
-    } finally {
-      setIsVerifying(false);
-    }
+    );
   };
 
-  const handleResendOtp = async () => {
-    if (!canResend) return;
+  const handleResendOtp = () => {
+    if (!canResend || !bookingId) return;
 
     setCanResend(false);
     setResendCooldown(60);
     setError("");
 
-    try {
-      // Simulate sending new OTP
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setTimeLeft(15 * 60); // Reset timer
-      alert("New OTP sent to your email!");
-    } catch (error) {
-      setError("Failed to resend OTP. Please try again.");
-      setCanResend(true);
-    }
+    regenerateOtpMutation.mutate(
+      { bookingId },
+      {
+        onSuccess: () => {
+          setTimeLeft(15 * 60); // Reset timer
+        },
+        onError: () => {
+          setCanResend(true);
+        },
+      }
+    );
   };
 
-  if (!bookingData) {
+  if (!bookingId || !bookingEmail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FAFB] to-[#E6F0FA] px-4">
         <div className="text-center">
@@ -150,7 +160,7 @@ export default function VerificationPage() {
             Verify Your Email
           </h2>
           <p className="text-gray-600 text-sm">
-            We&apos;ve sent a 6-digit OTP to <strong>{bookingData.email}</strong>
+            We&apos;ve sent a 6-digit OTP to <strong>{bookingEmail}</strong>
           </p>
         </div>
 
@@ -194,14 +204,14 @@ export default function VerificationPage() {
         {/* Verify Button */}
         <button
           onClick={handleVerify}
-          disabled={isVerifying || otp.some(digit => !digit)}
+          disabled={verifyBookingMutation.isPending || otp.some(digit => !digit)}
           className={`w-full px-6 py-3 bg-[#0077B6] text-white rounded-lg font-semibold hover:bg-[#005F91] transition-all duration-300 transform hover:scale-105 flex items-center justify-center mb-4 ${
-            isVerifying || otp.some(digit => !digit) 
+            verifyBookingMutation.isPending || otp.some(digit => !digit) 
               ? "opacity-75 cursor-not-allowed" 
               : ""
           }`}
         >
-          {isVerifying ? (
+          {verifyBookingMutation.isPending ? (
             <>
               <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

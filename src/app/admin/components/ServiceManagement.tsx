@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import { useAllServices, useUpdateService, useDeleteService } from "@/lib/api/hooks";
+import { useAllServices, useUpdateService, useDeleteService, useCreateService } from "@/lib/api/hooks";
 import { Service, ApiResponseWithServices } from "@/lib/api/client";
 
 export default function ServiceManagement() {
   const { data: servicesResponse } = useAllServices();
   const updateServiceMutation = useUpdateService();
   const deleteServiceMutation = useDeleteService();
+  const createServiceMutation = useCreateService();
 
-  const services: Service[] = 
-    servicesResponse && 'results' in servicesResponse && Array.isArray(servicesResponse.data)
-      ? servicesResponse.data
+  const services: Service[] =
+    servicesResponse && 'results' in servicesResponse && servicesResponse.data && Array.isArray(servicesResponse.data.data)
+      ? servicesResponse.data.data
       : [];
 
   const [editingService, setEditingService] = useState<Service | null>(null);
@@ -20,6 +21,7 @@ export default function ServiceManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [formData, setFormData] = useState<Partial<Service>>({});
 
   const filteredServices = services.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,11 +44,26 @@ export default function ServiceManagement() {
 
   const handleEditService = (service: Service) => {
     setEditingService(service);
+    setFormData({
+      pricingPackage: service.pricingPackage
+    });
     setShowModal(true);
   };
 
   const handleCreateService = () => {
     setEditingService(null);
+    setFormData({
+      name: "",
+      summary: "",
+      description: "",
+      slug: "",
+      isRecommended: false,
+      isMostPopular: false,
+      process: { title: "", description: "", steps: [] },
+      whyWork: { description: "", reasons: [] },
+      readySection: { title: "", description: "", readyButton: { primary: "Get Started", secondary: "Contact Us" } },
+      pricingPackage: { pricingPlans: [] }
+    });
     setShowModal(true);
   };
 
@@ -54,6 +71,63 @@ export default function ServiceManagement() {
     if (confirm("Are you sure you want to delete this service? This action cannot be undone.")) {
       deleteServiceMutation.mutate(serviceId);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingService) {
+      // Edit mode - update pricing
+      if (formData.pricingPackage?.pricingPlans) {
+        updateServiceMutation.mutate({
+          id: editingService._id,
+          updates: {
+            pricingPackage: formData.pricingPackage
+          } as Partial<Service>
+        });
+      }
+    } else {
+      // Create mode - create new service with defaults
+      const serviceData: Partial<Service> = {
+        ...formData,
+        heroButtons: {
+          primary: "Get Started",
+          secondary: "View Our Works"
+        },
+        pricingPackage: {
+          title: "Our Pricing Packages",
+          subtitle: "Transparent pricing designed to fit businesses of all sizes",
+          pricingPlans: formData.pricingPackage?.pricingPlans || []
+        },
+        heroImage: [],
+        recentProjects: { subtitle: "", projects: [] }
+      };
+      createServiceMutation.mutate(serviceData);
+    }
+    setShowModal(false);
+  };
+
+
+  const updatePricing = (planIndex: number, currency: 'usd' | 'ngn', price: number) => {
+    setFormData(prev => {
+      const currentPlans = prev.pricingPackage?.pricingPlans || editingService?.pricingPackage?.pricingPlans || [];
+      const updatedPlans = [...currentPlans];
+      if (updatedPlans[planIndex]) {
+        updatedPlans[planIndex] = {
+          ...updatedPlans[planIndex],
+          price: {
+            ...updatedPlans[planIndex].price,
+            [currency]: price
+          }
+        };
+      }
+      return {
+        ...prev,
+        pricingPackage: {
+          ...prev.pricingPackage,
+          pricingPlans: updatedPlans
+        }
+      } as Partial<Service>;
+    });
   };
 
   return (
@@ -228,7 +302,7 @@ export default function ServiceManagement() {
           <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                {editingService ? "Edit Service" : "Create New Service"}
+                {editingService ? `Update Pricing - ${editingService.name}` : "Create New Service"}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
@@ -240,78 +314,419 @@ export default function ServiceManagement() {
               </button>
             </div>
 
-            <form className="space-y-4">
-              {/* Service Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Service Name
-                </label>
-                <input
-                  type="text"
-                  defaultValue={editingService?.name || ""}
-                  placeholder="Enter service name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {editingService ? (
+                // Edit mode - only pricing
+                <>
+                  {/* Service Info */}
+                  <div className="bg-gray-50 p-4 rounded-md">
+                    <h4 className="font-medium text-gray-900 mb-2">Service: {editingService.name}</h4>
+                    <p className="text-sm text-gray-600">{editingService.summary}</p>
+                  </div>
 
-              {/* Summary */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Summary
-                </label>
-                <input
-                  type="text"
-                  defaultValue={editingService?.summary || ""}
-                  placeholder="Brief summary of the service"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+                  {/* Pricing Plans */}
+                  {editingService.pricingPackage?.pricingPlans && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Pricing Plans
+                      </label>
+                      <div className="space-y-3">
+                        {editingService.pricingPackage.pricingPlans.map((plan, index) => (
+                          <div key={plan._id} className="border border-gray-200 rounded-md p-3">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="font-medium">{plan.planTitle}</span>
+                              <span className="text-sm text-gray-500">
+                                {plan.duration.minDays}-{plan.duration.maxDays} days
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="text-sm text-gray-600">USD:</label>
+                              <input
+                                type="number"
+                                value={(formData.pricingPackage?.pricingPlans?.[index]?.price?.usd || plan.price.usd || 0)}
+                                onChange={(e) => updatePricing(index, 'usd', parseInt(e.target.value) || 0)}
+                                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              />
+                              <label className="text-sm text-gray-600">NGN:</label>
+                              <input
+                                type="number"
+                                value={(formData.pricingPackage?.pricingPlans?.[index]?.price?.ngn || plan.price.ngn || 0)}
+                                onChange={(e) => updatePricing(index, 'ngn', parseInt(e.target.value) || 0)}
+                                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // Create mode - full form
+                <>
+                  {/* Service Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Service Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Enter service name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
 
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  rows={3}
-                  defaultValue={editingService?.description || ""}
-                  placeholder="Detailed service description"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+                  {/* Summary */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Summary *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.summary || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
+                      placeholder="Brief summary of the service"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
 
-              {/* Slug */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slug
-                </label>
-                <input
-                  type="text"
-                  defaultValue={editingService?.slug || ""}
-                  placeholder="service-slug-name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+                  {/* Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description *
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={formData.description || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Detailed service description"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
 
-              {/* Flags */}
-              <div className="flex gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    defaultChecked={editingService?.isRecommended || false}
-                    className="mr-2"
-                  />
-                  Recommended
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    defaultChecked={editingService?.isMostPopular || false}
-                    className="mr-2"
-                  />
-                  Most Popular
-                </label>
-              </div>
+                  {/* Slug */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Slug *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.slug || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                      placeholder="service-slug-name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  {/* Process Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Process Title *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.process?.title || ""}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          process: { title: e.target.value, description: prev.process?.description || "", steps: prev.process?.steps || [] }
+                        }))}
+                        placeholder="Our Development Process"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Process Description *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.process?.description || ""}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          process: { title: prev.process?.title || "", description: e.target.value, steps: prev.process?.steps || [] }
+                        }))}
+                        placeholder="A proven methodology that ensures quality..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Why Work Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Why Work Description *
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={formData.whyWork?.description || ""}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        whyWork: { description: e.target.value, reasons: prev.whyWork?.reasons || [] }
+                      }))}
+                      placeholder="We combine technical excellence with creative vision..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  {/* Ready Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Ready Section Title *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.readySection?.title || ""}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          readySection: { title: e.target.value, description: prev.readySection?.description || "", readyButton: prev.readySection?.readyButton || { primary: "Get Started", secondary: "Contact Us" } }
+                        }))}
+                        placeholder="Ready To Build Your Website?"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Ready Section Description *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.readySection?.description || ""}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          readySection: { title: prev.readySection?.title || "", description: e.target.value, readyButton: prev.readySection?.readyButton || { primary: "Get Started", secondary: "Contact Us" } }
+                        }))}
+                        placeholder="Let's bring your digital vision to life"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Basic Pricing Plans */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Basic Pricing Plans (Optional)
+                    </label>
+                    <div className="space-y-3">
+                      {/* Basic Plan */}
+                      <div className="border border-gray-200 rounded-md p-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Basic Plan</span>
+                          <span className="text-sm text-gray-500">7-10 days</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm text-gray-600">USD:</label>
+                          <input
+                            type="number"
+                            placeholder="190"
+                            onChange={(e) => setFormData(prev => {
+                              const currentPlans = prev.pricingPackage?.pricingPlans || [];
+                              const existingPlan = currentPlans[0];
+                              return {
+                                ...prev,
+                                pricingPackage: {
+                                  ...prev.pricingPackage,
+                                  pricingPlans: [
+                                    {
+                                      planTitle: "Basic Website",
+                                      price: { usd: parseInt(e.target.value) || 0, ngn: existingPlan?.price?.ngn || 0 },
+                                      duration: { minDays: 7, maxDays: 10 },
+                                      benefit: ["Up to 5 pages", "Responsive design", "Contact form", "1 revision", "Free SSL setup"]
+                                    } as any,
+                                    ...currentPlans.slice(1)
+                                  ]
+                                }
+                              };
+                            })}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                          <label className="text-sm text-gray-600">NGN:</label>
+                          <input
+                            type="number"
+                            placeholder="150000"
+                            onChange={(e) => setFormData(prev => {
+                              const currentPlans = prev.pricingPackage?.pricingPlans || [];
+                              const existingPlan = currentPlans[0];
+                              return {
+                                ...prev,
+                                pricingPackage: {
+                                  ...prev.pricingPackage,
+                                  pricingPlans: [
+                                    {
+                                      planTitle: "Basic Website",
+                                      price: { usd: existingPlan?.price?.usd || 0, ngn: parseInt(e.target.value) || 0 },
+                                      duration: { minDays: 7, maxDays: 10 },
+                                      benefit: ["Up to 5 pages", "Responsive design", "Contact form", "1 revision", "Free SSL setup"]
+                                    } as any,
+                                    ...currentPlans.slice(1)
+                                  ]
+                                }
+                              };
+                            })}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Standard Plan */}
+                      <div className="border border-gray-200 rounded-md p-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Standard Plan</span>
+                          <span className="text-sm text-gray-500">14-21 days</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm text-gray-600">USD:</label>
+                          <input
+                            type="number"
+                            placeholder="449"
+                            onChange={(e) => setFormData(prev => {
+                              const currentPlans = prev.pricingPackage?.pricingPlans || [];
+                              const existingPlan = currentPlans[1];
+                              return {
+                                ...prev,
+                                pricingPackage: {
+                                  ...prev.pricingPackage,
+                                  pricingPlans: [
+                                    ...(currentPlans[0] ? [currentPlans[0]] : []),
+                                    {
+                                      planTitle: "Standard Website",
+                                      price: { usd: parseInt(e.target.value) || 0, ngn: existingPlan?.price?.ngn || 0 },
+                                      duration: { minDays: 14, maxDays: 21 },
+                                      benefit: ["Up to 15 pages", "Blog Integration", "CMS setup", "SEO basics", "2 revisions", "Hosting support"]
+                                    } as any,
+                                    ...(currentPlans.slice(2) || [])
+                                  ]
+                                }
+                              };
+                            })}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                          <label className="text-sm text-gray-600">NGN:</label>
+                          <input
+                            type="number"
+                            placeholder="350000"
+                            onChange={(e) => setFormData(prev => {
+                              const currentPlans = prev.pricingPackage?.pricingPlans || [];
+                              const existingPlan = currentPlans[1];
+                              return {
+                                ...prev,
+                                pricingPackage: {
+                                  ...prev.pricingPackage,
+                                  pricingPlans: [
+                                    ...(currentPlans[0] ? [currentPlans[0]] : []),
+                                    {
+                                      planTitle: "Standard Website",
+                                      price: { usd: existingPlan?.price?.usd || 0, ngn: parseInt(e.target.value) || 0 },
+                                      duration: { minDays: 14, maxDays: 21 },
+                                      benefit: ["Up to 15 pages", "Blog Integration", "CMS setup", "SEO basics", "2 revisions", "Hosting support"]
+                                    } as any,
+                                    ...(currentPlans.slice(2) || [])
+                                  ]
+                                }
+                              };
+                            })}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Premium Plan */}
+                      <div className="border border-gray-200 rounded-md p-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">Premium Plan</span>
+                          <span className="text-sm text-gray-500">21-45 days</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm text-gray-600">USD:</label>
+                          <input
+                            type="number"
+                            placeholder="1025"
+                            onChange={(e) => setFormData(prev => {
+                              const currentPlans = prev.pricingPackage?.pricingPlans || [];
+                              const existingPlan = currentPlans[2];
+                              return {
+                                ...prev,
+                                pricingPackage: {
+                                  ...prev.pricingPackage,
+                                  pricingPlans: [
+                                    ...(currentPlans.slice(0, 2) || []),
+                                    {
+                                      planTitle: "Premium Website/E-Commerce",
+                                      price: { usd: parseInt(e.target.value) || 0, ngn: existingPlan?.price?.ngn || 0 },
+                                      duration: { minDays: 21, maxDays: 45 },
+                                      benefit: ["Unlimited pages", "Payment gateway", "Product catalog", "Admin dashboard", "SEO optimization", "Priority support"]
+                                    } as any
+                                  ]
+                                }
+                              };
+                            })}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                          <label className="text-sm text-gray-600">NGN:</label>
+                          <input
+                            type="number"
+                            placeholder="800000"
+                            onChange={(e) => setFormData(prev => {
+                              const currentPlans = prev.pricingPackage?.pricingPlans || [];
+                              const existingPlan = currentPlans[2];
+                              return {
+                                ...prev,
+                                pricingPackage: {
+                                  ...prev.pricingPackage,
+                                  pricingPlans: [
+                                    ...(currentPlans.slice(0, 2) || []),
+                                    {
+                                      planTitle: "Premium Website/E-Commerce",
+                                      price: { usd: existingPlan?.price?.usd || 0, ngn: parseInt(e.target.value) || 0 },
+                                      duration: { minDays: 21, maxDays: 45 },
+                                      benefit: ["Unlimited pages", "Payment gateway", "Product catalog", "Admin dashboard", "SEO optimization", "Priority support"]
+                                    } as any
+                                  ]
+                                }
+                              };
+                            })}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Flags */}
+                  <div className="flex gap-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.isRecommended || false}
+                        onChange={(e) => setFormData(prev => ({ ...prev, isRecommended: !prev.isRecommended }))}
+                        className="mr-2"
+                      />
+                      Recommended
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.isMostPopular || false}
+                        onChange={(e) => setFormData(prev => ({ ...prev, isMostPopular: !prev.isMostPopular }))}
+                        className="mr-2"
+                      />
+                      Most Popular
+                    </label>
+                  </div>
+                </>
+              )}
 
               {/* Actions */}
               <div className="flex justify-end space-x-3 pt-4">
