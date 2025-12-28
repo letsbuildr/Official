@@ -19,7 +19,6 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: LoginRequest) => apiClient.login(credentials),
     onSuccess: (response) => {
-      console.log(response)
       if (response?.token) {
         apiClient.setToken(response.token);
         // Update auth state in React Query cache

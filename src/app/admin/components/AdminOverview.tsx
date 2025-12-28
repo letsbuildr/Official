@@ -68,9 +68,41 @@ export default function AdminOverview() {
     );
   }
 
-  const { stats, activityLog = [], topServices = [] } = overviewData.data;
-
-  console.log(overviewData.data)
+  // The API returns the numeric stats at the top level (overviewData.data).
+  // Treat overviewData.data as the stats object and safely pull optional arrays.
+  type Activity = {
+    type: string;
+    user: string;
+    createdAt: string;
+  };
+  
+  type TopService = {
+    _id?: { _id?: string } | string;
+    sales?: number;
+    revenue?: number;
+  };
+  
+  type StatsData = {
+    stats?: {
+      totalUsers?: number;
+      newUsersThisMonth?: number;
+      totalServices?: number;
+      activeServiceUsers?: number;
+      scheduledConsultations?: number;
+      totalRevenue?: number;
+      [key: string]: unknown;
+    };
+    activityLog?: Activity[];
+    topServices?: TopService[];
+    [key: string]: unknown;
+  };
+  
+  const statsData = overviewData.data.stats as StatsData | undefined;
+  
+  type Stats = NonNullable<StatsData["stats"]>;
+  const stats: Stats = statsData?.stats ?? {};
+  const activityLog: Activity[] = statsData?.activityLog ?? [];
+  const topServices: TopService[] = statsData?.topServices ?? [];
 
   // Helper function to get activity icon and message
   const getActivityInfo = (type: string, user: string) => {
@@ -241,12 +273,14 @@ export default function AdminOverview() {
                 topServices.map((service, index) => {
                   const maxSales = Math.max(...topServices.map(s => s?.sales || 0));
                   const percentage = maxSales > 0 ? ((service?.sales || 0) / maxSales) * 100 : 0;
+                  const rawId = typeof service?._id === 'string' ? service._id : service?._id?._id;
+                  const displayId = rawId ? String(rawId).slice(-6) : 'Unknown';
                   
                   return (
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-900">Service {service?._id?._id?.slice(-6) || 'Unknown'}</p>
+                          <p className="text-sm font-medium text-gray-900">Service {displayId}</p>
                           <p className="text-sm text-gray-500">{service?.sales || 0} sales</p>
                         </div>
                         <div className="mt-2">

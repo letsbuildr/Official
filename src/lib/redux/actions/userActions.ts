@@ -34,8 +34,6 @@ export const fetchUser = () => {
   return async (dispatch: Dispatch<UserActionTypes>) => {
     dispatch(fetchUserRequest());
     try {
-      console.log('Fetching current user');
-      console.log('Is authenticated:', apiClient.isAuthenticated());
 
       if (!apiClient.isAuthenticated()) {
         dispatch(fetchUserFailure('User not authenticated'));
@@ -43,13 +41,10 @@ export const fetchUser = () => {
       }
 
       const response = await apiClient.getCurrentUser();
-      console.log('API Response:', response);
 
       if (response.data) {
-        console.log('User data found:', response.data);
         dispatch(fetchUserSuccess(response.data));
       } else {
-        console.log('No user data in response');
         dispatch(fetchUserFailure('No user data received'));
       }
     } catch (error) {

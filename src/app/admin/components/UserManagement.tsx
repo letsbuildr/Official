@@ -50,8 +50,6 @@ export default function UserManagement() {
 
   const handleRoleChange = (userId: string, newRole: string) => {
     console.log(`Changing user ${userId} role to ${newRole}`);
-    // TODO: Implement API call to update user role
-    // Example: apiClient.updateUserRole(userId, newRole)
   };
 
   const handleDeleteUser = async (userId: string) => {

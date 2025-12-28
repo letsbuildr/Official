@@ -214,7 +214,6 @@ class ApiClient {
       try {
         // Try to get the response text first
         responseText = await response.text();
-        console.log('Raw response text:', responseText);
 
         // Try to parse as JSON if responseText is not empty
         if (responseText.trim()) {
@@ -386,22 +385,8 @@ class ApiClient {
         scheduledConsultations: number;
         totalRevenue: number;
       };
-      activityLog: Array<{
-        user: string;
-        type: string;
-        createdAt: string;
-      }>;
-      topServices: Array<{
-        _id: {
-          _id: string;
-        };
-        revenue: number;
-        sales: number;
-      }>;
     };
   }> {
-    console.log('Fetching admin overview from:', `${this.baseURL}/admin/overview`);
-    console.log('Current auth token:', this.getToken() ? 'Present' : 'Missing');
 
     try {
       const result = await this.request('/admin/overview', {
@@ -431,7 +416,6 @@ class ApiClient {
           }>;
         };
       };
-      console.log('Admin overview fetch successful:', result);
       return result;
     } catch (error) {
       console.error('Admin overview fetch failed:', error);

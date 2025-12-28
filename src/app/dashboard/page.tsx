@@ -49,7 +49,6 @@ export default function Dashboard() {
     if (isAuthenticated && authUser && !reduxUser && !loading) {
       const userId = authUser.id || authUser._id;
       if (userId) {
-        console.log('Dashboard: Fetching user details for authenticated user:', userId);
         fetchUserDetails(userId);
       }
     }
