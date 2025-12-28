@@ -22,7 +22,7 @@ export default function AutomationServicePage() {
 
   const service = serviceResponse.data.data;
 
-  const handleChoosePlan = (plan: any) => {
+  const handleChoosePlan = (plan: { planTitle: string; price: { usd: number; ngn: number } }) => {
     if (!isAuthenticated) {
       router.push('/sign-in');
       return;

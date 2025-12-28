@@ -168,7 +168,12 @@ export const useAllServices = () => {
 
 // Custom hook to get a service by slug
 export const useServiceBySlug = (slug: string) => {
-  return useQuery({
+  return useQuery<{
+    status: string;
+    data: {
+      data: Service;
+    };
+  }>({
     queryKey: [...queryKeys.services, 'slug', slug],
     queryFn: () => apiClient.getServiceBySlug(slug),
     enabled: !!slug,

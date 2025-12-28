@@ -342,7 +342,12 @@ class ApiClient {
     });
   }
 
-  async getServiceBySlug(slug: string): Promise<ApiResponse<Service>> {
+  async getServiceBySlug(slug: string): Promise<{
+    status: string;
+    data: {
+      data: Service;
+    };
+  }> {
     return this.request(`/services/slug/${slug}`, {
       method: 'GET',
     });
