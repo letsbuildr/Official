@@ -454,3 +454,25 @@ export const useCancelBooking = () => {
     },
   });
 };
+
+// Custom hook to start payment
+export const useStartPayment = () => {
+  return useMutation({
+    mutationFn: (data: {
+      serviceId: string;
+      planType: string;
+      currency: string;
+    }) => apiClient.startPayment(data),
+    onSuccess: (response) => {
+      if (response.data?.checkoutUrl) {
+        window.location.href = response.data.checkoutUrl;
+      }
+      toast.success('Payment initiated successfully!');
+    },
+    onError: (error) => {
+      console.error('Start payment failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Payment initiation failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};

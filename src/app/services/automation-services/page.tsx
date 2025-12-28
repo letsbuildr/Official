@@ -1,160 +1,46 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useServiceBySlug, useStartPayment } from "@/lib/api/hooks";
+import { useAuthContext } from "@/lib/api/auth-context";
 
 export default function AutomationServicePage() {
+  const { data: serviceResponse, isLoading, error } = useServiceBySlug('automation-services');
+  const startPayment = useStartPayment();
+  const { isAuthenticated } = useAuthContext();
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(1);
 
-  const pricingPlans = [
-    {
-      title: "Basic",
-      subtitle: "Single Process Setup",
-      price: "₦150,000",
-      aiPrice: "7–10 days",
-      benefits: [
-        "1 core process automated",
-        "Up to 2 app integrations",
-        "Basic workflow setup",
-        "Email support (7 days)",
-        "Quick delivery",
-      ],
-    },
-    {
-      title: "Standard",
-      subtitle: "Multi-App Integration",
-      price: "₦350,000",
-      aiPrice: "14–21 days",
-      benefits: [
-        "Up to 5 processes automated",
-        "5–7 app integrations",
-        "Optimized workflows",
-        "Dashboard setup",
-        "30-day support",
-        "Performance monitoring",
-      ],
-    },
-    {
-      title: "Premium",
-      subtitle: "Enterprise Workflow Automation",
-      price: "₦800,000+",
-      aiPrice: "21–45 days",
-      benefits: [
-        "Full-scale automation",
-        "Unlimited process integrations",
-        "Custom API integrations",
-        "Real-time monitoring and reporting",
-        "Dedicated account manager",
-        "Priority support",
-      ],
-    },
-  ];
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
-  const projects = [
-    {
-      id: 1,
-      image: "/images/project1.png",
-      alt: "Project Alpha",
-      title: "Modern Business Website",
-      category: "Corporate",
-    },
-    {
-      id: 2,
-      image: "/images/project2.png",
-      alt: "Project Beta",
-      title: "E-commerce Platform",
-      category: "Retail",
-    },
-    {
-      id: 3,
-      image: "/images/project3.png",
-      alt: "Project Gamma",
-      title: "SaaS Dashboard",
-      category: "Technology",
-    },
-    {
-      id: 4,
-      image: "/images/project4.png",
-      alt: "Project Delta",
-      title: "Portfolio Website",
-      category: "Creative",
-    },
-  ];
+  if (error || !serviceResponse?.data) {
+    return <div className="min-h-screen flex items-center justify-center">Error loading service</div>;
+  }
 
-  const features = [
-    {
-      id: 1,
-      icon: "/icon5.svg",
-      title: "Discover",
-      description:
-        "We begin by understanding your business needs and identifying key processes that can be automated.",
-    },
-    {
-      id: 2,
-      icon: "/icon6.svg",
-      title: "Plan",
-      description:
-        "Our team designs a tailored automation strategy with clear workflows and integration points.",
-    },
-    {
-      id: 3,
-      icon: "/icon7.svg",
-      title: "Integrate",
-      description:
-        "We connect your tools, apps, and systems to create a seamless, automated environment.",
-    },
-    {
-      id: 4,
-      icon: "/icon8.svg",
-      title: "Test",
-      description:
-        "Every workflow is tested thoroughly to ensure reliability, accuracy, and efficiency.",
-    },
-    {
-      id: 5,
-      icon: "/icon9.svg",
-      title: "Support",
-      description:
-        "We provide continuous maintenance and optimization to keep your automation running smoothly.",
-    },
-  ];
+  const service = serviceResponse.data.data;
 
-  const automationBoxes = [
-    {
-      id: 1,
-      icon: "/icon10.svg",
-      title: "Process Optimization",
-      description:
-        "We analyze and automate repetitive workflows to help your team work smarter, faster, and more efficiently.",
-    },
-    {
-      id: 2,
-      icon: "/icon11.svg",
-      title: "System Integration",
-      description:
-        "Connect all your business tools and platforms seamlessly to ensure smooth data flow and unified performance.",
-    },
-    {
-      id: 3,
-      icon: "/icon12.svg",
-      title: "Error Reduction",
-      description:
-        "Minimize manual mistakes through smart automation that enhances accuracy and reliability across processes.",
-    },
-    {
-      id: 4,
-      icon: "/icon13.svg",
-      title: "Ongoing Automation Support",
-      description:
-        "Enjoy continuous monitoring, maintenance, and updates to keep your automation systems running flawlessly.",
-    },
-  ];
+  const handleChoosePlan = (plan: any) => {
+    if (!isAuthenticated) {
+      router.push('/sign-in');
+      return;
+    }
+
+    startPayment.mutate({
+      serviceId: service._id,
+      planType: plan.planTitle,
+      currency: 'ngn',
+    });
+  };
 
   return (
     <>
       <section
         id="home"
         className="relative min-h-screen w-full bg-cover bg-center bg-no-repeat text-white flex flex-col md:flex-row items-center justify-between px-8 md:px-16 pt-28"
-        style={{ backgroundImage: "url('/images/bg.png')" }}
+        style={{ backgroundImage: `url('/images/bg.png')` }}
       >
         {/* Overlay (optional for better contrast) */}
         <div className="absolute inset-0 bg-black/50"></div>
@@ -162,18 +48,17 @@ export default function AutomationServicePage() {
         {/* Content wrapper (above overlay) */}
         <div className="relative z-10 flex-1 text-center md:text-left">
           <div className="bg-[#00AFDB33] inline-block  px-4 py-2 mb-4 text-sm  rounded-full">
-            Automation Services
+            {service.name}
           </div>
           <h3 className="mb-2   text-4xl md:text-5xl leading-tight">
-            Automate. Integrate.
+            {service.summary.split(' ').slice(0, 3).join(' ')}
           </h3>
           <h3 className="mb-1 text-4xl md:text-5xl  leading-tight">
-            Accelerate.
+            {service.summary.split(' ').slice(3).join(' ')}
           </h3>
 
           <div className="text-gray-300 mt-4 mb-6 text-base max-w-md leading-relaxed">
-            We streamline your business processes through smart automation and
-            integrations that save time and boost efficiency
+            {service.description}
           </div>
 
           <div className="flex justify-center md:justify-start gap-4">
@@ -183,14 +68,14 @@ export default function AutomationServicePage() {
               rel="noopener noreferrer"
               className="px-10 py-2 bg-[#0077B6] text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#005F91] hover:shadow-lg cursor-pointer"
             >
-              Start Your Automation
+              {service.heroButtons.primary}
             </a>
 
             <a
               href="#recent-jobs"
               className="px-10 py-2 border border-white text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#0B1E36] hover:shadow-lg cursor-pointer"
             >
-              View Case Studies
+              {service.heroButtons.secondary}
             </a>
           </div>
         </div>
@@ -198,8 +83,8 @@ export default function AutomationServicePage() {
         {/* Right side — Laptop image */}
         <div className="relative z-10 flex-1 flex justify-center md:justify-end mt-10 md:mt-0">
           <Image
-            src="/images/devices.png"
-            alt="Laptop mockup"
+            src={"/images/devices.png"}
+            alt="Service mockup"
             width={600}
             height={600}
             className="object-contain drop-shadow-2xl"
@@ -216,28 +101,27 @@ export default function AutomationServicePage() {
           Why Work With Bomcel Digital
         </h2>
         <p className="text-white max-w-2xl mx-auto mb-12">
-          We make automation simple and stress-free — helping your business work
-          smarter, faster, and with fewer mistakes.
+          {service.whyWork.description}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {automationBoxes.map((box) => (
+          {service.whyWork.reasons.map((reason) => (
             <div
-              key={box.id}
+              key={reason._id}
               className="group bg-white backdrop-blur-md p-6 rounded-xl hover:bg-white/20 transition cursor-pointer"
             >
               <Image
-                src={box.icon}
-                alt={box.title}
+                src="/icon3.svg"
+                alt={reason.title}
                 width={40}
                 height={40}
                 className="mb-4 mx-auto"
               />
               <h3 className="text-xl font-semibold text-[#0B1E36] mb-2 group-hover:text-white transition-colors">
-                {box.title}
+                {reason.title}
               </h3>
               <p className="text-[#4A5565] text-sm group-hover:text-white transition-colors">
-                {box.description}
+                {reason.description}
               </p>
             </div>
           ))}
@@ -245,7 +129,7 @@ export default function AutomationServicePage() {
       </section>
 
       <section
-        id="why-work"
+        id="process"
         className="relative w-full py-20 px-6 md:px-16 text-center bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: "url('/images/grade.png')",
@@ -257,32 +141,31 @@ export default function AutomationServicePage() {
         {/* Content wrapper */}
         <div className="relative z-10">
           <h2 className="text-3xl mt-5 md:text-4xl text-[#0B1E36] mb-4 font-bold">
-            Our Automation Process
+            {service.process.title}
           </h2>
           <p className="text-[#4A5565] mb-12 max-w-2xl mx-auto">
-            A proven methodology that ensures quality, efficiency, and
-            exceptional results.
+            {service.process.description}
           </p>
 
           {/* Features */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-12">
-            {features.map((feature) => (
+            {service.process.steps.map((step) => (
               <div
-                key={feature.id}
+                key={step._id}
                 className="flex flex-col items-center text-center"
               >
                 <Image
-                  src={feature.icon}
-                  alt={feature.title}
+                  src="/icon2.svg"
+                  alt={step.title}
                   width={50}
                   height={50}
                   className="mb-4 mx-auto"
                 />
                 <h3 className="text-lg font-semibold mb-3 text-[#0B1E36]">
-                  {feature.title}
+                  {step.title}
                 </h3>
                 <p className="text-[#FFFFFF] text-sm max-w-xs">
-                  {feature.description}
+                  {step.description}
                 </p>
               </div>
             ))}
@@ -300,21 +183,20 @@ export default function AutomationServicePage() {
             Recent Jobs
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto text-center mb-4">
-            Explore our portfolio of successful web projects across various
-            industries.
+            {service.recentProjects.subtitle}
           </p>
         </div>
 
         {/* Images Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {projects.map((project) => (
+          {service.recentProjects.projects.map((project) => (
             <div
-              key={project.id}
+              key={project._id}
               className="relative group rounded-xl overflow-hidden h-[300px]"
             >
               <Image
-                src={project.image}
-                alt={project.alt}
+                src="/images/project2.png"
+                alt={project.title}
                 width={600}
                 height={450}
                 className="w-full h-[60%] object-cover transform transition-transform duration-300 group-hover:scale-105"
@@ -325,7 +207,7 @@ export default function AutomationServicePage() {
                 </h3>
                 <p className="text-gray-600 text-sm flex items-center gap-2">
                   <span className="w-8 h-1 bg-blue-500 inline-block"></span>{" "}
-                  {project.category}
+                  {project.industry}
                 </p>
               </div>
             </div>
@@ -335,16 +217,16 @@ export default function AutomationServicePage() {
 
       <section className="w-full py-20 px-6 md:px-16 text-center bg-linear-to-b from-[#F8FBFF] to-white">
         <h2 className="text-3xl md:text-4xl font-bold text-[#0B1E36] mb-4">
-          Our Pricing Packages
+          {service.pricingPackage.title}
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto mb-12">
-          Transparent pricing designed to fit businesses of all sizes.
+          {service.pricingPackage.subtitle}
         </p>
 
         <div className="flex flex-col md:flex-row justify-center items-center gap-6">
-          {pricingPlans.map((plan, index) => (
+          {service.pricingPackage.pricingPlans.map((plan, index) => (
             <div
-              key={index}
+              key={plan._id}
               className={`relative bg-white shadow-md rounded-xl p-6 md:p-8 h-[500px] w-80 transform transition-all duration-300 border-2 ${
                 activeIndex === index
                   ? "border-[#0077B6] scale-105 z-20"
@@ -361,32 +243,27 @@ export default function AutomationServicePage() {
 
               <div className="text-center max-w-2xl mx-auto mb-8">
                 <h3 className="text-lg font-semibold text-[#0B1E36]  mb-2">
-                  {plan.subtitle}
+                  {plan.planTitle}
                 </h3>
                 <p className="text-[#4A5565] text-sm md:text-base">
-                  {plan.title}
+                  {plan.planTitle}
                 </p>
               </div>
 
               {/* Main Price */}
               <div className="mb-4">
                 <p className="text-3xl font-bold text-[#0077B6] flex items-baseline justify-center gap-1">
-                  <span className="text-base"></span>
-                  {plan.price}
+                  <span className="text-base">₦</span>
+                  {plan.price.ngn.toLocaleString()}
                   <span className="text-sm text-gray-500 font-normal">
-                    /month
+                    /{plan.duration.minDays}-{plan.duration.maxDays} days
                   </span>
                 </p>
-
-                {/* AI Price */}
-                {/* <p className="text-sm mt-3 text-gray-400 font-medium">
-                  {plan.aiPrice}
-                </p> */}
               </div>
 
               {/* Benefits */}
               <ul className="text-gray-600 text-sm space-y-3 text-left pl-4">
-                {plan.benefits.map((benefit, i) => (
+                {plan.benefit.map((benefit, i) => (
                   <li key={i} className="flex items-center gap-2">
                     <Image
                       src="/Margin.png"
@@ -401,13 +278,15 @@ export default function AutomationServicePage() {
 
               {/* Button */}
               <button
+                onClick={() => handleChoosePlan(plan)}
+                disabled={startPayment.isPending}
                 className={`px-10 mt-8 py-3 w-full font-medium rounded-lg border transition-all duration-300 ${
                   activeIndex === index
                     ? "bg-[#0077B6] text-white border-[#0077B6]"
                     : "bg-white text-[#0077B6] border-[#0077B6] hover:bg-[#0077B6] hover:text-white"
-                }`}
+                } ${startPayment.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Choose Plan
+                {startPayment.isPending ? 'Processing...' : 'Choose Plan'}
               </button>
             </div>
           ))}
@@ -415,7 +294,7 @@ export default function AutomationServicePage() {
       </section>
 
       <section
-        id="news"
+        id="ready"
         className="relative w-full py-20 px-6 md:px-16 text-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/Gradient.png')" }}
       >
@@ -423,10 +302,10 @@ export default function AutomationServicePage() {
 
         <div className="relative z-10 max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl  text-[#FFFFFF] mb-4">
-            Ready to Automate Your Business?
+            {service.readySection.title}
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto mb-8">
-            Let’s simplify your operations with intelligent automation
+            {service.readySection.description}
           </p>
           <div className="flex justify-center items-center gap-4 mb-12">
             <a
@@ -435,13 +314,13 @@ export default function AutomationServicePage() {
               rel="noopener noreferrer"
               className="px-8 py-3 rounded-lg bg-[#FFFFFF] text-[#0077B6] font-medium border border-[#0077B6] hover:bg-white hover:text-[#0B1E36] transition-all duration-300 cursor-pointer"
             >
-              Start Your Automation
+              {service.readySection.readyButton.primary}
             </a>
             <a
               href="../contact"
               className="px-8 py-3 rounded-lg  text-[#FFFFFF] font-medium border border-[#FFFFFF]  hover:text-white transition-all duration-300"
             >
-              Contact Us
+              {service.readySection.readyButton.secondary}
             </a>
           </div>
         </div>

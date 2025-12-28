@@ -7,6 +7,39 @@ interface ErrorResponse {
   rawResponse?: string;
 }
 
+export class ApiError extends Error {
+  public status: number;
+  public statusText: string;
+  public url: string;
+  public endpoint: string;
+  public method: string;
+  public errorData: ErrorResponse;
+  public responseText: string;
+
+  constructor(
+    message: string,
+    details: {
+      status: number;
+      statusText: string;
+      url: string;
+      endpoint: string;
+      method: string;
+      errorData: ErrorResponse;
+      responseText: string;
+    }
+  ) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = details.status;
+    this.statusText = details.statusText;
+    this.url = details.url;
+    this.endpoint = details.endpoint;
+    this.method = details.method;
+    this.errorData = details.errorData;
+    this.responseText = details.responseText;
+  }
+}
+
 export interface ApiResponse<T> {
   token: string;
   data?: T;
@@ -182,21 +215,24 @@ class ApiClient {
         // Try to get the response text first
         responseText = await response.text();
         console.log('Raw response text:', responseText);
-        
-        // Try to parse as JSON
-        if (responseText) {
+
+        // Try to parse as JSON if responseText is not empty
+        if (responseText.trim()) {
           errorData = JSON.parse(responseText);
           errorMessage = errorData.message || errorData.error || '';
+        } else {
+          errorData = { rawResponse: responseText };
+          errorMessage = response.statusText || 'Unknown error';
         }
       } catch (parseError) {
-        // If JSON parsing fails, use the raw text or status text
+        // If JSON parsing fails, use the raw text
         errorData = { rawResponse: responseText };
-        errorMessage = responseText || response.statusText;
+        errorMessage = responseText.trim() || response.statusText || 'Unknown error';
         console.warn('Failed to parse error response as JSON:', parseError);
       }
 
       // Log detailed error information for debugging
-      console.error('API Error Details:', {
+      console.error('API Error Details:', JSON.stringify({
         status: response.status,
         statusText: response.statusText,
         url: response.url,
@@ -205,7 +241,7 @@ class ApiClient {
         errorData,
         errorMessage,
         responseText
-      });
+      }, null, 2));
 
       // Provide specific messages for common HTTP status codes
       if (response.status === 401) {
@@ -220,7 +256,15 @@ class ApiClient {
         errorMessage = `HTTP ${response.status}: ${response.statusText || 'Unknown error'}`;
       }
 
-      throw new Error(errorMessage);
+      throw new ApiError(errorMessage, {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        endpoint,
+        method: options.method || 'GET',
+        errorData,
+        responseText,
+      });
     }
 
     // Handle empty responses (e.g., DELETE requests)
@@ -541,6 +585,20 @@ class ApiClient {
     message: string;
   }>> {
     return this.request('/bookings/cancel', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async startPayment(data: {
+    serviceId: string;
+    planType: string;
+    currency: string;
+  }): Promise<ApiResponse<{
+    checkoutUrl: string;
+    reference: string;
+  }>> {
+    return this.request('/payments/start', {
       method: 'POST',
       body: JSON.stringify(data),
     });
