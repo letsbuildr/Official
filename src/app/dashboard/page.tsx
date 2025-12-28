@@ -21,14 +21,14 @@ interface Transaction {
 }
 
 interface Consultation {
-  id: number;
-  service: string;
-  consultationDate: string;
-  consultationTime: string;
-  status: "scheduled" | "completed" | "cancelled";
-  fullName: string;
+  _id: string;
+  fullname: string;
   email: string;
-  message: string;
+  date: string;
+  time: string;
+  service: string;
+  status: string;
+  createdAt: string;
 }
 
 export default function Dashboard() {
@@ -129,27 +129,27 @@ export default function Dashboard() {
    ]);
 
   const [consultations] = useState<Consultation[]>([
-   {
-     id: 1,
-     service: "Web Development",
-     consultationDate: "2024-11-20",
-     consultationTime: "10:00 AM",
-     status: "scheduled",
-     fullName: "John Doe",
-     email: "john@example.com",
-     message: "Interested in building a modern e-commerce platform"
-   },
-   {
-     id: 2,
-     service: "Data Analysis",
-     consultationDate: "2024-11-18",
-     consultationTime: "02:00 PM",
-     status: "completed",
-     fullName: "Jane Smith",
-     email: "jane@example.com",
-     message: "Need help with business analytics dashboard"
-   }
- ]);
+    {
+      _id: "1",
+      service: "Web Development",
+      date: "2024-11-20",
+      time: "10:00 AM",
+      status: "scheduled",
+      fullname: "John Doe",
+      email: "john@example.com",
+      createdAt: "2024-11-15T10:00:00Z"
+    },
+    {
+      _id: "2",
+      service: "Data Analysis",
+      date: "2024-11-18",
+      time: "02:00 PM",
+      status: "completed",
+      fullname: "Jane Smith",
+      email: "jane@example.com",
+      createdAt: "2024-11-13T14:00:00Z"
+    }
+  ]);
 
  // Calculate statistics
  const totalSpent = transactions
