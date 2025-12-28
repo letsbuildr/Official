@@ -293,16 +293,12 @@ export default function TransactionHistoryPage() {
   }, []);
 
   const deleteSelectedTransactions = useCallback((): void => {
-    // In real app, this would call an API
-    console.log('Deleting transactions:', selectedTransactions);
     setSelectedTransactions([]);
-  }, [selectedTransactions]);
+  }, []);
 
   const markSelectedAsCompleted = useCallback((): void => {
-    // In real app, this would call an API
-    console.log('Marking as completed:', selectedTransactions);
     setSelectedTransactions([]);
-  }, [selectedTransactions]);
+  }, []);
 
   const formatCurrency = useCallback((amount: number): string => {
     return new Intl.NumberFormat("en-NG", {

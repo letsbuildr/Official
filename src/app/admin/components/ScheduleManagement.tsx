@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAddUnavailableDate, usePendingConsultations, useUpdateBookingDuration, useUpdateBookingStatus } from "@/lib/api/hooks";
 
 interface UnavailableDate {
   id: number;
@@ -10,21 +11,43 @@ interface UnavailableDate {
 }
 
 interface Consultation {
-  id: number;
-  clientName: string;
-  clientEmail: string;
-  service: string;
+  _id: string;
+  fullName: string;
+  email: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    id: string;
+  };
+  service: {
+    _id: string;
+    name: string;
+  } | null;
   date: string;
   time: string;
-  status: "scheduled" | "completed" | "cancelled";
-  duration: number;
+  timeZone: string;
+  isVerified: boolean;
+  isCancelled: boolean;
+  status: string;
+  createdAt: string;
+  __v: number;
 }
 
 export default function ScheduleManagement() {
+  const addUnavailableDateMutation = useAddUnavailableDate();
+  const updateBookingDurationMutation = useUpdateBookingDuration();
+  const updateBookingStatusMutation = useUpdateBookingStatus();
+  const { data: consultationsData, isLoading: consultationsLoading, error: consultationsError } = usePendingConsultations(60);
   const [currentTab, setCurrentTab] = useState("unavailable");
   const [showAddDateModal, setShowAddDateModal] = useState(false);
   const [consultationDuration, setConsultationDuration] = useState(30);
   const [showDurationModal, setShowDurationModal] = useState(false);
+  const [unavailableDateForm, setUnavailableDateForm] = useState({
+    date: "",
+    reason: "",
+    type: "maintenance" as "holiday" | "maintenance" | "personal" | "other"
+  });
 
   const [unavailableDates] = useState<UnavailableDate[]>([
     {
@@ -53,52 +76,19 @@ export default function ScheduleManagement() {
     }
   ]);
 
-  const [consultations] = useState<Consultation[]>([
-    {
-      id: 1,
-      clientName: "John Doe",
-      clientEmail: "john@example.com",
-      service: "Web Development",
-      date: "2024-11-20",
-      time: "10:00",
-      status: "scheduled",
-      duration: 30
-    },
-    {
-      id: 2,
-      clientName: "Jane Smith",
-      clientEmail: "jane@example.com",
-      service: "Data Analysis",
-      date: "2024-11-18",
-      time: "14:00",
-      status: "completed",
-      duration: 45
-    },
-    {
-      id: 3,
-      clientName: "Mike Johnson",
-      clientEmail: "mike@example.com",
-      service: "UI/UX Design",
-      date: "2024-11-25",
-      time: "11:00",
-      status: "scheduled",
-      duration: 30
-    },
-    {
-      id: 4,
-      clientName: "Sarah Wilson",
-      clientEmail: "sarah@example.com",
-      service: "Automation Setup",
-      date: "2024-11-22",
-      time: "15:30",
-      status: "cancelled",
-      duration: 60
-    }
-  ]);
+  const consultations = consultationsData?.data || [];
 
-  const handleAddUnavailableDate = () => {
-    console.log("Adding unavailable date");
-    setShowAddDateModal(false);
+  const handleAddUnavailableDate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (unavailableDateForm.date && unavailableDateForm.reason) {
+      addUnavailableDateMutation.mutate(unavailableDateForm);
+      setShowAddDateModal(false);
+      setUnavailableDateForm({
+        date: "",
+        reason: "",
+        type: "maintenance"
+      });
+    }
   };
 
   const handleDeleteUnavailableDate = (id: number) => {
@@ -107,15 +97,28 @@ export default function ScheduleManagement() {
     }
   };
 
-  const handleCancelConsultation = (consultationId: number) => {
+  const handleCancelConsultation = (consultationId: string) => {
     if (confirm("Are you sure you want to cancel this consultation? The client will be notified automatically.")) {
       console.log(`Cancelling consultation ${consultationId}`);
     }
   };
 
+  const handleUpdateStatus = (consultationId: string, newStatus: string) => {
+    updateBookingStatusMutation.mutate({
+      bookingId: consultationId,
+      status: newStatus
+    });
+  };
+
   const handleUpdateDuration = () => {
-    console.log(`Updating consultation duration to ${consultationDuration} minutes`);
-    setShowDurationModal(false);
+    updateBookingDurationMutation.mutate(
+      { duration: consultationDuration },
+      {
+        onSuccess: () => {
+          setShowDurationModal(false);
+        },
+      }
+    );
   };
 
   const getTypeColor = (type: string) => {
@@ -251,74 +254,91 @@ export default function ScheduleManagement() {
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold text-gray-900">All Consultations</h3>
             <div className="text-sm text-gray-500">
-              Total: {consultations.length} consultations
+              Total: {consultationsData?.count || 0} consultations
             </div>
           </div>
 
           <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Client
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Service
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date & Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Duration
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {consultations.map((consultation) => (
-                    <tr key={consultation.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{consultation.clientName}</div>
-                          <div className="text-sm text-gray-500">{consultation.clientEmail}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {consultation.service}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div>{new Date(consultation.date).toLocaleDateString()}</div>
-                        <div className="text-gray-500">{consultation.time}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {consultation.duration} min
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(consultation.status)}`}>
-                          {consultation.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {consultation.status === "scheduled" && (
-                          <button
-                            onClick={() => handleCancelConsultation(consultation.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </td>
+            {consultationsLoading ? (
+              <div className="p-6 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-2 text-gray-500">Loading consultations...</p>
+              </div>
+            ) : consultationsError ? (
+              <div className="p-6 text-center">
+                <p className="text-red-500">Error loading consultations: {consultationsError.message}</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Client
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Service
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date & Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {consultations.map((consultation) => (
+                      <tr key={consultation._id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{consultation.fullName}</div>
+                            <div className="text-sm text-gray-500">{consultation.email}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {consultation.service?.name || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div>{new Date(consultation.date).toLocaleDateString()}</div>
+                          <div className="text-gray-500">{consultation.time} ({consultation.timeZone})</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center space-x-2">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(consultation.status)}`}>
+                              {consultation.status}
+                            </span>
+                            <select
+                              value={consultation.status}
+                              onChange={(e) => handleUpdateStatus(consultation._id, e.target.value)}
+                              disabled={updateBookingStatusMutation.isPending}
+                              className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <option value="scheduled">Set Scheduled</option>
+                              <option value="completed">Set Completed</option>
+                              <option value="cancelled">Set Cancelled</option>
+                            </select>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          {consultation.status === "scheduled" && !consultation.isCancelled && (
+                            <button
+                              onClick={() => handleCancelConsultation(consultation._id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -407,25 +427,31 @@ export default function ScheduleManagement() {
               </button>
             </div>
 
-            <form className="space-y-4">
+            <form onSubmit={handleAddUnavailableDate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date
+                  Date *
                 </label>
                 <input
                   type="date"
+                  value={unavailableDateForm.date}
+                  onChange={(e) => setUnavailableDateForm(prev => ({ ...prev, date: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Reason
+                  Reason *
                 </label>
                 <input
                   type="text"
+                  value={unavailableDateForm.reason}
+                  onChange={(e) => setUnavailableDateForm(prev => ({ ...prev, reason: e.target.value }))}
                   placeholder="e.g., Christmas Holiday, Team Retreat"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
                 />
               </div>
 
@@ -433,7 +459,11 @@ export default function ScheduleManagement() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Type
                 </label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select
+                  value={unavailableDateForm.type}
+                  onChange={(e) => setUnavailableDateForm(prev => ({ ...prev, type: e.target.value as "holiday" | "maintenance" | "personal" | "other" }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="holiday">Holiday</option>
                   <option value="maintenance">Maintenance</option>
                   <option value="personal">Personal</option>
@@ -451,10 +481,10 @@ export default function ScheduleManagement() {
                 </button>
                 <button
                   type="submit"
-                  onClick={handleAddUnavailableDate}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  disabled={addUnavailableDateMutation.isPending}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
-                  Add Date
+                  {addUnavailableDateMutation.isPending ? "Adding..." : "Add Date"}
                 </button>
               </div>
             </form>
@@ -521,9 +551,10 @@ export default function ScheduleManagement() {
                 <button
                   type="submit"
                   onClick={handleUpdateDuration}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  disabled={updateBookingDurationMutation.isPending}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
-                  Update Duration
+                  {updateBookingDurationMutation.isPending ? 'Updating...' : 'Update Duration'}
                 </button>
               </div>
             </div>

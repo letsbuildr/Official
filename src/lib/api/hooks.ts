@@ -19,7 +19,6 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: LoginRequest) => apiClient.login(credentials),
     onSuccess: (response) => {
-      console.log(response)
       if (response?.token) {
         apiClient.setToken(response.token);
         // Update auth state in React Query cache
@@ -169,7 +168,12 @@ export const useAllServices = () => {
 
 // Custom hook to get a service by slug
 export const useServiceBySlug = (slug: string) => {
-  return useQuery({
+  return useQuery<{
+    status: string;
+    data: {
+      data: Service;
+    };
+  }>({
     queryKey: [...queryKeys.services, 'slug', slug],
     queryFn: () => apiClient.getServiceBySlug(slug),
     enabled: !!slug,
@@ -252,5 +256,227 @@ export const useAdminOverview = () => {
     queryFn: () => apiClient.getAdminOverview(),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+  });
+};
+
+// Custom hook to get pricing overview data
+export const usePricingOverview = () => {
+  return useQuery({
+    queryKey: ['pricingOverview'],
+    queryFn: () => apiClient.getPricingOverview(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Custom hook to update service pricing
+export const useUpdateServicePrice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ serviceId, plans }: {
+      serviceId: string;
+      plans: Array<{
+        _id: string;
+        price: {
+          usd?: number;
+          ngn?: number;
+        };
+      }>;
+    }) => apiClient.updateServicePrice(serviceId, plans),
+    onSuccess: () => {
+      // Invalidate and refetch pricing overview
+      queryClient.invalidateQueries({ queryKey: ['pricingOverview'] });
+      toast.success('Service pricing updated successfully!');
+    },
+    onError: (error) => {
+      console.error('Update service price failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Update service price failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to apply inflation adjustment
+export const useApplyInflationAdjustment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      percentage: number;
+      currency: 'all' | 'usd' | 'ngn';
+      reason?: string;
+    }) => apiClient.applyInflationAdjustment(data),
+    onSuccess: () => {
+      // Invalidate and refetch pricing overview
+      queryClient.invalidateQueries({ queryKey: ['pricingOverview'] });
+      toast.success('Inflation adjustment applied successfully!');
+    },
+    onError: (error) => {
+      console.error('Inflation adjustment failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Inflation adjustment failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to add unavailable date
+export const useAddUnavailableDate = () => {
+  return useMutation({
+    mutationFn: (data: {
+      date: string;
+      reason: string;
+      type: 'holiday' | 'maintenance' | 'personal' | 'other';
+    }) => apiClient.addUnavailableDate(data),
+    onSuccess: () => {
+      toast.success('Unavailable date added successfully!');
+    },
+    onError: (error) => {
+      console.error('Add unavailable date failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Add unavailable date failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to get pending consultations
+export const usePendingConsultations = (range: number = 60) => {
+  return useQuery({
+    queryKey: ['pendingConsultations', range],
+    queryFn: () => apiClient.getPendingConsultations(range),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+// Custom hook to update booking duration
+export const useUpdateBookingDuration = () => {
+  return useMutation({
+    mutationFn: (data: { duration: number }) => apiClient.updateBookingDuration(data),
+    onSuccess: () => {
+      toast.success('Booking duration updated successfully!');
+    },
+    onError: (error) => {
+      console.error('Update booking duration failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Update booking duration failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to update booking status
+export const useUpdateBookingStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { bookingId: string; status: string }) => apiClient.updateBookingStatus(data),
+    onSuccess: () => {
+      // Invalidate and refetch pending consultations
+      queryClient.invalidateQueries({ queryKey: ['pendingConsultations'] });
+      toast.success('Booking status updated successfully!');
+    },
+    onError: (error) => {
+      console.error('Update booking status failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Update booking status failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to initialize booking
+export const useInitializeBooking = () => {
+  return useQuery({
+    queryKey: ['initializeBooking'],
+    queryFn: () => apiClient.initializeBooking(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Custom hook to create booking
+export const useCreateBooking = () => {
+  return useMutation({
+    mutationFn: (data: {
+      fullname: string;
+      email: string;
+      date: string;
+      time: string;
+      service: string;
+    }) => apiClient.createBooking(data),
+    onSuccess: (response) => {
+      toast.success('Booking created successfully! Please check your email for OTP verification.');
+    },
+    onError: (error) => {
+      console.error('Create booking failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Create booking failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to verify booking
+export const useVerifyBooking = () => {
+  return useMutation({
+    mutationFn: (data: {
+      bookingId: string;
+      otp: string;
+    }) => apiClient.verifyBooking(data),
+    onSuccess: (response) => {
+      toast.success('Booking verified successfully!');
+    },
+    onError: (error) => {
+      console.error('Verify booking failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Invalid OTP. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to regenerate booking OTP
+export const useRegenerateBookingOtp = () => {
+  return useMutation({
+    mutationFn: (data: { bookingId: string }) => apiClient.regenerateBookingOtp(data),
+    onSuccess: () => {
+      toast.success('New OTP sent to your email!');
+    },
+    onError: (error) => {
+      console.error('Regenerate OTP failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to regenerate OTP. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to cancel booking
+export const useCancelBooking = () => {
+  return useMutation({
+    mutationFn: (data: { bookingId: string }) => apiClient.cancelBooking(data),
+    onSuccess: () => {
+      toast.success('Booking cancelled successfully!');
+    },
+    onError: (error) => {
+      console.error('Cancel booking failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Cancel booking failed. Please try again.';
+      toast.error(errorMessage);
+    },
+  });
+};
+
+// Custom hook to start payment
+export const useStartPayment = () => {
+  return useMutation({
+    mutationFn: (data: {
+      serviceId: string;
+      planType: string;
+      currency: string;
+    }) => apiClient.startPayment(data),
+    onSuccess: (response) => {
+      if (response.data?.checkoutUrl) {
+        window.location.href = response.data.checkoutUrl;
+      }
+      toast.success('Payment initiated successfully!');
+    },
+    onError: (error) => {
+      console.error('Start payment failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Payment initiation failed. Please try again.';
+      toast.error(errorMessage);
+    },
   });
 };

@@ -3,8 +3,12 @@
 import { useState, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import { AVAILABLE_SERVICES } from "./types";
+import { useInitializeBooking, useCreateBooking } from "@/lib/api/hooks";
 
 export default function ConsultationPage() {
+  const { data: initData, isLoading: initLoading, error: initError } = useInitializeBooking();
+  const createBookingMutation = useCreateBooking();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -19,11 +23,7 @@ export default function ConsultationPage() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [draftSaved, setDraftSaved] = useState(false);
   const [showDraftNotification, setShowDraftNotification] = useState(false);
-  
-  // Authentication state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState<{ fullName: string; email: string } | null>(null);
-  
+
   // Time slots state
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [loadingTimeSlots, setLoadingTimeSlots] = useState(false);
@@ -61,10 +61,23 @@ export default function ConsultationPage() {
     return () => clearInterval(autoSaveInterval);
   }, [formData]);
 
-  // Check authentication status on mount
+  // Update form data when init data is loaded
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
+    if (initData) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: prev.fullName || initData.fullname,
+        email: prev.email || initData.email
+      }));
+    }
+  }, [initData]);
+
+  // Ensure availableTimeSlots is always an array
+  useEffect(() => {
+    if (!Array.isArray(availableTimeSlots)) {
+      setAvailableTimeSlots([]);
+    }
+  }, [availableTimeSlots]);
 
   const saveDraft = () => {
     localStorage.setItem("consultationDraft", JSON.stringify(formData));
@@ -86,45 +99,22 @@ export default function ConsultationPage() {
     setAvailableTimeSlots([]);
   };
 
-  const checkAuthStatus = () => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      setIsLoggedIn(true);
-      const mockUserData = {
-        fullName: "John Doe",
-        email: "john@example.com"
-      };
-      setUserData(mockUserData);
-      
-      setFormData(prev => ({
-        ...prev,
-        fullName: prev.fullName || mockUserData.fullName,
-        email: prev.email || mockUserData.email
-      }));
-    }
-  };
-
   const handleLoginClick = () => {
    
     window.location.href = "/sign-in";
   };
 
   const fetchAvailableTimeSlots = async (date: string) => {
-    if (!date) {
+    if (!date || !initData?.availableSlots) {
       setAvailableTimeSlots([]);
       return;
     }
 
     setLoadingTimeSlots(true);
     try {
-   
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const allTimeSlots = ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "01:00 PM", "02:00 PM", "03:00 PM"];
-      const mockBookedSlots = ["10:00 AM", "02:00 PM"];
-      const available = allTimeSlots.filter(slot => !mockBookedSlots.includes(slot));
-      
-      setAvailableTimeSlots(available);
+      // Get available slots for the selected date from API data
+      const slotsForDate = initData.availableSlots[date];
+      setAvailableTimeSlots(Array.isArray(slotsForDate) ? slotsForDate : []);
     } catch (error) {
       console.error("Error fetching time slots:", error);
       setAvailableTimeSlots([]);
@@ -200,36 +190,35 @@ export default function ConsultationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
-    setIsSubmitting(true);
-    setSubmitStatus("idle");
+    // Prepare booking data
+    const bookingData = {
+      fullname: formData.fullName,
+      email: formData.email,
+      date: formData.preferredDate,
+      time: formData.preferredTime,
+      service: formData.service,
+    };
 
-    try {
-      // Prepare booking data for OTP verification
-      const bookingData = {
-        ...formData,
-        userId: isLoggedIn ? userData?.email : null, // Include user ID if logged in
-        bookingDate: new Date().toISOString(),
-      };
+    createBookingMutation.mutate(bookingData, {
+      onSuccess: (response) => {
+        if (response.data?.bookingId) {
+          // Save booking ID for verification
+          localStorage.setItem("pendingBookingId", response.data.bookingId);
+          localStorage.setItem("pendingBookingEmail", formData.email);
 
-      // Save booking data for verification
-      localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
-      
-      // Clear the draft as we're moving to verification
-      clearDraft();
-      
-      // Redirect to verification page
-      window.location.href = "/verification";
-    } catch (error) {
-      console.error("Booking error:", error);
-      setSubmitStatus("error");
-    } finally {
-      setIsSubmitting(false);
-    }
+          // Clear the draft as we're moving to verification
+          clearDraft();
+
+          // Redirect to verification page
+          window.location.href = "/verification";
+        }
+      },
+    });
   };
 
   const getMinDate = () => {
@@ -245,6 +234,46 @@ export default function ConsultationPage() {
   };
 
   
+
+  // Show loading state while initializing
+  if (initLoading) {
+    return (
+      <section className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#F9FAFB] to-[#E6F0FA] px-4 sm:px-6 py-8 sm:py-20">
+        <div className="w-full max-w-2xl">
+          <div className="bg-white shadow-lg rounded-2xl p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0077B6] mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold text-[#0B1E36] mb-2">Loading...</h2>
+            <p className="text-gray-600">Preparing your consultation booking</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state if initialization fails
+  if (initError) {
+    return (
+      <section className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#F9FAFB] to-[#E6F0FA] px-4 sm:px-6 py-8 sm:py-20">
+        <div className="w-full max-w-2xl">
+          <div className="bg-white shadow-lg rounded-2xl p-8 text-center">
+            <div className="text-red-500 mb-4">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-[#0B1E36] mb-2">Unable to Load Booking Form</h2>
+            <p className="text-gray-600 mb-4">Please try refreshing the page or contact support if the problem persists.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 bg-[#0077B6] text-white rounded-lg hover:bg-[#005F91] transition"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#F9FAFB] to-[#E6F0FA] px-4 sm:px-6 py-8 sm:py-20">
@@ -285,27 +314,27 @@ export default function ConsultationPage() {
         {/* Main Form */}
         <div className="bg-white shadow-lg rounded-2xl p-4 sm:p-8 border border-gray-100">
           {/* Login Suggestion */}
-          {!isLoggedIn && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-start sm:items-center">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mr-2 sm:mr-3 mt-0.5 sm:mt-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                  <div>
-                    <p className="text-blue-900 font-medium text-sm sm:text-base">Have an account?</p>
-                    <p className="text-blue-700 text-xs sm:text-sm">Log in to auto-fill your information</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleLoginClick}
-                  className="self-start sm:self-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
-                >
-                  Log In
-                </button>
-              </div>
-            </div>
-          )}
+           {initData && !initData.loggedIn && (
+             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                 <div className="flex items-start sm:items-center">
+                   <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mr-2 sm:mr-3 mt-0.5 sm:mt-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                   </svg>
+                   <div>
+                     <p className="text-blue-900 font-medium text-sm sm:text-base">Have an account?</p>
+                     <p className="text-blue-700 text-xs sm:text-sm">Log in to auto-fill your information</p>
+                   </div>
+                 </div>
+                 <button
+                   onClick={handleLoginClick}
+                   className="self-start sm:self-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                 >
+                   Log In
+                 </button>
+               </div>
+             </div>
+           )}
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Contact Information */}
@@ -377,13 +406,16 @@ export default function ConsultationPage() {
                     errors.service ? "border-red-500" : "border-gray-300"
                   }`}
                   required
+                  disabled={initLoading}
                 >
-                  <option value="">Select a service</option>
-                  {AVAILABLE_SERVICES.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.name} - {service.description}
+                  <option value="">
+                    {initLoading ? "Loading services..." : "Select a service"}
+                  </option>
+                  {initData?.services?.map((service) => (
+                    <option key={service._id} value={service._id}>
+                      {service.name}
                     </option>
-                  ))}
+                  )) || []}
                 </select>
                 {errors.service && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.service}</p>}
               </div>
@@ -471,7 +503,7 @@ export default function ConsultationPage() {
                       {!formData.preferredDate ? "Select a date first" :
                        loadingTimeSlots ? "Loading..." : "Select a time slot"}
                     </option>
-                    {availableTimeSlots.map((time) => (
+                    {(availableTimeSlots || []).map((time) => (
                       <option key={time} value={time}>
                         {time}
                       </option>
@@ -501,14 +533,14 @@ export default function ConsultationPage() {
             <div className="space-y-3 pt-4">
               <button
                 type="submit"
-                disabled={isSubmitting || !formData.preferredDate || !formData.preferredTime || !formData.service}
+                disabled={createBookingMutation.isPending || !formData.preferredDate || !formData.preferredTime || !formData.service}
                 className={`w-full px-6 py-4 bg-[#0077B6] text-white rounded-lg font-semibold hover:bg-[#005F91] transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-base ${
-                  isSubmitting || !formData.preferredDate || !formData.preferredTime || !formData.service
+                  createBookingMutation.isPending || !formData.preferredDate || !formData.preferredTime || !formData.service
                     ? "opacity-75 cursor-not-allowed"
                     : ""
                 }`}
               >
-                {isSubmitting ? (
+                {createBookingMutation.isPending ? (
                   <>
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

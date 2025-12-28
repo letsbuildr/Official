@@ -2,9 +2,23 @@
 
 import { Users, Calendar, DollarSign, CheckCircle, Star, Settings, CreditCard, Clock } from "lucide-react";
 import { useAdminOverview } from "../../../lib/api/hooks";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AdminOverview() {
   const { data: overviewData, isLoading, error } = useAdminOverview();
+  const router = useRouter();
+
+  // Handle authentication errors by redirecting to sign-in
+  useEffect(() => {
+    if (error && error.message && (
+      error.message.includes('not logged in') ||
+      error.message.includes('401') ||
+      error.message.includes('Unauthorized')
+    )) {
+      router.push('/sign-in');
+    }
+  }, [error, router]);
 
   if (isLoading) {
     return (
@@ -54,7 +68,41 @@ export default function AdminOverview() {
     );
   }
 
-  const { stats, activityLog, topServices } = overviewData.data;
+  // The API returns the numeric stats at the top level (overviewData.data).
+  // Treat overviewData.data as the stats object and safely pull optional arrays.
+  type Activity = {
+    type: string;
+    user: string;
+    createdAt: string;
+  };
+  
+  type TopService = {
+    _id?: { _id?: string } | string;
+    sales?: number;
+    revenue?: number;
+  };
+  
+  type StatsData = {
+    stats?: {
+      totalUsers?: number;
+      newUsersThisMonth?: number;
+      totalServices?: number;
+      activeServiceUsers?: number;
+      scheduledConsultations?: number;
+      totalRevenue?: number;
+      [key: string]: unknown;
+    };
+    activityLog?: Activity[];
+    topServices?: TopService[];
+    [key: string]: unknown;
+  };
+  
+  const statsData = overviewData.data.stats as StatsData | undefined;
+  
+  type Stats = NonNullable<StatsData["stats"]>;
+  const stats: Stats = statsData?.stats ?? {};
+  const activityLog: Activity[] = statsData?.activityLog ?? [];
+  const topServices: TopService[] = statsData?.topServices ?? [];
 
   // Helper function to get activity icon and message
   const getActivityInfo = (type: string, user: string) => {
@@ -104,7 +152,7 @@ export default function AdminOverview() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Platform Overview</h2>
         <p className="text-gray-600 mt-1">
-          Monitor your platform's performance and key metrics
+          Monitor your platform&apos;s performance and key metrics
         </p>
       </div>
 
@@ -118,8 +166,8 @@ export default function AdminOverview() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Users</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
-              <p className="text-sm text-green-600">+{stats.newUsersThisMonth} this month</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats?.totalUsers?.toLocaleString() || '0'}</p>
+              <p className="text-sm text-green-600">+{stats?.newUsersThisMonth || 0} this month</p>
             </div>
           </div>
         </div>
@@ -132,8 +180,8 @@ export default function AdminOverview() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Services</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalServices}</p>
-              <p className="text-sm text-blue-600">{stats.activeServiceUsers} active users</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats?.totalServices || 0}</p>
+              <p className="text-sm text-blue-600">{stats?.activeServiceUsers || 0} active users</p>
             </div>
           </div>
         </div>
@@ -146,7 +194,7 @@ export default function AdminOverview() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Consultations</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.scheduledConsultations}</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats?.scheduledConsultations || 0}</p>
               <p className="text-sm text-orange-600">scheduled</p>
             </div>
           </div>
@@ -160,7 +208,7 @@ export default function AdminOverview() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Revenue</p>
-              <p className="text-2xl font-semibold text-gray-900">₦{stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-semibold text-gray-900">₦{stats?.totalRevenue?.toLocaleString() || '0'}</p>
               <p className="text-sm text-green-600">lifetime</p>
             </div>
           </div>
@@ -223,15 +271,17 @@ export default function AdminOverview() {
             <div className="space-y-4">
               {topServices.length > 0 ? (
                 topServices.map((service, index) => {
-                  const maxSales = Math.max(...topServices.map(s => s.sales));
-                  const percentage = (service.sales / maxSales) * 100;
+                  const maxSales = Math.max(...topServices.map(s => s?.sales || 0));
+                  const percentage = maxSales > 0 ? ((service?.sales || 0) / maxSales) * 100 : 0;
+                  const rawId = typeof service?._id === 'string' ? service._id : service?._id?._id;
+                  const displayId = rawId ? String(rawId).slice(-6) : 'Unknown';
                   
                   return (
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-900">Service {service._id._id.slice(-6)}</p>
-                          <p className="text-sm text-gray-500">{service.sales} sales</p>
+                          <p className="text-sm font-medium text-gray-900">Service {displayId}</p>
+                          <p className="text-sm text-gray-500">{service?.sales || 0} sales</p>
                         </div>
                         <div className="mt-2">
                           <div className="bg-gray-200 rounded-full h-2">
@@ -242,7 +292,7 @@ export default function AdminOverview() {
                           </div>
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
-                          Revenue: ₦{service.revenue.toLocaleString()}
+                          Revenue: ₦{service?.revenue?.toLocaleString() || '0'}
                         </p>
                       </div>
                     </div>
