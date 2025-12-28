@@ -68,8 +68,7 @@ export default function AdminOverview() {
     );
   }
 
-  const { stats: statsData } = overviewData.data;
-  const { stats, activityLog = [], topServices = [] } = statsData;
+  const { stats, activityLog = [], topServices = [] } = overviewData.data;
 
   console.log(overviewData.data)
 
