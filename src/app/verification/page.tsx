@@ -103,7 +103,9 @@ export default function VerificationPage() {
           localStorage.removeItem("pendingBookingEmail");
 
           // Save verified booking data
-          localStorage.setItem("verifiedBooking", JSON.stringify(response.data.booking));
+          if (response.data && response.data.booking) {
+            localStorage.setItem("verifiedBooking", JSON.stringify(response.data.booking));
+          }
 
           // Redirect to success page
           router.push("/booking-success");
