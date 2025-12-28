@@ -5,6 +5,14 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import { useAllServices, useUpdateService, useDeleteService, useCreateService } from "@/lib/api/hooks";
 import { Service, ApiResponseWithServices } from "@/lib/api/client";
 
+type PricingPlan = {
+  price: { usd: number; ngn: number; };
+  duration: { minDays: number; maxDays: number; };
+  planTitle: string;
+  benefit: string[];
+  _id: string;
+};
+
 export default function ServiceManagement() {
   const { data: servicesResponse } = useAllServices();
   const updateServiceMutation = useUpdateService();
@@ -62,7 +70,7 @@ export default function ServiceManagement() {
       process: { title: "", description: "", steps: [] },
       whyWork: { description: "", reasons: [] },
       readySection: { title: "", description: "", readyButton: { primary: "Get Started", secondary: "Contact Us" } },
-      pricingPackage: { pricingPlans: [] }
+      pricingPackage: { title: "Our Pricing Packages", subtitle: "Transparent pricing designed to fit businesses of all sizes", pricingPlans: [] as PricingPlan[] }
     });
     setShowModal(true);
   };
@@ -537,18 +545,20 @@ export default function ServiceManagement() {
                               return {
                                 ...prev,
                                 pricingPackage: {
-                                  ...prev.pricingPackage,
+                                  title: prev.pricingPackage?.title || "Our Pricing Packages",
+                                  subtitle: prev.pricingPackage?.subtitle || "Transparent pricing designed to fit businesses of all sizes",
                                   pricingPlans: [
                                     {
                                       planTitle: "Basic Website",
                                       price: { usd: parseInt(e.target.value) || 0, ngn: existingPlan?.price?.ngn || 0 },
                                       duration: { minDays: 7, maxDays: 10 },
-                                      benefit: ["Up to 5 pages", "Responsive design", "Contact form", "1 revision", "Free SSL setup"]
-                                    } as any,
+                                      benefit: ["Up to 5 pages", "Responsive design", "Contact form", "1 revision", "Free SSL setup"],
+                                      _id: existingPlan?._id || ""
+                                    } as PricingPlan,
                                     ...currentPlans.slice(1)
                                   ]
                                 }
-                              };
+                              } as Partial<Service>;
                             })}
                             className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
@@ -562,18 +572,20 @@ export default function ServiceManagement() {
                               return {
                                 ...prev,
                                 pricingPackage: {
-                                  ...prev.pricingPackage,
+                                  title: prev.pricingPackage?.title || "Our Pricing Packages",
+                                  subtitle: prev.pricingPackage?.subtitle || "Transparent pricing designed to fit businesses of all sizes",
                                   pricingPlans: [
                                     {
                                       planTitle: "Basic Website",
                                       price: { usd: existingPlan?.price?.usd || 0, ngn: parseInt(e.target.value) || 0 },
                                       duration: { minDays: 7, maxDays: 10 },
-                                      benefit: ["Up to 5 pages", "Responsive design", "Contact form", "1 revision", "Free SSL setup"]
-                                    } as any,
+                                      benefit: ["Up to 5 pages", "Responsive design", "Contact form", "1 revision", "Free SSL setup"],
+                                      _id: existingPlan?._id || ""
+                                    } as PricingPlan,
                                     ...currentPlans.slice(1)
                                   ]
                                 }
-                              };
+                              } as Partial<Service>;
                             })}
                             className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
@@ -597,19 +609,21 @@ export default function ServiceManagement() {
                               return {
                                 ...prev,
                                 pricingPackage: {
-                                  ...prev.pricingPackage,
+                                  title: prev.pricingPackage?.title || "Our Pricing Packages",
+                                  subtitle: prev.pricingPackage?.subtitle || "Transparent pricing designed to fit businesses of all sizes",
                                   pricingPlans: [
                                     ...(currentPlans[0] ? [currentPlans[0]] : []),
                                     {
                                       planTitle: "Standard Website",
                                       price: { usd: parseInt(e.target.value) || 0, ngn: existingPlan?.price?.ngn || 0 },
                                       duration: { minDays: 14, maxDays: 21 },
-                                      benefit: ["Up to 15 pages", "Blog Integration", "CMS setup", "SEO basics", "2 revisions", "Hosting support"]
-                                    } as any,
+                                      benefit: ["Up to 15 pages", "Blog Integration", "CMS setup", "SEO basics", "2 revisions", "Hosting support"],
+                                      _id: existingPlan?._id || ""
+                                    } as PricingPlan,
                                     ...(currentPlans.slice(2) || [])
                                   ]
                                 }
-                              };
+                              } as Partial<Service>;
                             })}
                             className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
@@ -623,19 +637,21 @@ export default function ServiceManagement() {
                               return {
                                 ...prev,
                                 pricingPackage: {
-                                  ...prev.pricingPackage,
+                                  title: prev.pricingPackage?.title || "Our Pricing Packages",
+                                  subtitle: prev.pricingPackage?.subtitle || "Transparent pricing designed to fit businesses of all sizes",
                                   pricingPlans: [
                                     ...(currentPlans[0] ? [currentPlans[0]] : []),
                                     {
                                       planTitle: "Standard Website",
                                       price: { usd: existingPlan?.price?.usd || 0, ngn: parseInt(e.target.value) || 0 },
                                       duration: { minDays: 14, maxDays: 21 },
-                                      benefit: ["Up to 15 pages", "Blog Integration", "CMS setup", "SEO basics", "2 revisions", "Hosting support"]
-                                    } as any,
+                                      benefit: ["Up to 15 pages", "Blog Integration", "CMS setup", "SEO basics", "2 revisions", "Hosting support"],
+                                      _id: existingPlan?._id || ""
+                                    } as PricingPlan,
                                     ...(currentPlans.slice(2) || [])
                                   ]
                                 }
-                              };
+                              } as Partial<Service>;
                             })}
                             className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
@@ -659,18 +675,20 @@ export default function ServiceManagement() {
                               return {
                                 ...prev,
                                 pricingPackage: {
-                                  ...prev.pricingPackage,
+                                  title: prev.pricingPackage?.title || "Our Pricing Packages",
+                                  subtitle: prev.pricingPackage?.subtitle || "Transparent pricing designed to fit businesses of all sizes",
                                   pricingPlans: [
                                     ...(currentPlans.slice(0, 2) || []),
                                     {
                                       planTitle: "Premium Website/E-Commerce",
                                       price: { usd: parseInt(e.target.value) || 0, ngn: existingPlan?.price?.ngn || 0 },
                                       duration: { minDays: 21, maxDays: 45 },
-                                      benefit: ["Unlimited pages", "Payment gateway", "Product catalog", "Admin dashboard", "SEO optimization", "Priority support"]
-                                    } as any
+                                      benefit: ["Unlimited pages", "Payment gateway", "Product catalog", "Admin dashboard", "SEO optimization", "Priority support"],
+                                      _id: existingPlan?._id || ""
+                                    } as PricingPlan
                                   ]
                                 }
-                              };
+                              } as Partial<Service>;
                             })}
                             className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
@@ -684,18 +702,20 @@ export default function ServiceManagement() {
                               return {
                                 ...prev,
                                 pricingPackage: {
-                                  ...prev.pricingPackage,
+                                  title: prev.pricingPackage?.title || "Our Pricing Packages",
+                                  subtitle: prev.pricingPackage?.subtitle || "Transparent pricing designed to fit businesses of all sizes",
                                   pricingPlans: [
                                     ...(currentPlans.slice(0, 2) || []),
                                     {
                                       planTitle: "Premium Website/E-Commerce",
                                       price: { usd: existingPlan?.price?.usd || 0, ngn: parseInt(e.target.value) || 0 },
                                       duration: { minDays: 21, maxDays: 45 },
-                                      benefit: ["Unlimited pages", "Payment gateway", "Product catalog", "Admin dashboard", "SEO optimization", "Priority support"]
-                                    } as any
+                                      benefit: ["Unlimited pages", "Payment gateway", "Product catalog", "Admin dashboard", "SEO optimization", "Priority support"],
+                                      _id: existingPlan?._id || ""
+                                    } as PricingPlan
                                   ]
                                 }
-                              };
+                              } as Partial<Service>;
                             })}
                             className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
