@@ -94,12 +94,6 @@ app.use('/api/v1/bookings', bookingRouter);
 app.use('/api/v1/payments', paymentRouter);
 app.use('/api/v1/admin', adminRouter);
 
-// app.all('*', (req, res, next) => {
-//   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
-// });
-// app.all('/*', (req, res, next) => {
-//   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
-// });
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });

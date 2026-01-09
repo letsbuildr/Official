@@ -171,7 +171,7 @@ exports.regenerateBookingOtp = catchAsync(async (req, res, next) => {
   const now = Date.now();
   if (
     booking.lastOtpSentAt &&
-    now - booking.lastOtpSentAt.getTime() < 1 * 60 * 1000 //10 minutes
+    now - booking.lastOtpSentAt.getTime() < 1 * 60 * 1000 //1 minute
   ) {
     const remaining = Math.ceil(
       (1 * 60 * 1000 - (now - booking.lastOtpSentAt.getTime())) / 1000

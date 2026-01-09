@@ -318,14 +318,14 @@ exports.getAnalytics = catchAsync(async (req, res, next) => {
     { $match: { createdAt: { $gte: prevRangeStart, $lt: rangeStart } } },
     { $group: { _id: null, total: { $sum: '$amountPaid' } } },
   ]);
-  const revenuPrevRange = prevRevAgg[0]?.total || 0;
+  const revenuePrevRange = prevRevAgg[0]?.total || 0;
 
   const revenueChange =
-    revenuPrevRange === 0
+    revenuePrevRange === 0
       ? revenueThisRange === 0
         ? 0
         : 100
-      : ((revenueThisRange - revenuPrevRange) / revenuPrevRange) * 100;
+      : ((revenueThisRange - revenuePrevRange) / revenuePrevRange) * 100;
 
   const stats = {
     range,
@@ -337,7 +337,7 @@ exports.getAnalytics = catchAsync(async (req, res, next) => {
     successfulConsultations,
     consultationSuccessRate,
     revenueThisRange,
-    revenuPrevRange,
+    revenuePrevRange,
     revenueChange,
   };
 
